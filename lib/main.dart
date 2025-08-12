@@ -1,94 +1,35 @@
 import 'package:flutter/material.dart';
+import 'home/home_view.dart'; // 匯入功能頁面的主視圖
 
 /// 應用程式進入點。
 ///
-/// 透過 [runApp] 啟動 Flutter 應用，並載入根元件 [MyApp]。
-void main() => runApp(const MyApp());
+/// Flutter 會從這裡開始執行，並載入根元件 [MyApp]。
+void main() {
+  runApp(const MyApp()); // 啟動應用程式，並將 MyApp 掛載到畫面樹中
+}
 
-/// 應用程式根元件。
+/// 應用程式的根元件。
 ///
-/// 負責建立最外層的 [MaterialApp]，並將首頁設定為顯示
-/// [FullScreenText] 的畫面。
+/// 此元件負責建立整個 App 的基礎設定，包含：
+/// - 應用程式標題
+/// - 除錯標籤顯示設定
+/// - 全域主題樣式
+/// - 首頁入口頁面
 class MyApp extends StatelessWidget {
-  /// 建立 [MyApp]。
+  /// 建立 [MyApp] 根元件。
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 建立 Material Design 應用，首頁直接顯示全螢幕文字元件。
-    return const MaterialApp(home: Scaffold(body: FullScreenText()));
-  }
-}
-
-/// 全螢幕自適應文字顯示元件。
-///
-/// 此元件會根據可用畫面尺寸，自動計算文字縮放比例，
-/// 讓多行文字在不超出螢幕範圍的前提下，盡可能放大並置中顯示。
-class FullScreenText extends StatelessWidget {
-  /// 建立 [FullScreenText]。
-  const FullScreenText({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // 使用 Scaffold 提供基本頁面結構。
-    return Scaffold(
-      body: LayoutBuilder(
-        // 透過 LayoutBuilder 取得目前可用的版面尺寸限制。
-        builder: (context, constraints) {
-          // 要顯示的多行文字內容。
-          const String text = "神楽坂雅詩\nかぐらざか みやび\nKagurazakaMiyabi";
-
-          // 定義文字的基礎樣式，後續會在此基礎上調整字體大小與顏色。
-          const TextStyle baseStyle = TextStyle(
-            fontWeight: FontWeight.bold,
-            height: 1.1,
-          );
-
-          // 使用 TextPainter 先以基準字級量測文字實際繪製後的寬高。
-          final textPainter = TextPainter(
-            text: TextSpan(
-              text: text,
-              style: baseStyle.copyWith(fontSize: 100),
-            ),
-            textDirection: TextDirection.ltr,
-            textAlign: TextAlign.center,
-          )..layout();
-
-          // 取得基準字級下的文字寬度。
-          double textWidth = textPainter.width;
-
-          // 取得基準字級下的文字高度。
-          double textHeight = textPainter.height;
-
-          // 計算在目前容器寬度下，可水平放大的比例。
-          double scaleX = constraints.maxWidth / textWidth;
-
-          // 計算在目前容器高度下，可垂直放大的比例。
-          double scaleY = constraints.maxHeight / textHeight;
-
-          // 取寬高縮放比例中較小者，確保文字完整顯示且不會溢出。
-          double scale = scaleX < scaleY ? scaleX : scaleY;
-
-          // 以基準字級 100 為基礎，套用縮放比例後再保留一些邊界空間。
-          double finalFontSize = (100 * scale) * 0.8;
-
-          // 建立全螢幕容器，將文字置中顯示。
-          return Container(
-            width: constraints.maxWidth,
-            height: constraints.maxHeight,
-            alignment: Alignment.center,
-            color: Colors.blueGrey[900],
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: baseStyle.copyWith(
-                fontSize: finalFontSize,
-                color: Colors.redAccent,
-              ),
-            ),
-          );
-        },
+    return MaterialApp(
+      title: 'EvernightBoard', // 設定應用程式標題
+      debugShowCheckedModeBanner: false, // 關閉右上角的 DEBUG 標籤
+      theme: ThemeData(
+        primarySwatch: Colors.blue, // 設定主要色票為藍色
+        useMaterial3: true, // 啟用 Material 3 設計風格
       ),
+      // 這裡的 HomeView 是我們功能模組的入口
+      home: const HomeView(), // 指定應用程式啟動後顯示的首頁
     );
   }
 }
