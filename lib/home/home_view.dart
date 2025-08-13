@@ -1,127 +1,174 @@
 import 'package:flutter/material.dart';
 import 'home_controller.dart';
 
-/// HomeView 為首頁畫面的 StatefulWidget。
+/// HomeView 為首頁畫面元件。
 ///
-/// 職責：
-/// - 建立並顯示首頁 UI。
-/// - 與 [HomeController] 綁定，依據控制器狀態更新畫面。
-/// - 顯示中央文字內容與底部導覽列。
+/// 此畫面會根據螢幕方向自動切換導覽列的顯示方式：
+/// - 直向時：使用右側側邊導覽列
+/// - 橫向時：使用底部導覽列
+///
+/// 中央內容會依可用空間自動縮放文字大小，
 class HomeView extends StatefulWidget {
   /// 建立首頁畫面元件。
   const HomeView({super.key});
 
-  /// 建立對應的 State 物件。
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
-/// [HomeView] 對應的狀態類別。
+/// HomeView 的狀態物件。
 ///
-/// 主要負責：
-/// - 初始化與釋放 [HomeController]
-/// - 監聽控制器狀態變化並刷新 UI
-/// - 根據畫面尺寸動態計算文字縮放比例
+/// 負責：
+/// - 管理 [HomeController]
+/// - 監聽控制器資料變化並重建畫面
+/// - 根據畫面方向切換版面配置
 class _HomeViewState extends State<HomeView> {
-  /// 首頁控制器實例。
-  ///
-  /// 用於管理目前顯示的內容、底部導覽列索引，以及頁面切換邏輯。
+  /// 首頁畫面的控制器，用來管理目前索引、內容與導覽項目。
   final HomeController _controller = HomeController();
 
-  /// State 初始化生命週期。
-  ///
-  /// 在元件第一次建立時呼叫：
-  /// - 先執行父類別初始化
-  /// - 註冊 controller 監聽器，當資料變化時透過 setState 重新建構畫面
   @override
   void initState() {
     super.initState();
-    // 監聽 Controller 的變化，當內部狀態更新時重新刷新畫面
+
+    // 監聽控制器狀態變化，當資料更新時重新繪製畫面。
     _controller.addListener(() => setState(() {}));
   }
 
-  /// State 釋放生命週期。
-  ///
-  /// 當畫面被移除時：
-  /// - 先釋放 controller 資源，避免記憶體洩漏
-  /// - 再呼叫父類別的 dispose
   @override
   void dispose() {
-    // 釋放 Controller 佔用的資源
+    // 釋放控制器資源，避免記憶體洩漏。
     _controller.dispose();
     super.dispose();
   }
 
-  /// 建立首頁畫面。
-  ///
-  /// 畫面包含：
-  /// - 使用 [LayoutBuilder] 動態計算可用空間
-  /// - 中央顯示可自動縮放大小的文字
-  /// - 底部導覽列，點擊後切換內容
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // --- 之前討論的文字自適應邏輯 ---
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // 從 Controller 取得目前要顯示的文字內容
-          final String text = _controller.currentContent;
+    // 使用 OrientationBuilder 監聽螢幕方向變化。
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        // 判斷目前是否為直向畫面。
+        bool isPortrait = orientation == Orientation.portrait;
 
-          // 定義文字的基礎樣式
-          const TextStyle baseStyle = TextStyle(
-            height: 1.1,
-            color: Colors.blueAccent,
-          );
+        return Scaffold(
+          // 如果是直屏，導覽列在右側，因此不使用 bottomNavigationBar，
+          // 而是在 body 中以 Row 方式排版。
+          //
+          // 如果是橫屏，直接使用 Scaffold 的 bottomNavigationBar。
+          bottomNavigationBar: isPortrait ? null : _buildBottomNav(),
+          body: isPortrait
+              ? Row(
+                  children: [
+                    // 文字區域占據剩餘空間。
+                    Expanded(child: _buildScalingText()),
 
-          // 使用 TextPainter 先以固定字級 100 計算文字實際繪製尺寸
-          // 這樣可以根據可用空間推算最適合的縮放比例
-          final textPainter = TextPainter(
-            text: TextSpan(
-              text: text,
-              style: baseStyle.copyWith(fontSize: 100),
-            ),
-            textDirection: TextDirection.ltr,
+                    // 右側顯示側邊導覽列。
+                    _buildSideNav(),
+                  ],
+                )
+              // 橫屏時僅顯示主內容，底部導覽列由 Scaffold 負責。
+              : _buildScalingText(),
+        );
+      },
+    );
+  }
+
+  /// 建立可依容器大小自動縮放的文字區塊。
+  ///
+  /// 此方法會先使用 [TextPainter] 以基準字級進行排版測量，
+  /// 再依據可用寬高計算最適合的縮放比例，
+  /// 讓文字能盡可能完整地顯示於畫面中央。
+  Widget _buildScalingText() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 取得目前要顯示的文字內容。
+        final String text = _controller.currentContent;
+
+        // 定義文字的基礎樣式。
+        const TextStyle baseStyle = TextStyle(
+          height: 1.1,
+          color: Colors.deepPurple,
+        );
+
+        // 使用 TextPainter 先以固定字級測量文字實際尺寸。
+        final textPainter = TextPainter(
+          text: TextSpan(text: text, style: baseStyle.copyWith(fontSize: 100)),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center,
+        )..layout();
+
+        // 根據容器可用寬高與文字實際尺寸計算縮放比例，
+        // 取寬度比例與高度比例中較小者，避免文字超出容器範圍。
+        double scale =
+            (constraints.maxWidth / textPainter.width) <
+                (constraints.maxHeight / textPainter.height)
+            ? (constraints.maxWidth / textPainter.width)
+            : (constraints.maxHeight / textPainter.height);
+
+        return Container(
+          // 將文字置中顯示。
+          alignment: Alignment.center,
+
+          // 設定內距，避免文字貼齊邊界。
+          padding: const EdgeInsets.all(10),
+          child: Text(
+            text,
             textAlign: TextAlign.center,
-          )..layout();
 
-          // 計算寬度與高度方向各自可容納的縮放比例
-          // 並取較小值，確保文字可完整顯示於畫面內
-          double scale =
-              (constraints.maxWidth / textPainter.width) <
-                  (constraints.maxHeight / textPainter.height)
-              ? (constraints.maxWidth / textPainter.width)
-              : (constraints.maxHeight / textPainter.height);
+            // 套用縮放後字級，並保留些許安全邊界。
+            style: baseStyle.copyWith(fontSize: (100 * scale) * 0.9),
+          ),
+        );
+      },
+    );
+  }
 
-          return Center(
-            child: Text(
-              // 顯示目前內容文字
-              text,
-              // 文字置中對齊
-              textAlign: TextAlign.center,
-              // 套用基礎樣式，並依縮放比例動態調整字級
-              // 額外乘上 0.85 作為保留邊界，避免貼齊畫面
-              style: baseStyle.copyWith(fontSize: (100 * scale) * 0.85),
+  /// 建立底部導覽列。
+  ///
+  /// 此導覽列用於橫向畫面，並依據控制器中的導覽項目動態產生按鈕。
+  Widget _buildBottomNav() {
+    return BottomNavigationBar(
+      // 設定目前選中的索引。
+      currentIndex: _controller.currentIndex,
+
+      // 點擊導覽項目時切換頁面索引。
+      onTap: _controller.changeIndex,
+
+      // 由控制器的項目清單動態建立導覽列項目。
+      items: _controller.items
+          .map(
+            (item) => BottomNavigationBarItem(
+              icon: Icon(item.icon),
+              label: item.title,
             ),
-          );
-        },
-      ),
+          )
+          .toList(),
+    );
+  }
 
-      // --- 底部導覽列 ---
-      bottomNavigationBar: BottomNavigationBar(
-        // 目前選取的頁籤索引
-        currentIndex: _controller.currentIndex,
-        // 點擊頁籤時，呼叫 Controller 的切換方法
-        onTap: _controller.changeIndex,
-        // 根據 Controller 提供的項目清單動態建立底部導覽列項目
-        items: _controller.items.map((item) {
-          return BottomNavigationBarItem(
-            // 顯示頁籤圖示
-            icon: Icon(item.icon),
-            // 顯示頁籤標題
-            label: item.title,
-          );
-        }).toList(),
-      ),
+  /// 建立右側側邊導覽列。
+  ///
+  /// 此導覽列用於直向畫面，採用 [NavigationRail] 實作。
+  Widget _buildSideNav() {
+    // 使用 NavigationRail 實作側邊導覽。
+    return NavigationRail(
+      // 目前選中的目的地索引。
+      selectedIndex: _controller.currentIndex,
+
+      // 點選目的地時切換頁面索引。
+      onDestinationSelected: _controller.changeIndex,
+
+      // 顯示所有標籤文字。
+      labelType: NavigationRailLabelType.all,
+
+      // 由控制器的項目清單動態建立側邊導覽目的地。
+      destinations: _controller.items
+          .map(
+            (item) => NavigationRailDestination(
+              icon: Icon(item.icon),
+              label: Text(item.title),
+            ),
+          )
+          .toList(),
     );
   }
 }
