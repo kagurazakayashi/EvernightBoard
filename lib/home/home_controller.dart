@@ -61,11 +61,11 @@ class HomeController extends ChangeNotifier {
       AccelerometerEvent event,
     ) {
       // 在直向畫面邏輯下，x 軸可視為左右傾斜方向的判斷依據。
-      // 設定閾值 2.5，可避免感測器過於敏感造成畫面頻繁抖動切換。
-      if (event.x > 2.5) {
+      // 設定閾值可避免感測器過於敏感造成畫面頻繁抖動切換。
+      if (event.x > 1) {
         // 當 x 軸大於閾值時，視為裝置向右傾斜，將導覽切換至右側。
         _updateSide(NavSide.left);
-      } else if (event.x < -2.5) {
+      } else if (event.x < -1) {
         // 當 x 軸小於負閾值時，視為裝置向左傾斜，將導覽切換至左側。
         _updateSide(NavSide.right);
       }
@@ -95,6 +95,18 @@ class HomeController extends ChangeNotifier {
     _currentIndex = index;
 
     // 通知監聽者重新繪製對應內容。
+    notifyListeners();
+  }
+
+  // 翻到下一項
+  void nextItem() {
+    _currentIndex = (_currentIndex + 1) % items.length;
+    notifyListeners();
+  }
+
+  // 翻到上一項
+  void previousItem() {
+    _currentIndex = (_currentIndex - 1 + items.length) % items.length;
     notifyListeners();
   }
 
