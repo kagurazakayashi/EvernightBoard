@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'home_model.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 
 /// 導覽列所在側邊列舉。
 ///
@@ -31,11 +32,13 @@ class HomeController extends ChangeNotifier {
 
   /// 目前導覽所在側邊，預設顯示於右側。
   NavSide _currentSide = NavSide.right; // 默认在右侧
+  double _lastVolume = 0.5;
 
   /// 加速度計事件訂閱物件。
   ///
   /// 用於接收裝置感測器資料，並在控制器釋放時取消監聽。
   StreamSubscription<AccelerometerEvent>? _subscription;
+  StreamSubscription<double>? _volumeSub;
 
   /// 取得目前選中的導覽索引。
   int get currentIndex => _currentIndex;
@@ -49,6 +52,7 @@ class HomeController extends ChangeNotifier {
   /// 建立 [HomeController] 時自動初始化感測器監聽。
   HomeController() {
     _initSensors();
+    _initVolumeControl();
   }
 
   /// 初始化加速度計監聽。
@@ -87,15 +91,36 @@ class HomeController extends ChangeNotifier {
     }
   }
 
-  /// 切換目前選中的導覽索引。
-  ///
-  /// [index] 為欲切換的目標項目索引。
-  void changeIndex(int index) {
-    // 更新目前選中的頁籤索引。
-    _currentIndex = index;
+  // --- 音量键监听逻辑 ---
+  void _initVolumeControl() async {
+    // 1. 隐藏系统音量 UI（让翻页更纯粹）
+    await FlutterVolumeController.updateShowSystemUI(false);
 
-    // 通知監聽者重新繪製對應內容。
-    notifyListeners();
+    // 2. 获取当前初始音量
+    _lastVolume = await FlutterVolumeController.getVolume() ?? 0.5;
+
+    // 3. 监听变化
+    FlutterVolumeController.addListener((volume) {
+      if (volume > _lastVolume) {
+        previousItem(); // 音量变大 -> 上一项
+      } else if (volume < _lastVolume) {
+        nextItem(); // 音量变小 -> 下一项
+      }
+
+      // 关键：更新记录值
+      _lastVolume = volume;
+
+      // 4. 防止音量封顶/触底无法触发
+      // 如果音量到了 1.0 或 0.0，手动将其微调回 0.9 或 0.1
+      // 这样下次按键依然能产生 "变化" 信号
+      if (volume >= 1.0) {
+        FlutterVolumeController.setVolume(0.9);
+        _lastVolume = 0.9;
+      } else if (volume <= 0.0) {
+        FlutterVolumeController.setVolume(0.1);
+        _lastVolume = 0.1;
+      }
+    });
   }
 
   // 翻到下一項
@@ -110,11 +135,22 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 切換目前選中的導覽索引。
+  ///
+  /// [index] 為欲切換的目標項目索引。
+  void changeIndex(int index) {
+    // 更新目前選中的頁籤索引。
+    _currentIndex = index;
+
+    // 通知監聽者重新繪製對應內容。
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     // 取消加速度計監聽，避免控制器釋放後仍持續接收事件，造成記憶體洩漏。
     _subscription?.cancel(); // 必须销毁监听器，防止内存泄漏
-
+    FlutterVolumeController.removeListener();
     // 呼叫父類別的 dispose，完成 ChangeNotifier 資源釋放流程。
     super.dispose();
   }
