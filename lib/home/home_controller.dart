@@ -1,104 +1,114 @@
-/// 控制首頁狀態與互動邏輯的控制器。
-///
-/// 功能包含：
-/// 1. 管理目前顯示的 `HomeItem`。
-/// 2. 監聽裝置音量變化，切換上一個或下一個項目。
-/// 3. 監聽加速度感測器資料，更新目前導航顯示方向。
-/// 4. 透過 `ChangeNotifier` 通知 UI 重新繪製。
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'home_model.dart';
 
-/// 導航列所在側邊。
+/// 導航方向列舉。
+///
+/// 用於表示目前導覽提示或切換方向位於左側或右側。
 enum NavSide { left, right }
 
 /// 首頁控制器。
 ///
-/// 此類別負責：
-/// - 維護首頁資料清單
-/// - 記錄目前選中的索引
-/// - 根據裝置音量鍵切換項目
-/// - 根據加速度感測器判斷目前導覽側邊
+/// 負責管理首頁展示資料、目前選取項目、裝置感測器監聽、
+/// 音量鍵切換項目，以及狀態變更通知給 View。
 class HomeController extends ChangeNotifier {
-  /// 首頁可顯示的項目清單。
-  final List<HomeItem> items = [
-    HomeItem(title: 'Demo', content: 'Demo', icon: Icons.widgets_rounded),
-  ];
+  /// 定義單一 Demo 項目資料清單。
+  ///
+  /// 目前以 `late final` 建立，會在建構時透過 `_initData()` 完成初始化。
+  late final List<HomeItem> items;
 
-  /// 目前選中的項目索引。
+  /// 目前顯示中的項目索引。
   int _currentIndex = 0;
 
-  /// 目前導航所在側邊，預設為右側。
+  /// 目前導覽方向，預設為右側。
   NavSide _currentSide = NavSide.right;
 
-  /// 上一次記錄的音量值，用於比較音量增減方向。
+  /// 上一次記錄的音量值。
+  ///
+  /// 用來判斷使用者是按了音量增加還是減少。
   double _lastVolume = 0.5;
 
-  /// 加速度感測器監聽訂閱物件，用於釋放資源。
+  /// 加速度感測器訂閱物件。
+  ///
+  /// 在 `dispose()` 時需要取消訂閱，避免資源洩漏。
   StreamSubscription<AccelerometerEvent>? _sensorSub;
 
-  /// 取得目前選中的項目索引。
+  /// 取得目前項目索引。
   int get currentIndex => _currentIndex;
 
-  /// 取得目前導航所在側邊。
+  /// 取得目前導覽方向。
   NavSide get currentSide => _currentSide;
 
-  /// 取得目前選中項目的內容。
-  String get currentContent => items[_currentIndex].content;
+  /// 方便 View 直接取得目前顯示中的項目。
+  HomeItem get currentItem => items[_currentIndex];
 
   /// 建構子。
   ///
-  /// 建立控制器時，會立即初始化：
-  /// - 感測器監聽
-  /// - 音量控制監聽
+  /// 建立控制器時，會依序初始化：
+  /// 1. 畫面資料
+  /// 2. 感測器監聽
+  /// 3. 音量控制監聽
   HomeController() {
-    _initSensors();
-    _initVolumeControl();
+    _initData(); // 初始化展示資料
+    _initSensors(); // 初始化加速度感測器監聽
+    _initVolumeControl(); // 初始化音量鍵控制
   }
 
-  /// 初始化音量控制相關功能。
+  /// 初始化首頁資料。
   ///
-  /// 流程說明：
-  /// 1. 關閉系統原生音量 UI。
-  /// 2. 讀取目前音量作為初始比較基準。
-  /// 3. 監聽音量變化：
-  ///    - 音量增加時切換到上一個項目
-  ///    - 音量減少時切換到下一個項目
-  /// 4. 為避免音量到達極值後無法繼續觸發，
-  ///    當音量到 1.0 或 0.0 時，會稍微拉回。
+  /// 目前僅建立一筆 Demo 資料，可後續擴充為多筆項目。
+  void _initData() {
+    // 實例化 Demo 項目，設定標題、內容、圖示、文字顏色、背景顏色與背景圖片。
+    items = [
+      HomeItem(
+        title: 'Demo',
+        content: 'Demo',
+        icon: Icons.widgets_rounded,
+        textColor: Colors.white, // 有背景圖時此顏色可能不會顯示，仍保留以提升程式健壯性。
+        backgroundColor: Colors.grey[900]!, // 當圖片使用 contain 顯示時，兩側露出的底色。
+        backgroundImagePath: 'assets/default.png', // 指定測試用背景圖片路徑。
+      ),
+    ];
+  }
+
+  // --- 邏輯部分 (保持不變，已修復 if block) ---
+
+  /// 初始化音量控制監聽。
+  ///
+  /// 功能說明：
+  /// - 隱藏系統原生音量 UI
+  /// - 讀取目前音量作為初始基準值
+  /// - 監聽音量變化，並依音量增減切換上一個或下一個項目
+  /// - 避免音量到達 0 或 1，防止後續無法持續觸發切換
   void _initVolumeControl() async {
-    // 隱藏系統預設音量 UI，避免操作時跳出原生音量提示。
+    // 關閉系統預設音量顯示 UI，避免影響畫面體驗。
     await FlutterVolumeController.updateShowSystemUI(false);
 
-    // 讀取目前系統音量，若取得失敗則預設為 0.5。
+    // 取得目前系統音量，若讀取失敗則使用 0.5 作為預設值。
     _lastVolume = await FlutterVolumeController.getVolume() ?? 0.5;
 
-    // 監聽音量變化事件。
+    // 監聽音量變化。
     FlutterVolumeController.addListener((volume) {
-      // 若音量比上次大，視為使用者按了音量增加鍵，
-      // 切換到上一個項目。
+      // 音量上升時，切換到前一個項目。
       if (volume > _lastVolume) {
         previousItem();
       }
-      // 若音量比上次小，視為使用者按了音量減少鍵，
-      // 切換到下一個項目。
+      // 音量下降時，切換到下一個項目。
       else if (volume < _lastVolume) {
         nextItem();
       }
 
-      // 更新最後一次音量記錄值。
+      // 更新最後一次記錄的音量值。
       _lastVolume = volume;
 
-      // 若音量已達上限，稍微往下降一點，
-      // 避免卡在最大值時後續無法再觸發增加事件。
+      // 若音量已到最大值，稍微拉回 0.9，保留之後繼續增加的空間。
       if (volume >= 1.0) {
         FlutterVolumeController.setVolume(0.9);
         _lastVolume = 0.9;
       }
-      // 若音量已達下限，稍微往上調一點，
-      // 避免卡在最小值時後續無法再觸發減少事件。
+      // 若音量已到最小值，稍微拉回 0.1，保留之後繼續降低的空間。
       else if (volume <= 0.0) {
         FlutterVolumeController.setVolume(0.1);
         _lastVolume = 0.1;
@@ -108,75 +118,74 @@ class HomeController extends ChangeNotifier {
 
   /// 切換到下一個項目。
   ///
-  /// 使用取餘數方式，讓索引超過尾端後回到開頭，
-  /// 形成循環切換效果。
+  /// 使用循環索引，超過最後一項時會回到第一項。
   void nextItem() {
     _currentIndex = (_currentIndex + 1) % items.length;
-
-    // 通知所有監聽者更新畫面。
-    notifyListeners();
+    notifyListeners(); // 通知畫面更新
   }
 
   /// 切換到上一個項目。
   ///
-  /// 使用循環索引方式，讓索引減到 0 以下時回到最後一個項目。
+  /// 使用循環索引，當前為第一項時會回到最後一項。
   void previousItem() {
     _currentIndex = (_currentIndex - 1 + items.length) % items.length;
-
-    // 通知所有監聽者更新畫面。
-    notifyListeners();
+    notifyListeners(); // 通知畫面更新
   }
 
-  /// 直接切換到指定索引的項目。
+  /// 依指定索引切換目前項目。
   ///
-  /// [index] 為欲切換的目標索引。
+  /// 只有當索引與目前索引不同時，才會更新並通知監聽者。
+  ///
+  /// [index] 欲切換的目標索引。
   void changeIndex(int index) {
-    _currentIndex = index;
-
-    // 通知所有監聽者更新畫面。
-    notifyListeners();
+    // 避免重複設定相同索引，減少不必要的畫面更新。
+    if (_currentIndex != index) {
+      _currentIndex = index;
+      notifyListeners(); // 通知畫面更新
+    }
   }
 
   /// 初始化加速度感測器監聽。
   ///
-  /// 依據裝置在 X 軸方向的傾斜程度判斷導航位置：
-  /// - `event.x > 2.5`：切換為左側
-  /// - `event.x < -2.5`：切換為右側
+  /// 根據裝置 X 軸傾斜方向，更新目前導覽方向：
+  /// - X 軸大於 2.5：判定為左側
+  /// - X 軸小於 -2.5：判定為右側
   void _initSensors() {
-    // 開始監聽加速度感測器事件流。
+    // 訂閱加速度感測器資料流。
     _sensorSub = accelerometerEventStream().listen((event) {
-      // 裝置往某一方向傾斜時，更新導航側邊。
+      // 裝置朝某一方向傾斜時，更新為左側導覽。
       if (event.x > 2.5) {
         _updateSide(NavSide.left);
-      } else if (event.x < -2.5) {
+      }
+      // 裝置朝相反方向傾斜時，更新為右側導覽。
+      else if (event.x < -2.5) {
         _updateSide(NavSide.right);
       }
     });
   }
 
-  /// 更新目前導航側邊。
+  /// 更新目前導覽方向。
   ///
-  /// 僅當側邊真的發生變化時才通知 UI，
-  /// 避免不必要的重繪。
+  /// 僅在方向真的改變時才通知監聽者，避免多餘重繪。
+  ///
+  /// [side] 新的導覽方向。
   void _updateSide(NavSide side) {
-    // 只有在新側邊與目前側邊不同時才更新。
+    // 只有在方向變更時才更新狀態。
     if (_currentSide != side) {
       _currentSide = side;
-
-      // 通知所有監聽者更新畫面。
-      notifyListeners();
+      notifyListeners(); // 通知畫面更新
     }
   }
 
   @override
   void dispose() {
-    // 取消感測器監聽，避免記憶體洩漏。
+    // 取消感測器訂閱，避免記憶體洩漏。
     _sensorSub?.cancel();
 
-    // 移除音量監聽器，釋放相關資源。
+    // 移除音量監聽器。
     FlutterVolumeController.removeListener();
 
-    // 呼叫父類別的 dispose。
+    // 呼叫父類別釋放資源。
     super.dispose();
   }
 }

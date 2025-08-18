@@ -2,25 +2,60 @@ import 'package:flutter/material.dart';
 
 /// 首頁項目資料模型。
 ///
-/// 用來描述單一首頁卡片或導覽項目的基本資訊，包含：
-/// - [title]：顯示在導覽列或介面上的標題文字
-/// - [content]：頁面中要呈現的主要大型文字內容
-/// - [icon]：對應此項目的 Material 圖示
+/// 用來描述單一首頁／導覽項目的顯示資訊，包含：
+/// - 導覽列標題
+/// - 畫面主要內容文字
+/// - 導覽列圖示
+/// - 文字顏色
+/// - 背景顏色
+/// - 背景圖片路徑（可選）
+///
+/// 此類別通常會搭配清單使用，讓 UI 可依據不同項目動態產生對應畫面。
 class HomeItem {
-  /// 導航欄標籤文字。
-  final String title; // 導航欄標籤
+  /// 導覽列上顯示的標題文字。
+  final String title; // 导航栏标签
 
-  /// 要顯示的巨大文本內容。
-  final String content; // 要顯示的巨大文本
+  /// 畫面中顯示的主要文字內容。
+  ///
+  /// 當未提供背景圖片，或畫面需要顯示文字說明時使用。
+  final String content; // 屏幕显示文字 (如果没图片)
 
-  /// 此項目對應的圖示資料。
-  final IconData icon;
+  /// 導覽列或對應功能項目的圖示。
+  final IconData icon; // 导航栏图标
+
+  // --- 新增属性 ---
+
+  /// 畫面文字顏色。
+  ///
+  /// 預設為 [Colors.cyanAccent]，以維持深色主題下的可讀性與科技感。
+  final Color textColor; // 文字颜色
+
+  /// 畫面背景顏色。
+  ///
+  /// 當未設定背景圖片，或背景圖片未完整覆蓋畫面時，會顯示此背景色。
+  final Color backgroundColor; // 背景颜色 (没图片或图片没填满时显示)
+
+  /// 背景圖片路徑。
+  ///
+  /// 可為空值，表示不使用背景圖片。
+  /// 若有提供，通常會搭配 `AssetImage` 或其他圖片載入方式使用。
+  final String? backgroundImagePath; // 背景图片路径 (可选)
 
   /// 建立一個 [HomeItem] 實例。
   ///
-  /// 所有欄位皆為必填：
-  /// - [title]：標題文字
-  /// - [content]：內容文字
-  /// - [icon]：圖示
-  HomeItem({required this.title, required this.content, required this.icon});
+  /// [title]、[content]、[icon] 為必填欄位。
+  ///
+  /// 其餘視覺相關欄位提供預設值：
+  /// - [textColor] 預設為 `Colors.cyanAccent`
+  /// - [backgroundColor] 預設為 `Colors.black87`
+  /// - [backgroundImagePath] 為可選欄位
+  HomeItem({
+    required this.title,
+    required this.content,
+    required this.icon,
+    // 設定預設值，以維持深色主題風格與一致的視覺表現
+    this.textColor = Colors.cyanAccent,
+    this.backgroundColor = Colors.black87,
+    this.backgroundImagePath,
+  });
 }
