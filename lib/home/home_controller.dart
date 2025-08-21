@@ -1,256 +1,120 @@
-/// HomeController
-///
-/// 此控制器負責管理首頁資料與互動邏輯，包含：
-/// 1. 初始化首頁預設項目資料
-/// 2. 管理目前選取的項目索引
-/// 3. 透過音量鍵切換上一筆 / 下一筆項目
-/// 4. 透過加速度感測器判斷目前導覽方向
-/// 5. 提供新增、刪除、更新項目的操作
-///
-/// 搭配 [ChangeNotifier] 使用，當狀態變更時會呼叫 [notifyListeners]，
-/// 讓 UI 可以即時更新畫面。
+/// 匯入 Dart 非同步功能，例如 [StreamSubscription]。
 import 'dart:async';
+
+/// 匯入 Flutter Material 元件庫。
 import 'package:flutter/material.dart';
+
+/// 匯入感測器套件，用於監聽加速度感測器事件。
 import 'package:sensors_plus/sensors_plus.dart';
+
+/// 匯入系統音量控制套件，用於監聽或調整裝置音量。
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
+
+/// 匯入首頁資料模型定義。
 import 'home_model.dart';
 
-/// 導覽方向列舉。
+/// 依然使用 part，以便共享私有變數 _currentIndex 等
 ///
-/// 用於表示目前裝置傾斜或導覽顯示的方向。
-enum NavSide { left, right }
+/// 將資料邏輯拆分到獨立 part 檔案，
+/// 但仍與目前檔案屬於同一個 library，
+/// 因此可以共用私有成員（例如 `_currentIndex`、`_currentSide` 等）。
+part 'home_controller_data.part.dart';
+
+/// 感測器相關邏輯模組。
+part 'home_controller_sensors.part.dart';
+
+/// 音量控制相關邏輯模組。
+part 'home_controller_volume.part.dart';
+
+/// 導航方向列舉。
+///
+/// 用來表示目前操作或切換的方向是左側還是右側。
+enum NavSide {
+  /// 左側方向。
+  left,
+
+  /// 右側方向。
+  right,
+}
 
 /// 首頁控制器。
 ///
-/// 管理首頁資料清單、目前選取項目、音量控制事件與感測器事件。
-class HomeController extends ChangeNotifier {
-  /// 首頁項目清單。
+/// 負責管理首頁目前顯示的項目、左右側狀態、音量控制狀態，
+/// 並整合資料初始化、感測器初始化與音量控制初始化等功能。
+///
+/// 透過 `ChangeNotifier` 提供狀態通知能力，讓 UI 在資料變動時可即時更新。
+class HomeController extends ChangeNotifier
+    with HomeControllerData, HomeControllerSensors, HomeControllerVolume {
+  // 儲存首頁所有可顯示的項目清單。
   List<HomeItem> items = [];
 
-  /// 目前選取的項目索引。
+  // 目前顯示中的項目索引。
   int _currentIndex = 0;
 
-  /// 目前導覽方向，預設為右側。
+  // 目前導覽側邊的位置，預設為右側。
   NavSide _currentSide = NavSide.right;
 
-  /// 記錄上一次的系統音量，用於比對音量增減方向。
+  // 紀錄上一次音量值，預設為 0.5。
   double _lastVolume = 0.5;
 
-  /// 加速度感測器訂閱物件，用於後續釋放資源。
+  // 加速度感測器的訂閱物件，用於後續取消監聽。
   StreamSubscription<AccelerometerEvent>? _sensorSub;
 
-  /// 取得目前項目索引。
+  // 目前顯示項目的索引。
   int get currentIndex => _currentIndex;
 
-  /// 取得目前導覽方向。
+  // 目前導覽所在的側邊。
   NavSide get currentSide => _currentSide;
 
-  /// 取得目前選取的項目。
+  // 取得目前顯示中的項目。
   HomeItem get currentItem => items[_currentIndex];
 
   /// 建構子。
   ///
-  /// 建立控制器時，依序初始化：
-  /// - 預設資料
-  /// - 感測器監聽
-  /// - 音量鍵控制
+  /// 建立控制器時，會依序初始化：
+  /// 1. 資料內容
+  /// 2. 感測器監聽
+  /// 3. 音量控制邏輯
   HomeController() {
-    _initData();
-    _initSensors();
-    _initVolumeControl();
+    _initData(); // 初始化首頁資料
+    _initSensors(); // 初始化感測器相關功能
+    _initVolumeControl(); // 初始化音量控制相關功能
   }
 
-  /// 初始化首頁預設資料。
+  /// 切換到下一個項目。
   ///
-  /// 建立兩筆預設 [HomeItem]：
-  /// - 一筆圖片項
-  /// - 一筆文字項
-  void _initData() {
-    items = [
-      HomeItem(
-        title: '图片项',
-        content: '',
-        icon: Icons.image,
-        backgroundColor: Colors.indigo[900]!,
-        textColor: Colors.amberAccent,
-        backgroundImagePath: 'assets/default.png',
-      ),
-      HomeItem(
-        title: '文字项',
-        content: 'Demo\nText',
-        icon: Icons.text_fields,
-        backgroundColor: Colors.teal[900]!,
-        textColor: Colors.white,
-      ),
-    ];
+  /// 若目前已是最後一個項目，則會回到第一個項目。
+  /// 供 Mixin 共用呼叫的基礎翻頁方法。
+  void nextItem() {
+    _currentIndex = (_currentIndex + 1) % items.length; // 以循環方式切換到下一筆
+    notifyListeners(); // 通知監聽者更新 UI
   }
 
-  /// 新增一筆項目，並自動切換到新項目。
-  void addItem() {
-    items.add(
-      HomeItem(
-        title: '新增项',
-        content: '新内容',
-        icon: Icons.add_circle_outline,
-        backgroundColor: Colors.blueGrey[900]!,
-        textColor: Colors.white,
-      ),
-    );
-
-    // 將目前索引移到最後一筆，也就是剛新增的項目。
-    _currentIndex = items.length - 1;
-
-    // 通知監聽者更新 UI。
-    notifyListeners();
+  /// 切換到前一個項目。
+  ///
+  /// 若目前已是第一個項目，則會跳到最後一個項目。
+  void previousItem() {
+    _currentIndex =
+        (_currentIndex - 1 + items.length) % items.length; // 以循環方式切換到前一筆
+    notifyListeners(); // 通知監聽者更新 UI
   }
 
-  /// 刪除目前選取的項目。
+  /// 直接切換到指定索引的項目。
   ///
-  /// 為避免清單為空，至少保留一筆資料，因此當僅剩一筆時不執行刪除。
-  void deleteCurrentItem() {
-    // 若只剩最後一筆，則不允許刪除。
-    if (items.length <= 1) return;
-
-    // 刪除目前索引對應的項目。
-    items.removeAt(_currentIndex);
-
-    // 若刪除後索引超出範圍，將索引調整到最後一筆。
-    if (_currentIndex >= items.length) {
-      _currentIndex = items.length - 1;
-    }
-
-    // 通知 UI 更新。
-    notifyListeners();
-  }
-
-  /// 更新目前項目的標題與內容。
+  /// 只有當指定索引與目前索引不同時，才會更新狀態並通知 UI。
   ///
-  /// [newTitle] 為新的標題。
-  /// [newContent] 為新的內容。
-  ///
-  /// 其餘樣式屬性會沿用目前項目的設定。
-  void updateCurrentItem(String newTitle, String newContent) {
-    items[_currentIndex] = HomeItem(
-      title: newTitle,
-      content: newContent,
-      icon: currentItem.icon,
-      backgroundColor: currentItem.backgroundColor,
-      textColor: currentItem.textColor,
-      backgroundImagePath: currentItem.backgroundImagePath,
-    );
-
-    // 通知 UI 重新渲染。
-    notifyListeners();
-  }
-
-  /// 切換目前索引。
-  ///
-  /// 僅當目標索引與目前索引不同時才更新，以避免不必要的通知。
+  /// [index] 要切換到的目標項目索引。
   void changeIndex(int index) {
     if (_currentIndex != index) {
-      _currentIndex = index;
-      notifyListeners();
+      _currentIndex = index; // 更新目前索引
+      notifyListeners(); // 通知監聽者刷新畫面
     }
   }
 
-  /// 切換到下一筆項目。
-  ///
-  /// 使用取餘數實作循環切換，超過最後一筆時會回到第一筆。
-  void nextItem() {
-    _currentIndex = (_currentIndex + 1) % items.length;
-    notifyListeners();
-  }
-
-  /// 切換到上一筆項目。
-  ///
-  /// 使用循環索引，當目前在第一筆時會切換到最後一筆。
-  void previousItem() {
-    _currentIndex = (_currentIndex - 1 + items.length) % items.length;
-    notifyListeners();
-  }
-
-  /// 初始化音量鍵控制邏輯。
-  ///
-  /// 功能說明：
-  /// - 隱藏系統音量 UI
-  /// - 監聽音量變化
-  /// - 音量增加時切換到上一筆
-  /// - 音量減少時切換到下一筆
-  /// - 避免音量停在 0 或 1，降低邊界值造成的操作問題
-  void _initVolumeControl() async {
-    // 關閉系統原生音量 UI，避免干擾畫面顯示。
-    await FlutterVolumeController.updateShowSystemUI(false);
-
-    // 讀取目前系統音量，若取得失敗則預設為 0.5。
-    _lastVolume = await FlutterVolumeController.getVolume() ?? 0.5;
-
-    // 監聽音量變化事件。
-    FlutterVolumeController.addListener((volume) {
-      // 若音量上升，切換到上一筆。
-      if (volume > _lastVolume) {
-        previousItem();
-      }
-      // 若音量下降，切換到下一筆。
-      else if (volume < _lastVolume) {
-        nextItem();
-      }
-
-      // 更新最後一次音量值。
-      _lastVolume = volume;
-
-      // 若音量達到上限，稍微往下拉回，避免卡在最大值無法再觸發增加事件。
-      if (volume >= 1.0) {
-        FlutterVolumeController.setVolume(0.9);
-        _lastVolume = 0.9;
-      }
-      // 若音量達到下限，稍微往上拉回，避免卡在最小值無法再觸發減少事件。
-      else if (volume <= 0.0) {
-        FlutterVolumeController.setVolume(0.1);
-        _lastVolume = 0.1;
-      }
-    });
-  }
-
-  /// 初始化加速度感測器監聽。
-  ///
-  /// 根據 X 軸數值判斷裝置偏向左或右，並更新導覽方向。
-  void _initSensors() {
-    _sensorSub = accelerometerEventStream().listen((event) {
-      // 當 X 軸大於門檻值，視為偏向左側。
-      if (event.x > 2.5) {
-        _updateSide(NavSide.left);
-      }
-      // 當 X 軸小於負門檻值，視為偏向右側。
-      else if (event.x < -2.5) {
-        _updateSide(NavSide.right);
-      }
-    });
-  }
-
-  /// 更新目前導覽方向。
-  ///
-  /// 僅在方向有實際變更時才通知 UI 更新。
-  void _updateSide(NavSide side) {
-    if (_currentSide != side) {
-      _currentSide = side;
-      notifyListeners();
-    }
-  }
-
-  /// 釋放控制器資源。
-  ///
-  /// 包含：
-  /// - 取消加速度感測器監聽
-  /// - 移除音量監聽器
   @override
   void dispose() {
-    // 取消感測器串流訂閱，避免記憶體洩漏。
-    _sensorSub?.cancel();
-
-    // 移除音量監聽器。
-    FlutterVolumeController.removeListener();
-
-    // 呼叫父類別的 dispose。
-    super.dispose();
+    _sensorSub?.cancel(); // 取消感測器訂閱，避免記憶體洩漏
+    FlutterVolumeController.removeListener(); // 移除音量監聽器
+    super.dispose(); // 呼叫父類別釋放資源
   }
 }
