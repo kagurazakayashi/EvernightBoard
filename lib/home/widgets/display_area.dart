@@ -1,85 +1,108 @@
-/// 顯示區元件。
+/// 顯示區域元件。
 ///
-/// 功能說明：
-/// - 若 `item.backgroundImagePath` 有有效圖片路徑，則優先顯示圖片。
-/// - 若圖片路徑為空字串，且 `content` 也為空，則顯示預設圖片。
-/// - 否則顯示文字內容，並依可用空間自動縮放字體大小。
+/// 此元件負責依照 [HomeItem] 的內容，決定要顯示：
+/// 1. 背景圖片
+/// 2. 預設圖片
+/// 3. 自動縮放的置中文字
 ///
-/// 設計重點：
-/// - 使用 `LayoutBuilder` 取得目前可用的寬高限制。
-/// - 透過 `TextPainter` 預先量測文字大小，計算最合適的縮放比例。
-/// - 使用 `IgnorePointer` 讓此顯示區不攔截任何觸控事件。
-library;
-
+/// 顯示邏輯如下：
+/// - 若有設定背景圖片路徑，優先顯示圖片。
+/// - 若沒有背景圖片，且內容文字也為空，則顯示預設圖片。
+/// - 若沒有圖片但有文字，則顯示會依容器大小自動縮放的文字。
+///
+/// 同時會根據 [item] 提供的顏色設定進行背景色與文字色顯示；
+/// 若未提供，則回退使用目前主題的色彩設定。
 import 'package:flutter/material.dart';
 import '../home_model.dart';
 
-/// 用來顯示首頁項目內容的區域元件。
-///
-/// 依據 `HomeItem` 的資料內容，決定要顯示背景圖片或文字。
+/// 用來顯示首頁單一項目內容的無互動展示元件。
 class DisplayArea extends StatelessWidget {
-  /// 要顯示的首頁資料項目。
+  /// 要顯示的資料項目。
   final HomeItem item;
 
-  /// 建構子。
+  /// 建立 [DisplayArea]。
   ///
-  /// [item] 為必要參數，代表目前要渲染的資料內容。
+  /// [item] 為必要參數，代表目前要渲染的首頁項目資料。
   const DisplayArea({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    // IgnorePointer：讓此區塊只負責顯示，不處理任何點擊或手勢事件。
+    // 取得目前系統／App 主題，作為顏色未指定時的回退來源。
+    final theme = Theme.of(context);
+
+    // 若 item 有指定背景色則使用之，否則回退到主題的 surface 顏色。
+    final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
+
+    // 若 item 有指定文字色則使用之，否則回退到主題的 onSurface 顏色。
+    final Color txtColor = item.textColor ?? theme.colorScheme.onSurface;
+
+    // IgnorePointer 表示此區域僅供展示，不接收點擊或其他指標事件。
     return IgnorePointer(
       child: LayoutBuilder(
-        // LayoutBuilder 可取得父層提供的實際尺寸限制，方便做自適應排版。
         builder: (context, constraints) {
-          // 讀取背景圖片路徑，可能為 null。
+          // 背景圖片路徑，可能為 null。
           final String? path = item.backgroundImagePath;
 
-          // 讀取要顯示的文字內容。
+          // 顯示內容文字。
           final String content = item.content;
 
-          // 判斷是否應該顯示圖片：
-          // 1. path 不為 null 且不為空字串時，顯示指定圖片。
-          // 2. path 為空字串且 content 為空時，顯示預設圖片。
+          // 判斷圖片路徑是否為空：
+          // - null 視為空
+          // - 空字串也視為空
+          bool isPathEmpty = path == null || path.isEmpty;
+
+          // 判斷內容文字是否為空字串。
+          bool isContentEmpty = content.isEmpty;
+
+          // 顯示圖片的條件：
+          // 1. 有圖片時顯示圖片
+          // 2. 沒有圖片且沒有文字時，顯示預設圖片
           bool shouldShowImage =
-              (path != null && path.isNotEmpty) ||
-              (path == '' && content.isEmpty);
+              !isPathEmpty || (isPathEmpty && isContentEmpty);
 
           if (shouldShowImage) {
-            // 若 path 為 null 或空字串，改用預設圖片。
-            final String finalPath = (path == null || path.isEmpty)
-                ? 'assets/default.png'
-                : path;
+            // 若沒有提供圖片路徑，使用預設圖片；
+            // 否則使用 item 中設定的圖片路徑。
+            //
+            // 這裡不需要對 path 使用驚嘆號強制解 null，
+            // 因為在 isPathEmpty 為 false 的情況下，path 邏輯上必定有值。
+            final String finalPath = isPathEmpty ? 'assets/default.png' : path;
 
             return Container(
-              // 撐滿目前版面可用寬度。
+              // 讓容器寬高填滿目前可用空間。
               width: constraints.maxWidth,
-
-              // 撐滿目前版面可用高度。
               height: constraints.maxHeight,
 
-              // 內容置中。
+              // 設定背景色。
+              color: bgColor,
+
+              // 將子元件置中。
               alignment: Alignment.center,
 
-              // 顯示資產圖片，並以 contain 方式完整縮放進容器中。
-              child: Image.asset(finalPath, fit: BoxFit.contain),
+              child: Image.asset(
+                // 載入資產圖片。
+                finalPath,
+
+                // 保持圖片比例，完整包含在容器範圍內。
+                fit: BoxFit.contain,
+              ),
             );
           }
 
-          // 建立文字的基礎樣式。
-          // 後續會在此基礎上動態調整字體大小。
+          // 建立基礎文字樣式。
+          // 這裡先不直接決定最終字級，而是先以固定大字級進行量測，
+          // 後續再依容器大小計算縮放比例。
           final TextStyle baseStyle = TextStyle(
-            // 控制行高，讓文字上下更緊湊。
+            // 設定行高，避免多行文字過於鬆散。
             height: 1.1,
 
-            // 文字顏色由 item 提供。
-            color: item.textColor,
+            // 套用最終文字顏色。
+            color: txtColor,
           );
 
-          // 使用 TextPainter 預先量測文字在字體大小 100 時的實際寬高。
-          // 這樣可以依容器大小動態計算最適合的縮放比例。
-          final tp = TextPainter(
+          // 使用 TextPainter 先量測文字在 fontSize = 100 時的實際尺寸。
+          // 之後會根據容器可用空間計算等比縮放比例。
+          final textPainter = TextPainter(
             text: TextSpan(
               text: content,
               style: baseStyle.copyWith(fontSize: 100),
@@ -88,25 +111,40 @@ class DisplayArea extends StatelessWidget {
             textAlign: TextAlign.center,
           )..layout();
 
-          // 依照寬度與高度限制，取較小的縮放比例，
-          // 確保文字不會超出可用顯示區域。
-          double scale =
-              (constraints.maxWidth / tp.width) <
-                  (constraints.maxHeight / tp.height)
-              ? (constraints.maxWidth / tp.width)
-              : (constraints.maxHeight / tp.height);
+          // 計算寬度方向可縮放比例。
+          double scaleX = constraints.maxWidth / textPainter.width;
 
-          return Center(
+          // 計算高度方向可縮放比例。
+          double scaleY = constraints.maxHeight / textPainter.height;
+
+          // 取較小值，確保文字可完整放入容器，不會超出邊界。
+          double scale = scaleX < scaleY ? scaleX : scaleY;
+
+          return Container(
+            // 讓容器寬高填滿目前可用空間。
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+
+            // 設定背景色。
+            color: bgColor,
+
+            // 加入內距，避免文字貼齊邊界。
+            padding: const EdgeInsets.all(24),
+
+            // 將文字置中。
+            alignment: Alignment.center,
+
             child: Text(
-              // 顯示文字內容。
               content,
 
-              // 文字置中對齊。
+              // 文字本身置中對齊，適用於多行內容。
               textAlign: TextAlign.center,
 
-              // 以基礎樣式為基準，套用計算後的字體大小。
-              // 額外乘上 0.85，保留一些安全邊界，避免文字太貼近容器邊緣。
-              style: baseStyle.copyWith(fontSize: (100 * scale) * 0.85),
+              style: baseStyle.copyWith(
+                // 以 100 為基準字級，再乘上縮放比例。
+                // 額外乘上 0.85，保留一些安全邊界，避免在某些字型或字形下過度貼邊。
+                fontSize: (100 * scale) * 0.85,
+              ),
             ),
           );
         },

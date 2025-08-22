@@ -21,17 +21,10 @@ mixin HomeControllerData on ChangeNotifier {
     // 且此 mixin 最終會混入 `HomeController`，
     // 所以這裡可透過型別轉型存取 `HomeController` 的私有欄位。
     final self = this as HomeController;
-
-    // 建立首頁預設項目。
-    self.items = [
-      HomeItem(
-        title: 'Default', // 导航栏显示的标题
-        content: '', // 屏幕显示文字为空
-        icon: Icons.blur_on, // 随便选一个默认图标
-        backgroundImagePath: '', // 图片路径为空
-        // backgroundColor 和 textColor 将使用 HomeItem 里的构造函数默认值
-      ),
-    ];
+    // 初始化時如果列表為空，自動加一個
+    if (self.items.isEmpty) {
+      addItem();
+    }
   }
 
   /// 新增一個項目到清單尾端。
@@ -46,10 +39,11 @@ mixin HomeControllerData on ChangeNotifier {
     self.items.add(
       HomeItem(
         title: '新增项',
-        content: '新内容',
-        icon: Icons.add_circle_outline,
-        backgroundColor: Colors.blueGrey[900]!,
-        textColor: Colors.white,
+        content: '', // 文字内容为空
+        icon: Icons.add_to_photos,
+        textColor: null, // 使用系统默认
+        backgroundColor: null, // 使用系统默认
+        backgroundImagePath: '', // 路径为空，触发默认图回退
       ),
     );
 
@@ -66,23 +60,21 @@ mixin HomeControllerData on ChangeNotifier {
   /// 保留至少一個項目，避免清單被刪空。
   /// 若刪除後目前索引超出範圍，會自動修正到最後一個有效位置。
   void deleteCurrentItem() {
-    // 轉型為 `HomeController`，以便存取其狀態與私有成員。
     final self = this as HomeController;
 
-    // 若目前只剩一個項目，則不執行刪除，
-    // 以避免清單變成空集合。
-    if (self.items.length <= 1) return;
-
-    // 刪除目前索引對應的項目。
+    // 執行刪除
     self.items.removeAt(self._currentIndex);
 
-    // 若刪除後目前索引已超出清單範圍，
-    // 則將索引調整為最後一個有效位置。
-    if (self._currentIndex >= self.items.length) {
-      self._currentIndex = self.items.length - 1;
+    // 如果刪完後沒項了，自動加一個
+    if (self.items.isEmpty) {
+      addItem();
+    } else {
+      // 如果還有項，調整索引防止溢位
+      if (self._currentIndex >= self.items.length) {
+        self._currentIndex = self.items.length - 1;
+      }
+      // 通知所有監聽者（例如 UI）進行刷新。
+      notifyListeners();
     }
-
-    // 通知監聽者資料已更新。
-    notifyListeners();
   }
 }

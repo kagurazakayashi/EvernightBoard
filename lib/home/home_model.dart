@@ -28,12 +28,12 @@ class HomeItem {
   /// 畫面文字顏色。
   ///
   /// 預設為 [Colors.cyanAccent]，以維持深色主題下的可讀性與科技感。
-  final Color textColor; // 文字颜色
+  final Color? textColor; // 文字颜色
 
   /// 畫面背景顏色。
   ///
   /// 當未設定背景圖片，或背景圖片未完整覆蓋畫面時，會顯示此背景色。
-  final Color backgroundColor; // 背景颜色 (没图片或图片没填满时显示)
+  final Color? backgroundColor; // 背景颜色 (没图片或图片没填满时显示)
 
   /// 背景圖片路徑。
   ///
@@ -54,8 +54,8 @@ class HomeItem {
     required this.content,
     required this.icon,
     // 設定預設值，以維持深色主題風格與一致的視覺表現
-    this.textColor = Colors.cyanAccent,
-    this.backgroundColor = Colors.black87,
+    this.textColor,
+    this.backgroundColor,
     this.backgroundImagePath,
   });
 }

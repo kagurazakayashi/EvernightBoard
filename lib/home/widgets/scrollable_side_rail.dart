@@ -1,35 +1,26 @@
-/// 可捲動的側邊導覽列元件。
-///
-/// 此元件以 `NavigationRail` 為核心，外層包覆 `SingleChildScrollView`，
-/// 讓導覽項目在數量較多或垂直空間不足時仍可捲動顯示。
-///
-/// 特色如下：
-/// - 根據目前選取的項目動態調整背景色與文字色。
-/// - 支援外部傳入目前索引值與點擊回呼。
-/// - 適合用於平板、桌面版或寬螢幕版面配置中的側邊選單。
-library;
-
 import 'package:flutter/material.dart';
 import '../home_model.dart';
 
-/// 可捲動的側邊導覽列 StatelessWidget。
+/// 可捲動的側邊導覽列元件。
+///
+/// 適用於導覽項目數量可能超出可視高度的情境，透過 `SingleChildScrollView`
+/// 讓整個 `NavigationRail` 可以垂直捲動，避免內容被截斷。
+///
+/// 此元件會依據目前選取的 `HomeItem`，動態套用目前頁面的文字色與背景色；
+/// 若對應色彩為空，則自動回退到目前主題的預設色彩。
 class ScrollableSideRail extends StatelessWidget {
   /// 側邊導覽列要顯示的項目清單。
   final List<HomeItem> items;
 
-  /// 目前被選取的項目索引。
+  /// 目前選取中的導覽項目索引。
   final int currentIndex;
 
-  /// 點擊導覽項目時觸發的回呼函式。
+  /// 點擊導覽項目時的回呼函式。
   ///
-  /// 傳出的參數為被點擊項目的索引值。
+  /// 參數為被點擊項目的索引值。
   final Function(int) onTap;
 
-  /// 建構子。
-  ///
-  /// - [items]：導覽項目清單，不可為空。
-  /// - [currentIndex]：目前選取的索引位置。
-  /// - [onTap]：使用者選取導覽項目時的回呼。
+  /// 建立可捲動側邊導覽列。
   const ScrollableSideRail({
     super.key,
     required this.items,
@@ -39,67 +30,88 @@ class ScrollableSideRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 取得目前選取的項目，用來套用對應的背景色與文字色。
+    // 取得目前主題，供色彩樣式回退使用。
+    final theme = Theme.of(context);
+
+    // 取得目前選取中的項目，用來決定目前導覽列的主色與背景色。
     final currentItem = items[currentIndex];
 
+    // 顏色回退邏輯：
+    // 若目前項目有自訂文字顏色，優先使用；
+    // 否則回退到主題的 primary 色。
+    final Color activeColor =
+        currentItem.textColor ?? theme.colorScheme.primary;
+
+    // 若目前項目有自訂背景顏色，優先使用；
+    // 否則回退到主題的 surface 色。
+    final Color navBgColor =
+        currentItem.backgroundColor ?? theme.colorScheme.surface;
+
     return Container(
-      // 整個側邊欄的背景色，依目前選取項目的背景色動態切換。
-      color: currentItem.backgroundColor,
-      child: SingleChildScrollView(
-        // 讓整個導覽列在垂直空間不足時可以捲動。
-        child: IntrinsicHeight(
-          // 依內容本身的高度來撐開元件，
-          // 避免在某些版面情況下高度計算異常。
-          child: NavigationRail(
-            // 導覽列本身背景設為透明，
-            // 由外層 Container 統一控制背景顏色。
-            backgroundColor: Colors.transparent,
+      // 整個側邊導覽區塊的背景色。
+      color: navBgColor,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              // 確保當內容較少時，最小高度仍至少等於可用高度，
+              // 這樣背景色才能完整鋪滿整個側邊區域。
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: NavigationRail(
+                  // 由外層 Container 控制背景，因此此處設為透明。
+                  backgroundColor: Colors.transparent,
 
-            // 指定目前被選取的項目索引。
-            selectedIndex: currentIndex,
+                  // 目前選取中的項目索引。
+                  selectedIndex: currentIndex,
 
-            // 當使用者點擊某個導覽項目時，
-            // 直接呼叫外部傳入的 onTap 回呼。
-            onDestinationSelected: onTap,
+                  // 點擊導覽項目時，將索引值往外傳遞。
+                  onDestinationSelected: onTap,
 
-            // 顯示所有項目的標籤文字。
-            labelType: NavigationRailLabelType.all,
+                  // 顯示所有項目的文字標籤。
+                  labelType: NavigationRailLabelType.all,
 
-            // 已選取項目的圖示樣式。
-            selectedIconTheme: IconThemeData(color: currentItem.textColor),
+                  // 選中狀態的圖示樣式。
+                  selectedIconTheme: IconThemeData(color: activeColor),
 
-            // 已選取項目的文字樣式。
-            selectedLabelTextStyle: TextStyle(
-              color: currentItem.textColor,
-              fontWeight: FontWeight.bold,
-            ),
-
-            // 未選取項目的圖示樣式，
-            // 使用較低透明度來區分選取與未選取狀態。
-            unselectedIconTheme: IconThemeData(
-              color: currentItem.textColor.withValues(alpha: 0.5),
-            ),
-
-            // 未選取項目的文字樣式，
-            // 同樣以半透明方式呈現。
-            unselectedLabelTextStyle: TextStyle(
-              color: currentItem.textColor.withValues(alpha: 0.5),
-            ),
-
-            // 將 items 清單轉換成 NavigationRailDestination 清單。
-            destinations: items
-                .map(
-                  (e) => NavigationRailDestination(
-                    // 每個導覽項目的圖示。
-                    icon: Icon(e.icon),
-
-                    // 每個導覽項目的標籤文字。
-                    label: Text(e.title),
+                  // 選中狀態的文字樣式。
+                  selectedLabelTextStyle: TextStyle(
+                    color: activeColor,
+                    fontWeight: FontWeight.bold,
                   ),
-                )
-                .toList(),
-          ),
-        ),
+
+                  // 未選中狀態的圖示樣式。
+                  // 使用新版 withValues 取代舊版 withOpacity。
+                  unselectedIconTheme: IconThemeData(
+                    color: activeColor.withValues(alpha: 0.5),
+                  ),
+
+                  // 未選中狀態的文字樣式。
+                  unselectedLabelTextStyle: TextStyle(
+                    color: activeColor.withValues(alpha: 0.5),
+                  ),
+
+                  // 選中項目的背景指示器顏色，
+                  // 透過較低透明度呈現輕量高亮效果。
+                  indicatorColor: activeColor.withValues(alpha: 0.15),
+
+                  // 將資料清單轉換為 NavigationRail 需要的目的地項目。
+                  destinations: items
+                      .map(
+                        (e) => NavigationRailDestination(
+                          // 導覽項目的圖示。
+                          icon: Icon(e.icon),
+
+                          // 導覽項目的標題文字。
+                          label: Text(e.title),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
