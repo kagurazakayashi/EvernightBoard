@@ -8,7 +8,11 @@ import 'widgets/management_grid_menu.dart';
 
 /// 主頁面元件
 ///
-/// 負責呈現首頁的整體 UI，包括底部導航列、側邊導航列、觸控層以及內容區
+/// 此元件為應用首頁的主要畫面，負責呈現整體 UI，包括：
+/// - 底部導航列 (橫向模式時)
+/// - 側邊導航列 (直向模式時)
+/// - 觸控層，用於滑動切換前後項目
+/// - 內容顯示區
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -17,14 +21,14 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  /// 控制首頁狀態及資料的控制器
+  /// 控制首頁狀態與資料的控制器
   final HomeController _controller = HomeController();
 
   @override
   void initState() {
     super.initState();
 
-    // 監聽控制器變化，若畫面已掛載則刷新 UI
+    // 監聽控制器狀態改變，畫面已掛載則刷新 UI
     _controller.addListener(() {
       if (mounted) {
         setState(() {});
@@ -34,43 +38,44 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void dispose() {
-    // 清理控制器資源
+    // 釋放控制器資源
     _controller.dispose();
     super.dispose();
   }
 
-  /// 導航列點擊事件
+  /// 導航列點擊事件處理
   ///
   /// 若點擊當前項目則顯示管理選單，否則切換到點擊的索引
   void _onNavTap(int index) {
     if (index == _controller.currentIndex) {
-      _showManagementMenu();
+      _showManagementMenu(); // 顯示管理選單
     } else {
-      _controller.changeIndex(index);
+      _controller.changeIndex(index); // 切換到新的索引
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // 取得當前項目
+    // 取得當前選中項目
     final item = _controller.currentItem;
 
+    // 取得主題資料
     final theme = Theme.of(context);
 
-    // 背景顏色，若項目未設定則使用主題表面色
+    // 背景顏色，若項目未設定則使用主題 surface 色
     final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
 
-    // 主題文字顏色，若未設定則使用主題主要色
+    // 主題文字顏色，若未設定則使用主題 primary 色
     final Color themeColor = item.textColor ?? theme.colorScheme.primary;
 
     return OrientationBuilder(
       builder: (context, orientation) {
-        final bool isPortrait = orientation == Orientation.portrait;
+        final bool isPortrait = orientation == Orientation.portrait; // 判斷直向模式
 
         return Scaffold(
           backgroundColor: bgColor,
 
-          // 若為橫向，顯示底部可滾動導航列
+          // 若為橫向，顯示底部可滾動導航列；直向則不顯示
           bottomNavigationBar: isPortrait
               ? null
               : ScrollableNavBar(
@@ -81,7 +86,7 @@ class _HomeViewState extends State<HomeView> {
 
           body: Stack(
             children: [
-              // 觸控層，用於滑動切換前後頁
+              // 觸控層，用於滑動切換前後項
               TouchLayer(
                 isPortrait: isPortrait,
                 themeColor: themeColor,
@@ -102,84 +107,153 @@ class _HomeViewState extends State<HomeView> {
   ///
   /// 左側或右側為側邊導航列，另一側為內容區
   Widget _buildPortraitLayout(var item) {
+    // 側邊導航列
     final nav = ScrollableSideRail(
       items: _controller.items,
       currentIndex: _controller.currentIndex,
       onTap: _onNavTap,
     );
 
+    // 內容區，使用 Expanded 填滿剩餘空間
     final content = Expanded(child: DisplayArea(item: _controller.currentItem));
 
+    // 根據目前側邊導航列位置返回 Row
     return Row(
       children: _controller.currentSide == NavSide.left
-          ? [nav, content]
-          : [content, nav],
+          ? [nav, content] // 側邊在左
+          : [content, nav], // 側邊在右
     );
   }
 
   /// 顯示管理選單
   ///
-  /// 提供新增、刪除、上下移動、編輯標題、圖示及文字、文字顏色與背景顏色等操作
+  /// 提供操作：新增、複製、刪除、上下移動、編輯標題、編輯圖示與文字、文字顏色、背景顏色
   void _showManagementMenu() {
     showModalBottomSheet(
       context: context,
-      showDragHandle: true,
+      showDragHandle: true, // 顯示拖動手把
       builder: (context) => ManagementGridMenu(
-        onAdd: () {
+        // 第一行操作
+        onEditIcon: () {
           Navigator.pop(context);
-        },
-        onDelete: () {
-          Navigator.pop(context);
-          _confirmDelete();
-        },
-        onMoveUp: () {
-          Navigator.pop(context);
-        },
-        onMoveDown: () {
-          Navigator.pop(context);
+          // 修改圖示為示例圖示
+          _controller.updateIcon(Icons.auto_awesome);
         },
         onEditTitle: () {
           Navigator.pop(context);
-        },
-        onEditIcon: () {
-          Navigator.pop(context);
+          _showEditDialog(
+            '邊欄標題',
+            _controller.currentItem.title,
+            _controller.updateTitle,
+          );
         },
         onSetText: () {
           Navigator.pop(context);
+          _showEditDialog(
+            '設為文字內容',
+            _controller.currentItem.content,
+            _controller.setAsText,
+          );
         },
         onSetImage: () {
           Navigator.pop(context);
+          // 設定為圖片
+          _controller.setAsImage('assets/default.png');
         },
+
+        // 第二行操作
         onSetTextColor: () {
           Navigator.pop(context);
+          _controller.updateColors(text: Colors.orange); // 更新文字顏色
         },
         onSetBgColor: () {
           Navigator.pop(context);
+          _controller.updateColors(bg: Colors.blueGrey[900]); // 更新背景顏色
+        },
+        onMoveUp: () {
+          Navigator.pop(context);
+          _controller.moveUp(); // 上移項目
+        },
+        onMoveDown: () {
+          Navigator.pop(context);
+          _controller.moveDown(); // 下移項目
+        },
+
+        // 第三行操作
+        onAdd: () {
+          Navigator.pop(context);
+          _controller.addItem(); // 新增項目
         },
         onCopy: () {
           Navigator.pop(context);
+          _controller.copyCurrentItem(); // 複製當前項目
+        },
+        onDelete: () {
+          Navigator.pop(context);
+          _confirmDelete(); // 刪除項目確認
         },
       ),
     );
   }
 
-  /// 顯示刪除確認對話框
-  void _confirmDelete() {
+  /// 顯示文字或標題編輯對話框
+  ///
+  /// [title] 對話框標題
+  /// [initialValue] 初始文字
+  /// [onConfirm] 確認後回調
+  void _showEditDialog(
+    String title,
+    String initialValue,
+    Function(String) onConfirm,
+  ) {
+    final textController = TextEditingController(text: initialValue);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: const Text('删除后如果列表为空，系统将自动创建一个默认项。'),
+        title: Text(title),
+        content: TextField(controller: textController, autofocus: true),
         actions: [
+          // 取消按鈕
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),
           ),
+          // 確定按鈕
+          TextButton(
+            onPressed: () {
+              onConfirm(textController.text); // 回傳文字
+              Navigator.pop(context);
+            },
+            child: const Text('確定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 顯示刪除確認對話框
+  ///
+  /// 提示使用者刪除操作，若列表刪光，會自動建立預設項
+  void _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('確認刪除'),
+        content: const Text('刪除後若列表為空，系統將自動建立一個預設項。'),
+        actions: [
+          // 取消刪除
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          // 確認刪除
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              _controller.deleteCurrentItem(); // 執行刪除
             },
-            child: const Text('删除', style: TextStyle(color: Colors.red)),
+            child: const Text('刪除', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
