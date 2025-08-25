@@ -59,7 +59,7 @@ class ManagementGridMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     // 建立格子選單資料列表
     final List<_GridItemData> menuItems = [
-      // 第一行功能項目
+      // 第一行功能項目：圖示與標題修改、上下移動
       _GridItemData(Icons.category, '边栏图标', onEditIcon, color: Colors.cyan),
       _GridItemData(Icons.title, '边栏标题', onEditTitle, color: Colors.cyan),
       _GridItemData(Icons.arrow_upward, '上移', onMoveUp, color: Colors.green),
@@ -69,7 +69,7 @@ class ManagementGridMenu extends StatelessWidget {
         onMoveDown,
         color: Colors.green,
       ),
-      // 第二行功能項目
+      // 第二行功能項目：文字與圖片設定、顏色設定
       _GridItemData(Icons.text_fields, '设为文字', onSetText, color: Colors.orange),
       _GridItemData(Icons.image, '设为图片', onSetImage, color: Colors.orange),
       _GridItemData(
@@ -84,17 +84,17 @@ class ManagementGridMenu extends StatelessWidget {
         onSetBgColor,
         color: Colors.pinkAccent,
       ),
-      // 第三行功能項目
+      // 第三行功能項目：新增、複製、刪除
       _GridItemData(
         Icons.add_to_photos,
-        '新增项',
+        '新增屏幕',
         onAdd,
         color: Colors.blue,
       ), // 藍色凸顯新增
-      _GridItemData(Icons.content_copy, '复制项', onCopy, color: Colors.blue),
+      _GridItemData(Icons.content_copy, '复制屏幕', onCopy, color: Colors.blue),
       _GridItemData(
         Icons.delete_forever,
-        '删除项',
+        '删除屏幕',
         onDelete,
         color: Colors.red,
       ), // 紅色凸顯刪除
@@ -102,15 +102,15 @@ class ManagementGridMenu extends StatelessWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 20), // 上下左右間距
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 20), // 四周間距，上下有額外底部間距
         child: GridView.builder(
-          shrinkWrap: true, // 根據內容收縮高度
+          shrinkWrap: true, // 根據內容自動收縮高度
           physics: const NeverScrollableScrollPhysics(), // 禁止滾動
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4, // 每行四個格子
             mainAxisSpacing: 10, // 行間距
             crossAxisSpacing: 10, // 列間距
-            childAspectRatio: 0.8, // 格子高寬比，留文字空間
+            childAspectRatio: 0.8, // 高寬比，保留文字顯示空間
           ),
           itemCount: menuItems.length,
           itemBuilder: (context, index) {
@@ -125,14 +125,14 @@ class ManagementGridMenu extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 圓形圖示容器
+                  // 圓形圖示容器，提供背景顏色效果
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: activeColor.withOpacity(0.1), // 淡色背景
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(item.icon, color: item.color, size: 24),
+                    child: Icon(item.icon, color: item.color, size: 24), // 功能圖示
                   ),
                   const SizedBox(height: 6), // 圖示與文字間距
                   // 功能文字標籤
@@ -146,7 +146,7 @@ class ManagementGridMenu extends StatelessWidget {
                       fontWeight: item.color != null
                           ? FontWeight.bold
                           : FontWeight.normal, // 若有顏色使用粗體
-                      color: activeColor,
+                      color: activeColor, // 顯示文字顏色
                     ),
                   ),
                 ],
@@ -161,7 +161,7 @@ class ManagementGridMenu extends StatelessWidget {
 
 /// 格子選單單項資料模型
 ///
-/// 包含圖示、文字標籤、點擊事件以及可選的顏色
+/// 包含圖示、文字標籤、點擊事件以及可選的顏色設定
 class _GridItemData {
   /// 圖示
   final IconData icon;

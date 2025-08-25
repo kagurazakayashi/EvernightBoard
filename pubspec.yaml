@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   sensors_plus: ^7.0.0
   flutter_volume_controller: ^1.3.4
+  flutter_iconpicker: ^4.0.3
 
 dev_dependencies:
   flutter_test:

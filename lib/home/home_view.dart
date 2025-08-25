@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'home_controller.dart';
 import 'widgets/display_area.dart';
 import 'widgets/touch_layer.dart';
 import 'widgets/scrollable_nav_bar.dart';
 import 'widgets/scrollable_side_rail.dart';
 import 'widgets/management_grid_menu.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 /// 主頁面元件
 ///
@@ -31,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
     // 監聽控制器狀態改變，畫面已掛載則刷新 UI
     _controller.addListener(() {
       if (mounted) {
-        setState(() {});
+        setState(() {}); // 畫面刷新
       }
     });
   }
@@ -133,16 +135,31 @@ class _HomeViewState extends State<HomeView> {
       context: context,
       showDragHandle: true, // 顯示拖動手把
       builder: (context) => ManagementGridMenu(
-        // 第一行操作
-        onEditIcon: () {
+        // 第一行操作：編輯圖示、編輯標題、文字、圖片
+        onEditIcon: () async {
+          // 1. 先關閉底部選單，避免 UI 疊加
           Navigator.pop(context);
-          // 修改圖示為示例圖示
-          _controller.updateIcon(Icons.auto_awesome);
+
+          // 2. 顯示圖示選擇器
+          IconPickerIcon? selectedIcon = await showIconPicker(
+            context,
+            configuration: const SinglePickerConfiguration(
+              iconPackModes: [IconPack.material],
+              searchHintText: '',
+              title: Text(''),
+            ),
+          );
+
+          // 3. 處理返回結果
+          if (selectedIcon != null) {
+            // 更新 Controller 中的圖示資料
+            _controller.updateIcon(selectedIcon.data);
+          }
         },
         onEditTitle: () {
           Navigator.pop(context);
           _showEditDialog(
-            '邊欄標題',
+            '修改邊欄標題',
             _controller.currentItem.title,
             _controller.updateTitle,
           );
@@ -150,7 +167,7 @@ class _HomeViewState extends State<HomeView> {
         onSetText: () {
           Navigator.pop(context);
           _showEditDialog(
-            '設為文字內容',
+            '配置要顯示的文字',
             _controller.currentItem.content,
             _controller.setAsText,
           );
@@ -161,7 +178,7 @@ class _HomeViewState extends State<HomeView> {
           _controller.setAsImage('assets/default.png');
         },
 
-        // 第二行操作
+        // 第二行操作：設定文字顏色、背景顏色、上下移動
         onSetTextColor: () {
           Navigator.pop(context);
           _controller.updateColors(text: Colors.orange); // 更新文字顏色
@@ -179,7 +196,7 @@ class _HomeViewState extends State<HomeView> {
           _controller.moveDown(); // 下移項目
         },
 
-        // 第三行操作
+        // 第三行操作：新增、複製、刪除
         onAdd: () {
           Navigator.pop(context);
           _controller.addItem(); // 新增項目
@@ -189,8 +206,20 @@ class _HomeViewState extends State<HomeView> {
           _controller.copyCurrentItem(); // 複製當前項目
         },
         onDelete: () {
+          // 1. 先關閉宮格選單
           Navigator.pop(context);
-          _confirmDelete(); // 刪除項目確認
+
+          // 2. 執行刪除邏輯
+          // 控制器會自動判斷：若列表空則新增預設項目
+          _controller.deleteCurrentItem();
+
+          // 顯示提示
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('已刪除該項'),
+              duration: Duration(seconds: 1),
+            ),
+          );
         },
       ),
     );
@@ -222,38 +251,10 @@ class _HomeViewState extends State<HomeView> {
           // 確定按鈕
           TextButton(
             onPressed: () {
-              onConfirm(textController.text); // 回傳文字
+              onConfirm(textController.text); // 回傳使用者輸入文字
               Navigator.pop(context);
             },
             child: const Text('確定'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 顯示刪除確認對話框
-  ///
-  /// 提示使用者刪除操作，若列表刪光，會自動建立預設項
-  void _confirmDelete() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('確認刪除'),
-        content: const Text('刪除後若列表為空，系統將自動建立一個預設項。'),
-        actions: [
-          // 取消刪除
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          // 確認刪除
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _controller.deleteCurrentItem(); // 執行刪除
-            },
-            child: const Text('刪除', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

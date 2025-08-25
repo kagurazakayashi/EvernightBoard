@@ -18,15 +18,15 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 新增一個 HomeItem 項目
   ///
-  /// 預設標題為「項目 X」，內容為空，圖示為 Icons.star_outline。
+  /// 預設標題為「新屏幕」，內容為空，圖示為 Icons.fullscreen。
   void addItem() {
     final self = this as HomeController;
     // 建立新的 HomeItem 並加入 items 清單
     self.items.add(
       HomeItem(
-        title: '项目 ${self.items.length + 1}', // 自動編號
+        title: '新屏幕', // 預設標題
         content: '', // 內容預設為空
-        icon: Icons.star_outline, // 預設圖示
+        icon: Icons.fullscreen, // 預設圖示
         textColor: null, // 文字顏色預設為 null
         backgroundColor: null, // 背景顏色預設為 null
         backgroundImagePath: '', // 背景圖片預設為空
@@ -80,6 +80,7 @@ mixin HomeControllerData on ChangeNotifier {
     self.items.insert(self._currentIndex + 1, newItem);
     // 更新當前索引為副本的位置
     self._currentIndex++;
+    // 通知 UI 更新
     notifyListeners();
   }
 
@@ -95,6 +96,7 @@ mixin HomeControllerData on ChangeNotifier {
       self.items.insert(self._currentIndex - 1, item);
       // 更新當前索引
       self._currentIndex--;
+      // 通知 UI 更新
       notifyListeners();
     }
   }
@@ -111,6 +113,7 @@ mixin HomeControllerData on ChangeNotifier {
       self.items.insert(self._currentIndex + 1, item);
       // 更新當前索引
       self._currentIndex++;
+      // 通知 UI 更新
       notifyListeners();
     }
   }
@@ -130,6 +133,7 @@ mixin HomeControllerData on ChangeNotifier {
       backgroundColor: item.backgroundColor,
       backgroundImagePath: item.backgroundImagePath,
     );
+    // 通知 UI 更新
     notifyListeners();
   }
 
@@ -148,6 +152,7 @@ mixin HomeControllerData on ChangeNotifier {
       backgroundColor: item.backgroundColor,
       backgroundImagePath: item.backgroundImagePath,
     );
+    // 通知 UI 更新
     notifyListeners();
   }
 
@@ -166,6 +171,7 @@ mixin HomeControllerData on ChangeNotifier {
       backgroundColor: item.backgroundColor,
       backgroundImagePath: '', // 純文字，清空背景圖
     );
+    // 通知 UI 更新
     notifyListeners();
   }
 
@@ -184,6 +190,7 @@ mixin HomeControllerData on ChangeNotifier {
       backgroundColor: item.backgroundColor,
       backgroundImagePath: path,
     );
+    // 通知 UI 更新
     notifyListeners();
   }
 
@@ -203,6 +210,7 @@ mixin HomeControllerData on ChangeNotifier {
       backgroundColor: bg ?? item.backgroundColor, // 未提供則保留原顏色
       backgroundImagePath: item.backgroundImagePath,
     );
+    // 通知 UI 更新
     notifyListeners();
   }
 }
