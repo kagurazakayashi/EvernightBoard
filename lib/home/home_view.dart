@@ -188,11 +188,9 @@ class _HomeViewState extends State<HomeView> {
           _controller.updateColors(bg: Colors.blueGrey[900]); // 更新背景顏色
         },
         onMoveUp: () {
-          Navigator.pop(context);
           _controller.moveUp(); // 上移項目
         },
         onMoveDown: () {
-          Navigator.pop(context);
           _controller.moveDown(); // 下移項目
         },
 

@@ -89,16 +89,17 @@ mixin HomeControllerData on ChangeNotifier {
   /// 如果已經是第一個，則不做任何動作。
   void moveUp() {
     final self = this as HomeController;
-    if (self._currentIndex > 0) {
-      // 移除當前項目
-      final item = self.items.removeAt(self._currentIndex);
-      // 插入到上一個位置
-      self.items.insert(self._currentIndex - 1, item);
-      // 更新當前索引
-      self._currentIndex--;
-      // 通知 UI 更新
-      notifyListeners();
-    }
+    if (self.items.length <= 1) return;
+
+    final int len = self.items.length;
+    // 計算新位置：(當前 - 1 + 總長度) % 總長度
+    int newIndex = (self._currentIndex - 1 + len) % len;
+
+    final item = self.items.removeAt(self._currentIndex);
+    self.items.insert(newIndex, item);
+
+    self._currentIndex = newIndex;
+    notifyListeners();
   }
 
   /// 將當前項目往下移動一格
@@ -106,16 +107,17 @@ mixin HomeControllerData on ChangeNotifier {
   /// 如果已經是最後一個，則不做任何動作。
   void moveDown() {
     final self = this as HomeController;
-    if (self._currentIndex < self.items.length - 1) {
-      // 移除當前項目
-      final item = self.items.removeAt(self._currentIndex);
-      // 插入到下一個位置
-      self.items.insert(self._currentIndex + 1, item);
-      // 更新當前索引
-      self._currentIndex++;
-      // 通知 UI 更新
-      notifyListeners();
-    }
+    if (self.items.length <= 1) return;
+
+    final int len = self.items.length;
+    // 計算新位置：(當前 + 1) % 總長度
+    int newIndex = (self._currentIndex + 1) % len;
+
+    final item = self.items.removeAt(self._currentIndex);
+    self.items.insert(newIndex, item);
+
+    self._currentIndex = newIndex;
+    notifyListeners();
   }
 
   /// 更新當前項目的標題
