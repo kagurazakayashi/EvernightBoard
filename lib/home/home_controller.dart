@@ -1,4 +1,6 @@
 /// 匯入 Dart 非同步功能，例如 [StreamSubscription]。
+library;
+
 import 'dart:async';
 
 /// 匯入 Flutter Material 元件庫。
@@ -9,6 +11,8 @@ import 'package:sensors_plus/sensors_plus.dart';
 
 /// 匯入系統音量控制套件，用於監聽或調整裝置音量。
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
+
+import 'package:image_picker/image_picker.dart';
 
 /// 匯入首頁資料模型定義。
 import 'home_model.dart';

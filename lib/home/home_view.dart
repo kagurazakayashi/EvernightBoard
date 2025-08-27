@@ -172,10 +172,12 @@ class _HomeViewState extends State<HomeView> {
             _controller.setAsText,
           );
         },
-        onSetImage: () {
+        onSetImage: () async {
+          // 1. 關閉選單，因為接下來的相簿是系統級介面
           Navigator.pop(context);
-          // 設定為圖片
-          _controller.setAsImage('assets/default.png');
+
+          // 2. 呼叫控制器的圖片選擇邏輯
+          await _controller.pickImage();
         },
 
         // 第二行操作：設定文字顏色、背景顏色、上下移動

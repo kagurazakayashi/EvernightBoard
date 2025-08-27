@@ -139,6 +139,28 @@ mixin HomeControllerData on ChangeNotifier {
     notifyListeners();
   }
 
+  /// 呼叫相簿並更新當前項圖片
+  Future<void> pickImage() async {
+    final self = this as HomeController;
+    final ImagePicker picker = ImagePicker();
+
+    // 開啟系統相簿選擇圖片
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      final item = self.currentItem;
+      self.items[self._currentIndex] = HomeItem(
+        title: item.title,
+        content: '', // 設為圖片模式時清空文字內容
+        icon: item.icon,
+        textColor: item.textColor,
+        backgroundColor: item.backgroundColor,
+        backgroundImagePath: image.path, // 儲存本地絕對路徑
+      );
+      notifyListeners();
+    }
+  }
+
   /// 更新當前項目的圖示
   ///
   /// @param newIcon 新的 IconData

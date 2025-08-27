@@ -14,6 +14,7 @@
 /// 若未提供，則回退使用目前主題的色彩設定。
 import 'package:flutter/material.dart';
 import '../home_model.dart';
+import 'dart:io';
 
 /// 用來顯示首頁單一項目內容的無互動展示元件。
 class DisplayArea extends StatelessWidget {
@@ -61,31 +62,23 @@ class DisplayArea extends StatelessWidget {
               !isPathEmpty || (isPathEmpty && isContentEmpty);
 
           if (shouldShowImage) {
-            // 若沒有提供圖片路徑，使用預設圖片；
-            // 否則使用 item 中設定的圖片路徑。
-            //
-            // 這裡不需要對 path 使用驚嘆號強制解 null，
-            // 因為在 isPathEmpty 為 false 的情況下，path 邏輯上必定有值。
             final String finalPath = isPathEmpty ? 'assets/default.png' : path;
 
+            // 區分 Asset 和 File
+            Widget imageWidget;
+            if (finalPath.startsWith('assets/')) {
+              imageWidget = Image.asset(finalPath, fit: BoxFit.contain);
+            } else {
+              // 使用者匯入的圖片是本地路徑，使用 Image.file
+              imageWidget = Image.file(File(finalPath), fit: BoxFit.contain);
+            }
+
             return Container(
-              // 讓容器寬高填滿目前可用空間。
               width: constraints.maxWidth,
               height: constraints.maxHeight,
-
-              // 設定背景色。
               color: bgColor,
-
-              // 將子元件置中。
               alignment: Alignment.center,
-
-              child: Image.asset(
-                // 載入資產圖片。
-                finalPath,
-
-                // 保持圖片比例，完整包含在容器範圍內。
-                fit: BoxFit.contain,
-              ),
+              child: imageWidget,
             );
           }
 
