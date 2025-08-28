@@ -159,7 +159,7 @@ class _HomeViewState extends State<HomeView> {
         onEditTitle: () {
           Navigator.pop(context);
           _showEditDialog(
-            '修改邊欄標題',
+            '边栏标题',
             _controller.currentItem.title,
             _controller.updateTitle,
           );
@@ -167,17 +167,27 @@ class _HomeViewState extends State<HomeView> {
         onSetText: () {
           Navigator.pop(context);
           _showEditDialog(
-            '配置要顯示的文字',
+            '全屏文字',
             _controller.currentItem.content,
             _controller.setAsText,
           );
         },
+        // 設為圖片
         onSetImage: () async {
-          // 1. 關閉選單，因為接下來的相簿是系統級介面
           Navigator.pop(context);
 
-          // 2. 呼叫控制器的圖片選擇邏輯
-          await _controller.pickImage();
+          // 1. 獲取螢幕尺寸
+          final Size screenSize = MediaQuery.sizeOf(context);
+
+          // 2. 計算螢幕最長邊 (取寬高的最大值)
+          // 比如手機豎屏是 390x844，則 limit 為 844
+          // 這樣圖片匯入後，最長的一邊不會超過 844，且比例不變
+          final double limit = screenSize.width > screenSize.height
+              ? screenSize.width
+              : screenSize.height;
+
+          // 3. 傳入限制值進行圖片挑選
+          await _controller.pickImage(limit);
         },
 
         // 第二行操作：設定文字顏色、背景顏色、上下移動

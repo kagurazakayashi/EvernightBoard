@@ -139,25 +139,37 @@ mixin HomeControllerData on ChangeNotifier {
     notifyListeners();
   }
 
-  /// 呼叫相簿並更新當前項圖片
-  Future<void> pickImage() async {
+  /// 呼叫相簿並根據限制尺寸更新圖片
+  /// 呼叫相簿並更新圖片，支援等比例縮放
+  Future<void> pickImage(double maxDimension) async {
     final self = this as HomeController;
     final ImagePicker picker = ImagePicker();
 
-    // 開啟系統相簿選擇圖片
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    // 核心邏輯：
+    // maxWidth 和 maxHeight 同時設定時，外掛會自動進行等比例縮放。
+    // 它會挑選圖片最長的一邊縮放到 maxDimension，另一邊按比例自動調整。
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: maxDimension, // 限制最大寬度
+      maxHeight: maxDimension, // 限制最大高度
+      imageQuality: 85, // 質量
+    );
+
+    debugPrint("maxDimension=${maxDimension.toString()}");
 
     if (image != null) {
       final item = self.currentItem;
       self.items[self._currentIndex] = HomeItem(
         title: item.title,
-        content: '', // 設為圖片模式時清空文字內容
+        content: '',
         icon: item.icon,
         textColor: item.textColor,
         backgroundColor: item.backgroundColor,
-        backgroundImagePath: image.path, // 儲存本地絕對路徑
+        backgroundImagePath: image.path,
       );
       notifyListeners();
+
+      debugPrint(image.path);
     }
   }
 
