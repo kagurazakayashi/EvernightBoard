@@ -7,6 +7,7 @@ import 'widgets/scrollable_nav_bar.dart';
 import 'widgets/scrollable_side_rail.dart';
 import 'widgets/management_grid_menu.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 /// 主頁面元件
 ///
@@ -54,6 +55,37 @@ class _HomeViewState extends State<HomeView> {
     } else {
       _controller.changeIndex(index); // 切換到新的索引
     }
+  }
+
+  Future<void> _openColorPicker({
+    required String title,
+    required Color? initialColor,
+    required Function(Color?) onColorChanged,
+  }) async {
+    // 直接调用，不再赋值给未使用的 isConfirmed 变量
+    await ColorPicker(
+      color: initialColor ?? Colors.blue,
+      onColorChanged: (Color color) => onColorChanged(color),
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      heading: Text(title, style: Theme.of(context).textTheme.titleMedium),
+      // 僅開啟 Primary 調色盤
+      pickersEnabled: const <ColorPickerType, bool>{
+        ColorPickerType.primary: true,
+        ColorPickerType.accent: false,
+        ColorPickerType.bw: false,
+        ColorPickerType.wheel: false,
+      },
+      enableShadesSelection: true, // 允許選擇深淺陰影
+    ).showPickerDialog(
+      context,
+      constraints: const BoxConstraints(
+        minHeight: 400,
+        minWidth: 300,
+        maxWidth: 320,
+      ),
+    );
   }
 
   @override
@@ -191,13 +223,25 @@ class _HomeViewState extends State<HomeView> {
         },
 
         // 第二行操作：設定文字顏色、背景顏色、上下移動
-        onSetTextColor: () {
+        onSetTextColor: () async {
           Navigator.pop(context);
-          _controller.updateColors(text: Colors.orange); // 更新文字顏色
+          await _openColorPicker(
+            title: '设置文字颜色',
+            initialColor: _controller.currentItem.textColor,
+            onColorChanged: (color) {
+              _controller.updateColors(text: color);
+            },
+          );
         },
-        onSetBgColor: () {
+        onSetBgColor: () async {
           Navigator.pop(context);
-          _controller.updateColors(bg: Colors.blueGrey[900]); // 更新背景顏色
+          await _openColorPicker(
+            title: '设置背景颜色',
+            initialColor: _controller.currentItem.backgroundColor,
+            onColorChanged: (color) {
+              _controller.updateColors(bg: color);
+            },
+          );
         },
         onMoveUp: () {
           _controller.moveUp(); // 上移項目

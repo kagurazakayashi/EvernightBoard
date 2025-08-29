@@ -155,8 +155,6 @@ mixin HomeControllerData on ChangeNotifier {
       imageQuality: 85, // 質量
     );
 
-    debugPrint("maxDimension=${maxDimension.toString()}");
-
     if (image != null) {
       final item = self.currentItem;
       self.items[self._currentIndex] = HomeItem(
@@ -169,7 +167,9 @@ mixin HomeControllerData on ChangeNotifier {
       );
       notifyListeners();
 
-      debugPrint(image.path);
+      debugPrint(
+        "imagePath=${image.path}, maxDimension=${maxDimension.toString()}",
+      );
     }
   }
 
