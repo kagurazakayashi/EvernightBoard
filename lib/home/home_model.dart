@@ -23,8 +23,6 @@ class HomeItem {
   /// 導覽列或對應功能項目的圖示。
   final IconData icon; // 导航栏图标
 
-  // --- 新增属性 ---
-
   /// 畫面文字顏色。
   ///
   /// 預設為 [Colors.cyanAccent]，以維持深色主題下的可讀性與科技感。
@@ -58,4 +56,29 @@ class HomeItem {
     this.backgroundColor,
     this.backgroundImagePath,
   });
+
+  HomeItem copyWith({
+    String? title,
+    String? content,
+    IconData? icon,
+    Color? textColor,
+    // 注意：这里我们允许传入 null，所以内部逻辑不使用 ??
+    // 我们手动处理“想要设为 null”的情况
+    bool clearTextColor = false,
+    Color? backgroundColor,
+    bool clearBgColor = false,
+    String? backgroundImagePath,
+  }) {
+    return HomeItem(
+      title: title ?? this.title,
+      content: content ?? this.content,
+      icon: icon ?? this.icon,
+      // 如果 clear 为 true，强制设为 null，否则才取传入的值或原值
+      textColor: clearTextColor ? null : (textColor ?? this.textColor),
+      backgroundColor: clearBgColor
+          ? null
+          : (backgroundColor ?? this.backgroundColor),
+      backgroundImagePath: backgroundImagePath ?? this.backgroundImagePath,
+    );
+  }
 }

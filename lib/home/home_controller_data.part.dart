@@ -230,23 +230,89 @@ mixin HomeControllerData on ChangeNotifier {
     notifyListeners();
   }
 
-  /// 更新文字與背景顏色
+  void setTextColor(Color? color) {
+    final self = this as HomeController;
+    self.items[self._currentIndex] = self.currentItem.copyWith(
+      textColor: color,
+      clearTextColor: color == null,
+    );
+    notifyListeners();
+  }
+
+  /// 设置背景颜色
+  void setBgColor(Color? color) {
+    final self = this as HomeController;
+    self.items[self._currentIndex] = self.currentItem.copyWith(
+      backgroundColor: color,
+      clearBgColor: color == null,
+    );
+    notifyListeners();
+  }
+
+  // 檢查兩個顏色是否過於相近 (基於亮度差)
+  /// 閾值 0.1 通常意味著肉眼很難分辨文字和背景
+  bool isTooSimilar(Color? a, Color? b) {
+    if (a == null || b == null) return false;
+
+    // 如果完全一致
+    if (a.toARGB32() == b.toARGB32()) return true;
+
+    // 如果相對亮度差小於xx
+    final double luminanceDiff = (a.computeLuminance() - b.computeLuminance())
+        .abs();
+    return luminanceDiff < 0.1;
+  }
+
+  /// 更新文字與背景顏色並處理顏色衝突
   ///
   /// @param text 文字顏色 (可選)
   /// @param bg 背景顏色 (可選)
-  void updateColors({Color? text, Color? bg}) {
+  bool updateColors({Color? text, Color? bg}) {
     final self = this as HomeController;
     final item = self.currentItem;
-    // 建立新的 HomeItem，僅更新文字顏色與背景顏色
+    bool didInvert = false;
+    if (item.textColor == null || item.backgroundColor == null) return false;
+
+    // 獲取當前事實上的顏色（處理 null 預設值情況）
+    Color currentTxt = item.textColor!;
+    Color currentBg = item.backgroundColor!;
+
+    Color? nextTxt = text ?? item.textColor;
+    Color? nextBg = bg ?? item.backgroundColor;
+
+    // 衝突檢測：如果新設定的顏色與另一個顏色相同
+    if (text != null && _isSameColor(text, currentBg)) {
+      nextBg = _invertColor(text);
+      didInvert = true;
+    } else if (bg != null && _isSameColor(bg, currentTxt)) {
+      nextTxt = _invertColor(bg);
+      didInvert = true;
+    }
+
     self.items[self._currentIndex] = HomeItem(
       title: item.title,
       content: item.content,
       icon: item.icon,
-      textColor: text ?? item.textColor, // 未提供則保留原顏色
-      backgroundColor: bg ?? item.backgroundColor, // 未提供則保留原顏色
+      textColor: nextTxt,
+      backgroundColor: nextBg,
       backgroundImagePath: item.backgroundImagePath,
     );
-    // 通知 UI 更新
+
     notifyListeners();
+    return didInvert; // 返回是否發生了自動調整
+  }
+
+  // 1. 使用 toARGB32() 替代 .value 進行顏色相等判斷
+  bool _isSameColor(Color a, Color b) => a.toARGB32() == b.toARGB32();
+
+  // 2. 使用 Color.from 建構函式（接受 0.0 - 1.0 的浮點數）
+  // 使用 .r, .g, .b, .a 訪問器（替代舊的 .red, .green, .blue, .alpha）
+  Color _invertColor(Color color) {
+    return Color.from(
+      alpha: color.a, // 保持原有的不透明度
+      red: 1.0 - color.r, // 紅色分量取反
+      green: 1.0 - color.g, // 綠色分量取反
+      blue: 1.0 - color.b, // 藍色分量取反
+    );
   }
 }

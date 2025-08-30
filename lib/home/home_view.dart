@@ -61,29 +61,66 @@ class _HomeViewState extends State<HomeView> {
     required String title,
     required Color? initialColor,
     required Function(Color?) onColorChanged,
+    required bool isTextType, // 標記是設定文字還是背景
   }) async {
-    // 直接调用，不再赋值给未使用的 isConfirmed 变量
-    await ColorPicker(
-      color: initialColor ?? Colors.blue,
-      onColorChanged: (Color color) => onColorChanged(color),
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      heading: Text(title, style: Theme.of(context).textTheme.titleMedium),
-      // 僅開啟 Primary 調色盤
-      pickersEnabled: const <ColorPickerType, bool>{
-        ColorPickerType.primary: true,
-        ColorPickerType.accent: false,
-        ColorPickerType.bw: false,
-        ColorPickerType.wheel: false,
-      },
-      enableShadesSelection: true, // 允許選擇深淺陰影
-    ).showPickerDialog(
-      context,
-      constraints: const BoxConstraints(
-        minHeight: 400,
-        minWidth: 300,
-        maxWidth: 320,
+    final Color? originalColor = initialColor;
+    // 記錄預覽過程中的最新選擇（因為 onColorChanged 會即時改變 controller 狀態）
+    Color? latestPickedColor = initialColor;
+
+    final bool? isConfirmed =
+        await ColorPicker(
+          color: initialColor ?? (isTextType ? Colors.white : Colors.black),
+          onColorChanged: (Color color) {
+            latestPickedColor = color; // 跟蹤使用者當前選中的顏色
+            onColorChanged(color); // 即時預覽
+          },
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          heading: Text(title),
+          pickersEnabled: const {
+            ColorPickerType.primary: true,
+            ColorPickerType.accent: false,
+          },
+          actionButtons: const ColorPickerActionButtons(
+            okButton: true,
+            closeButton: true,
+          ),
+        ).showPickerDialog(
+          context,
+          constraints: const BoxConstraints(
+            minHeight: 400,
+            minWidth: 300,
+            maxWidth: 320,
+          ),
+        );
+
+    if (isConfirmed == true) {
+      // 檢查最新選中的顏色是否與另一個顏色太像
+      final item = _controller.currentItem;
+      final Color? otherColor = isTextType
+          ? item.backgroundColor
+          : item.textColor;
+
+      // 使用控制器裡的相似度檢查
+      if (_controller.isTooSimilar(latestPickedColor, otherColor)) {
+        // 拒絕操作：回滾並提示
+        onColorChanged(originalColor);
+        _showWarningHint('颜色太相近了，会导致看不清内容哦！');
+      }
+    } else {
+      // 點選取消或外部：直接回滾
+      onColorChanged(originalColor);
+    }
+  }
+
+  /// 顏色相近警告提示
+  void _showWarningHint(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.black)),
+        backgroundColor: Colors.yellow,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -226,21 +263,19 @@ class _HomeViewState extends State<HomeView> {
         onSetTextColor: () async {
           Navigator.pop(context);
           await _openColorPicker(
-            title: '设置文字颜色',
+            title: '文字颜色',
+            isTextType: true,
             initialColor: _controller.currentItem.textColor,
-            onColorChanged: (color) {
-              _controller.updateColors(text: color);
-            },
+            onColorChanged: (color) => _controller.setTextColor(color),
           );
         },
         onSetBgColor: () async {
           Navigator.pop(context);
           await _openColorPicker(
-            title: '设置背景颜色',
+            title: '背景颜色',
+            isTextType: false,
             initialColor: _controller.currentItem.backgroundColor,
-            onColorChanged: (color) {
-              _controller.updateColors(bg: color);
-            },
+            onColorChanged: (color) => _controller.setBgColor(color),
           );
         },
         onMoveUp: () {
@@ -279,6 +314,24 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  /// 顏色取反提示資訊
+  // void _showInvertHint(String message) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Row(
+  //         children: [
+  //           const Icon(Icons.auto_fix_high, color: Colors.white),
+  //           const SizedBox(width: 10),
+  //           Text(message),
+  //         ],
+  //       ),
+  //       backgroundColor: Colors.blueAccent,
+  //       behavior: SnackBarBehavior.floating,
+  //       duration: const Duration(seconds: 2),
+  //     ),
+  //   );
+  // }
+
   /// 顯示文字或標題編輯對話框
   ///
   /// [title] 對話框標題
@@ -308,7 +361,7 @@ class _HomeViewState extends State<HomeView> {
               onConfirm(textController.text); // 回傳使用者輸入文字
               Navigator.pop(context);
             },
-            child: const Text('確定'),
+            child: const Text('确定'),
           ),
         ],
       ),
