@@ -302,10 +302,10 @@ mixin HomeControllerData on ChangeNotifier {
     return didInvert; // 返回是否發生了自動調整
   }
 
-  // 1. 使用 toARGB32() 替代 .value 進行顏色相等判斷
+  // 使用 toARGB32() 替代 .value 進行顏色相等判斷
   bool _isSameColor(Color a, Color b) => a.toARGB32() == b.toARGB32();
 
-  // 2. 使用 Color.from 建構函式（接受 0.0 - 1.0 的浮點數）
+  // 使用 Color.from 建構函式（接受 0.0 - 1.0 的浮點數）
   // 使用 .r, .g, .b, .a 訪問器（替代舊的 .red, .green, .blue, .alpha）
   Color _invertColor(Color color) {
     return Color.from(

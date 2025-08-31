@@ -61,18 +61,18 @@ class _HomeViewState extends State<HomeView> {
     required String title,
     required Color? initialColor,
     required Function(Color?) onColorChanged,
-    required bool isTextType, // 標記是設定文字還是背景
+    required bool isTextType,
   }) async {
     final Color? originalColor = initialColor;
-    // 記錄預覽過程中的最新選擇（因為 onColorChanged 會即時改變 controller 狀態）
     Color? latestPickedColor = initialColor;
 
     final bool? isConfirmed =
         await ColorPicker(
-          color: initialColor ?? (isTextType ? Colors.white : Colors.black),
+          color:
+              initialColor ?? (isTextType ? Colors.cyanAccent : Colors.black87),
           onColorChanged: (Color color) {
-            latestPickedColor = color; // 跟蹤使用者當前選中的顏色
-            onColorChanged(color); // 即時預覽
+            latestPickedColor = color;
+            onColorChanged(color);
           },
           width: 44,
           height: 44,
@@ -82,10 +82,6 @@ class _HomeViewState extends State<HomeView> {
             ColorPickerType.primary: true,
             ColorPickerType.accent: false,
           },
-          actionButtons: const ColorPickerActionButtons(
-            okButton: true,
-            closeButton: true,
-          ),
         ).showPickerDialog(
           context,
           constraints: const BoxConstraints(
@@ -96,20 +92,31 @@ class _HomeViewState extends State<HomeView> {
         );
 
     if (isConfirmed == true) {
-      // 檢查最新選中的顏色是否與另一個顏色太像
       final item = _controller.currentItem;
-      final Color? otherColor = isTextType
-          ? item.backgroundColor
-          : item.textColor;
 
-      // 使用控制器裡的相似度檢查
-      if (_controller.isTooSimilar(latestPickedColor, otherColor)) {
-        // 拒絕操作：回滾並提示
-        onColorChanged(originalColor);
-        _showWarningHint('颜色太相近了，会导致看不清内容哦！');
+      // 1. 判斷是否為預設圖片狀態 (路徑為空且文字為空)
+      final bool isDefaultImage =
+          (item.backgroundImagePath?.isEmpty ?? true) && item.content.isEmpty;
+
+      // 2. 按照你的要求：顯示文字為空 並且 不是預設圖片 -> 判定為“純圖片模式”
+      // 只有這種模式下才會跳過顏色校驗
+      final bool isPureImageMode = item.content.isEmpty && !isDefaultImage;
+
+      // 3. 如果不是純圖片模式（即：正在顯示文字，或者是預設圖狀態），則執行衝突檢查
+      if (!isPureImageMode) {
+        final Color? otherColor = isTextType
+            ? item.backgroundColor
+            : item.textColor;
+        if (_controller.isTooSimilar(latestPickedColor, otherColor)) {
+          onColorChanged(originalColor); // 攔截回滾
+          _showWarningHint('背景颜色和文字颜色太相近了，请重新设置！');
+          return;
+        }
       }
+
+      // 如果是圖片模式，或者校驗透過，則不做任何攔截，直接保留 onColorChanged 已更新的狀態
     } else {
-      // 點選取消或外部：直接回滾
+      // 使用者取消：回滾到開啟前的顏色
       onColorChanged(originalColor);
     }
   }
@@ -231,6 +238,7 @@ class _HomeViewState extends State<HomeView> {
             '边栏标题',
             _controller.currentItem.title,
             _controller.updateTitle,
+            isMultiline: false,
           );
         },
         onSetText: () {
@@ -239,6 +247,7 @@ class _HomeViewState extends State<HomeView> {
             '全屏文字',
             _controller.currentItem.content,
             _controller.setAsText,
+            isMultiline: true,
           );
         },
         // 設為圖片
@@ -340,25 +349,35 @@ class _HomeViewState extends State<HomeView> {
   void _showEditDialog(
     String title,
     String initialValue,
-    Function(String) onConfirm,
-  ) {
+    Function(String) onConfirm, {
+    bool isMultiline = false,
+  }) {
     final textController = TextEditingController(text: initialValue);
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
-        content: TextField(controller: textController, autofocus: true),
+        content: TextField(
+          controller: textController,
+          autofocus: true,
+          // 如果是多行模式，不限制行數，並允許回車換行
+          maxLines: isMultiline ? null : 1,
+          keyboardType: isMultiline
+              ? TextInputType.multiline
+              : TextInputType.text,
+          decoration: const InputDecoration(
+            hintText: "请输入内容...",
+            border: OutlineInputBorder(),
+          ),
+        ),
         actions: [
-          // 取消按鈕
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),
           ),
-          // 確定按鈕
           TextButton(
             onPressed: () {
-              onConfirm(textController.text); // 回傳使用者輸入文字
+              onConfirm(textController.text);
               Navigator.pop(context);
             },
             child: const Text('确定'),
