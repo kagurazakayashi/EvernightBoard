@@ -18,10 +18,20 @@ import 'package:image_picker/image_picker.dart';
 /// 匯入首頁資料模型定義。
 import 'home_model.dart';
 
-import 'dart:convert'; // 用於將資料轉為 JSON 字串，例如 jsonEncode
-import 'package:shared_preferences/shared_preferences.dart'; // 用於本機儲存簡單設定與資料
-import 'dart:io'; // 用於存取平台與檔案系統相關 API
-import 'package:flutter/foundation.dart'; // 用於 kIsWeb 判斷目前是否執行於 Web 平台
+/// 匯入檔案服務，用於本機檔案讀寫。
+import 'file_service.dart';
+
+/// 匯入 JSON 編碼功能，用於將資料轉為 JSON 字串。
+import 'dart:convert';
+
+/// 匯入本機簡單資料儲存套件，用於儲存設定與狀態。
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// 匯入平台與檔案系統相關 API。
+import 'dart:io';
+
+/// 匯入 Flutter 基礎工具，例如判斷是否在 Web 平台。
+import 'package:flutter/foundation.dart';
 
 /// 使用 `part` 將控制器拆分為多個檔案，以便共用私有成員。
 ///
@@ -36,9 +46,7 @@ part 'home_controller_sensors.part.dart';
 /// 音量控制相關邏輯模組。
 part 'home_controller_volume.part.dart';
 
-/// 導航方向列舉。
-///
-/// 用來表示目前操作或切換的方向是左側還是右側。
+/// 導航方向列舉，用來表示操作或切換的方向。
 enum NavSide {
   /// 左側方向。
   left,
@@ -47,24 +55,22 @@ enum NavSide {
   right,
 }
 
-/// 首頁控制器。
+/// 首頁控制器，負責管理首頁 UI 與邏輯。
 ///
-/// 負責管理首頁目前顯示的項目、左右側狀態與音量控制狀態，
-/// 並整合資料初始化、感測器初始化與音量控制初始化等功能。
-///
-/// 透過 `ChangeNotifier` 提供狀態通知能力，讓 UI 在資料變動時可即時更新。
+/// 包含資料初始化、感測器監聽、音量控制與導航操作。
+/// 繼承自 `ChangeNotifier`，可在資料更新時通知 UI。
 class HomeController extends ChangeNotifier
     with HomeControllerData, HomeControllerSensors, HomeControllerVolume {
-  /// 是否已完成控制器初始化。
+  /// 控制器是否已初始化完成。
   bool _isInitialized = false;
 
-  /// 是否已完成控制器初始化。
+  /// 控制器初始化狀態的 getter。
   bool get isInitialized => _isInitialized;
 
   /// 儲存首頁所有可顯示的項目清單。
   List<HomeItem> items = [];
 
-  /// 目前顯示中的項目索引。
+  /// 目前顯示的項目索引。
   int _currentIndex = 0;
 
   /// 目前導覽所在的側邊，預設為右側。
@@ -73,7 +79,7 @@ class HomeController extends ChangeNotifier
   /// 記錄上一個音量值，預設為 `0.5`。
   double _lastVolume = 0.5;
 
-  /// 加速度感測器的訂閱物件，用於後續取消監聽。
+  /// 加速度感測器的訂閱物件，用於取消監聽。
   StreamSubscription<AccelerometerEvent>? _sensorSub;
 
   /// 目前顯示項目的索引。
@@ -84,86 +90,80 @@ class HomeController extends ChangeNotifier
 
   /// 建立首頁控制器並啟動初始化流程。
   ///
-  /// 建立控制器時，會依序初始化：
-  /// 1. 資料內容
-  /// 2. 感測器監聽
-  /// 3. 音量控制邏輯
+  /// 初始化流程依序完成：
+  /// 1. 資料內容初始化
+  /// 2. 感測器監聽初始化
+  /// 3. 音量控制初始化
   HomeController() {
     _setup();
   }
 
   /// 執行控制器初始化流程。
   ///
-  /// 會先完成資料初始化，更新初始化狀態並通知 UI。
-  /// 若目前平台為 Web，或不是 Android / iOS，則不啟用感測器與音量控制功能。
+  /// 初始化資料後，更新狀態並通知 UI。
+  /// 若目前平台為 Web 或非 Android/iOS，則略過感測器與音量控制。
   Future<void> _setup() async {
-    await initData(); // 等待 `home_controller_data.part.dart` 中的資料初始化完成
+    // clearAllData(); // 可選：清除歷史資料
+    await initData(); // 等待資料初始化完成
     _isInitialized = true; // 標記初始化完成
-    notifyListeners(); // 通知監聽者更新初始化後的畫面狀態
+    notifyListeners(); // 通知監聽者更新畫面
+
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
-      return; // 非支援平台時直接略過感測器與音量控制初始化
+      return; // 非支援平台略過感測器與音量初始化
     }
+
     _initSensors(); // 初始化感測器監聽
-    _initVolumeControl(); // 初始化音量控制監聽
+    _initVolumeControl(); // 初始化音量控制
   }
 
   /// 取得目前應顯示的首頁項目。
   ///
-  /// 當 [items] 尚未有資料時，會回傳一個暫時的載入中佔位項目，
-  /// 以避免 UI 在初始化期間發生錯誤。
-  ///
-  /// 同時會對目前索引進行邊界保護，避免索引超出清單範圍。
+  /// 若 [items] 尚未有資料，回傳暫時的載入中佔位項目，避免 UI 錯誤。
   HomeItem get currentItem {
     if (items.isEmpty) {
-      // 回傳暫時的載入中佔位項目，避免清單為空時發生錯誤
+      // 回傳暫時的載入中佔位項目
       return HomeItem(
         title: 'Loading...',
         content: '',
         icon: Icons.hourglass_empty,
       );
     }
-    // 確保索引不會超出目前項目清單範圍
+    // 邊界保護，避免索引超出清單範圍
     final index = _currentIndex.clamp(0, items.isEmpty ? 0 : items.length - 1);
     return items[index];
   }
 
-  /// 切換到下一個項目。
-  ///
-  /// 若目前已是最後一個項目，則會回到第一個項目。
-  /// 供 Mixin 共用呼叫的基礎翻頁方法。
+  /// 切換到下一個項目，循環顯示。
   void nextItem() {
-    _currentIndex = (_currentIndex + 1) % items.length; // 以循環方式切換到下一個項目
-    notifyListeners(); // 通知監聽者更新 UI
+    _currentIndex = (_currentIndex + 1) % items.length; // 循環切換
+    notifyListeners(); // 通知 UI 更新
   }
 
-  /// 切換到前一個項目。
-  ///
-  /// 若目前已是第一個項目，則會跳到最後一個項目。
+  /// 切換到前一個項目，循環顯示。
   void previousItem() {
-    _currentIndex =
-        (_currentIndex - 1 + items.length) % items.length; // 以循環方式切換到前一個項目
-    notifyListeners(); // 通知監聽者更新 UI
+    _currentIndex = (_currentIndex - 1 + items.length) % items.length; // 循環切換
+    notifyListeners(); // 通知 UI 更新
   }
 
   /// 直接切換到指定索引的項目。
   ///
-  /// 只有當指定索引與目前索引不同時，才會更新狀態並通知 UI。
+  /// 只有當指定索引與目前索引不同時，才更新狀態並通知 UI。
   ///
-  /// [index] 要切換到的目標項目索引。
+  /// [index] 目標項目索引。
   void changeIndex(int index) {
     if (_currentIndex != index) {
-      _currentIndex = index; // 更新目前項目索引
-      notifyListeners(); // 通知監聽者重新整理畫面
+      _currentIndex = index; // 更新索引
+      notifyListeners(); // 通知 UI 更新
     }
   }
 
-  /// 釋放控制器所使用的資源。
+  /// 釋放控制器資源。
   ///
-  /// 會取消感測器訂閱、移除音量監聽器，最後呼叫父類別的 [dispose]。
+  /// 會取消感測器訂閱、移除音量監聽器，最後呼叫父類別 [dispose]。
   @override
   void dispose() {
-    _sensorSub?.cancel(); // 取消感測器訂閱，避免資源未釋放
-    FlutterVolumeController.removeListener(); // 移除音量監聽器
+    _sensorSub?.cancel(); // 取消感測器訂閱
+    FlutterVolumeController.removeListener(); // 移除音量監聽
     super.dispose(); // 呼叫父類別釋放資源
   }
 }

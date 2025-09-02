@@ -1,11 +1,19 @@
 part of 'home_controller.dart';
 
 mixin HomeControllerData on ChangeNotifier {
+  // 是否已完成初始化
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
+  // 本機儲存資料的 Key
   static const String _storageKey = 'demo_master_items';
 
-  // 初始化與資料持久化的核心流程
+  // ===============================
+  // 初始化與資料持久化流程
+  // ===============================
 
   /// 啟動時載入本機儲存的資料。
+  /// 若沒有資料或發生錯誤，會建立預設資料。
   Future<void> initData() async {
     final self = this as HomeController;
     try {
@@ -13,72 +21,85 @@ mixin HomeControllerData on ChangeNotifier {
       final String? jsonStr = prefs.getString(_storageKey);
 
       if (jsonStr != null && jsonStr.isNotEmpty) {
+        // 將 JSON 字串解析為 HomeItem 列表
         final List<dynamic> jsonData = jsonDecode(jsonStr);
         self.items.clear();
         self.items.addAll(
           jsonData.map((item) => HomeItem.fromJson(item)).toList(),
         );
-        debugPrint('成功从硬盘加载了 ${self.items.length} 个项目');
       } else {
+        // 若本地沒有資料，初始化預設項目
         _setDefaultData();
       }
     } catch (e) {
-      debugPrint('加载数据失败，使用默认值: $e');
+      // 發生任何錯誤時，初始化預設資料
       _setDefaultData();
+    } finally {
+      _isInitialized = true; // 標記初始化完成
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   /// 清除所有使用者資料，並還原為預設狀態。
   Future<void> clearAllData() async {
     final self = this as HomeController;
 
-    // 1. 取得持久化儲存實例並移除對應 key
+    // 1. 刪除所有項目的物理圖片檔案
+    for (var item in self.items) {
+      await FileService.deleteFile(item.backgroundImagePath);
+    }
+
+    // 2. 清除 SharedPreferences 中的儲存 Key
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
 
-    // 2. 清空記憶體中的項目列表
+    // 3. 重置內存資料與索引
     self.items.clear();
-
-    // 3. 還原預設初始資料
     _setDefaultData();
-
-    // 4. 重設目前索引並通知 UI 更新
     self._currentIndex = 0;
-    notifyListeners();
 
-    debugPrint('所有用户设置已清除，恢复至默认状态。');
+    notifyListeners();
+    debugPrint('所有資料與物理檔案已清理完成。');
   }
 
   /// 內部方法：建立初始預設資料。
   void _setDefaultData() {
-    addItem();
+    addItem(); // 建立第一個預設項目
   }
 
   /// 將目前項目資料同步寫入本機儲存。
   Future<void> _syncToDisk() async {
     final self = this as HomeController;
     final prefs = await SharedPreferences.getInstance();
+
+    // 將 items 列表序列化成 JSON 字串
     final String encoded = jsonEncode(
       self.items.map((e) => e.toJson()).toList(),
     );
+
     await prefs.setString(_storageKey, encoded);
   }
 
-  // 列表管理（新增、刪除、編輯、移動）
+  // ===============================
+  // 列表管理（新增、複製、刪除、移動）
+  // ===============================
 
   /// 新增一個項目，並自動切換到新建立的項目。
   void addItem() {
     final self = this as HomeController;
+
     self.items.add(
       HomeItem(
-        title: '新项目 ${self.items.length + 1}',
+        title: '新屏幕',
         content: '',
-        icon: Icons.star_border,
-        backgroundImagePath: '',
+        icon: Icons.add_box_outlined,
+        backgroundImagePath: '', // 初始背景為空
       ),
     );
+
+    // 更新目前索引到新建立項目
     self._currentIndex = self.items.length - 1;
+
     notifyListeners();
     _syncToDisk();
   }
@@ -87,8 +108,11 @@ mixin HomeControllerData on ChangeNotifier {
   void copyCurrentItem() {
     final self = this as HomeController;
     final current = self.currentItem;
-    final newItem = current.copyWith(title: "${current.title} (副本)");
 
+    // 建立副本並修改標題
+    final newItem = current.copyWith(title: "${current.title}2");
+
+    // 插入到原項目後方
     self.items.insert(self._currentIndex + 1, newItem);
     self._currentIndex++;
     notifyListeners();
@@ -96,31 +120,39 @@ mixin HomeControllerData on ChangeNotifier {
   }
 
   /// 刪除目前項目，必要時自動修正索引或補回預設資料。
-  void deleteCurrentItem() {
+  void deleteCurrentItem() async {
     final self = this as HomeController;
+
+    // 刪除目前項目的物理檔案
+    await FileService.deleteFile(self.currentItem.backgroundImagePath);
+
     self.items.removeAt(self._currentIndex);
 
-    // 自動補齊資料的處理邏輯
     if (self.items.isEmpty) {
-      clearAllData();
-      _setDefaultData();
-      self._currentIndex = 0;
-    } else if (self._currentIndex >= self.items.length) {
-      self._currentIndex = self.items.length - 1;
+      // 若刪除後無項目，由 clearAllData 重置資料
+      await clearAllData();
+    } else {
+      // 修正索引，避免越界
+      if (self._currentIndex >= self.items.length) {
+        self._currentIndex = self.items.length - 1;
+      }
+      notifyListeners();
+      _syncToDisk();
     }
-    notifyListeners();
-    _syncToDisk();
   }
 
   /// 將目前項目往上移動一格，採循環式排序。
   void moveUp() {
     final self = this as HomeController;
     if (self.items.length <= 1) return;
+
     final int len = self.items.length;
-    // 使用循環位移演算法，讓首項可移到最後一項
+
+    // 循環位移算法，首項可移到最後
     int newIndex = (self._currentIndex - 1 + len) % len;
     final item = self.items.removeAt(self._currentIndex);
     self.items.insert(newIndex, item);
+
     self._currentIndex = newIndex;
     notifyListeners();
     _syncToDisk();
@@ -130,16 +162,21 @@ mixin HomeControllerData on ChangeNotifier {
   void moveDown() {
     final self = this as HomeController;
     if (self.items.length <= 1) return;
+
     final int len = self.items.length;
     int newIndex = (self._currentIndex + 1) % len;
+
     final item = self.items.removeAt(self._currentIndex);
     self.items.insert(newIndex, item);
+
     self._currentIndex = newIndex;
     notifyListeners();
     _syncToDisk();
   }
 
-  // 屬性編輯
+  // ===============================
+  // 屬性編輯（標題、圖示、文字/圖片模式）
+  // ===============================
 
   /// 更新目前項目的標題。
   void updateTitle(String newTitle) {
@@ -162,7 +199,7 @@ mixin HomeControllerData on ChangeNotifier {
     final self = this as HomeController;
     self.items[self._currentIndex] = self.currentItem.copyWith(
       content: text,
-      backgroundImagePath: '', // 切換為文字模式時，清空圖片路徑
+      backgroundImagePath: '', // 切換文字模式時清空圖片路徑
     );
     notifyListeners();
     _syncToDisk();
@@ -172,6 +209,7 @@ mixin HomeControllerData on ChangeNotifier {
   Future<void> pickImage(double maxDimension) async {
     final self = this as HomeController;
     final ImagePicker picker = ImagePicker();
+
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: maxDimension,
@@ -179,18 +217,30 @@ mixin HomeControllerData on ChangeNotifier {
     );
 
     if (image != null) {
-      self.items[self._currentIndex] = self.currentItem.copyWith(
-        content: '', // 切換為圖片模式時，清空文字內容
-        backgroundImagePath: image.path,
+      // 1. 刪除舊的圖片檔案
+      await FileService.deleteFile(self.currentItem.backgroundImagePath);
+
+      // 2. 儲存新圖片檔案（僅存檔名）
+      final String? savedFileName = await FileService.saveImageToDocs(
+        image.path,
       );
-      notifyListeners();
-      _syncToDisk();
+
+      if (savedFileName != null) {
+        self.items[self._currentIndex] = self.currentItem.copyWith(
+          content: '',
+          backgroundImagePath: savedFileName, // 儲存檔名
+        );
+        notifyListeners();
+        _syncToDisk();
+      }
     }
   }
 
-  // 顏色管理與檢查
+  // ===============================
+  // 顏色管理
+  // ===============================
 
-  /// 設定文字顏色；若為 `null`，則表示清除自訂文字顏色。
+  /// 設定文字顏色；若為 null，表示清除自訂文字顏色。
   void setTextColor(Color? color) {
     final self = this as HomeController;
     self.items[self._currentIndex] = self.currentItem.copyWith(
@@ -201,7 +251,7 @@ mixin HomeControllerData on ChangeNotifier {
     _syncToDisk();
   }
 
-  /// 設定背景顏色；若為 `null`，則表示清除自訂背景顏色。
+  /// 設定背景顏色；若為 null，表示清除自訂背景顏色。
   void setBgColor(Color? color) {
     final self = this as HomeController;
     self.items[self._currentIndex] = self.currentItem.copyWith(
@@ -212,20 +262,21 @@ mixin HomeControllerData on ChangeNotifier {
     _syncToDisk();
   }
 
-  /// 檢查兩個顏色是否過於接近（依據 WCAG 相對亮度差異）。
+  /// 檢查兩個顏色是否過於接近（依據 WCAG 相對亮度差）。
   bool isTooSimilar(Color? a, Color? b) {
     if (a == null || b == null) return false;
-    // 使用 toARGB32() 比對完整色彩值，可更準確判斷是否完全相同
+
+    // 若 ARGB 完全相同，直接判定
     if (a.toARGB32() == b.toARGB32()) return true;
-    // 以相對亮度差作為閾值判斷，差異越小代表越相近
+
+    // 計算相對亮度差，差距小於 0.15 判定為過於相似
     final double diff = (a.computeLuminance() - b.computeLuminance()).abs();
     return diff < 0.15;
   }
 
   /// 計算反相色。
   ///
-  /// 可用於特殊提示、對比輔助或自動配色調整等情境，
-  /// 目前先保留為通用工具方法。
+  /// 可用於特殊提示、對比輔助或自動配色調整等情境。
   Color invertColor(Color color) {
     return Color.from(
       alpha: color.a,
@@ -235,6 +286,6 @@ mixin HomeControllerData on ChangeNotifier {
     );
   }
 
-  /// 判斷兩個顏色是否為完全相同的色值。
+  /// 判斷兩個顏色是否為完全相同。
   bool isSameColor(Color a, Color b) => a.toARGB32() == b.toARGB32();
 }
