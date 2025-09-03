@@ -41,8 +41,11 @@ class FileService {
   /// [fileName]：欲刪除的檔案名稱
   /// 注意：若檔名為 null、空字串或 assets 目錄下的檔案，將不執行刪除
   static Future<void> deleteFile(String? fileName) async {
-    if (fileName == null || fileName.isEmpty || fileName.startsWith('assets/'))
+    if (fileName == null ||
+        fileName.isEmpty ||
+        fileName.startsWith('assets/')) {
       return;
+    }
 
     try {
       // 取得應用程式文件目錄

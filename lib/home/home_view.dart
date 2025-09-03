@@ -66,7 +66,7 @@ class _HomeViewState extends State<HomeView> {
     final Color? originalColor = initialColor;
     Color? latestPickedColor = initialColor;
 
-    final bool? isConfirmed =
+    final bool isConfirmed =
         await ColorPicker(
           color:
               initialColor ?? (isTextType ? Colors.cyanAccent : Colors.black87),

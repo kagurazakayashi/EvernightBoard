@@ -35,8 +35,10 @@ class ScrollableSideRail extends StatelessWidget {
 
     // 取得目前選取中的項目，用來決定導覽列的主色與背景色。
     // 若清單為空，先顯示載入中的提示文字。
-    if (items.isEmpty) return Text("Loading...");
-    final currentItem = items[currentIndex];
+    // if (items.isEmpty) return Text("Loading...");
+    final currentItem = items.isEmpty
+        ? HomeItem(title: "...", content: "", icon: Icons.hourglass_empty)
+        : items[currentIndex];
 
     // 計算選取狀態要使用的主色：
     // 若目前項目有自訂文字顏色則優先採用，否則回退為主題的 primary 色。
@@ -51,69 +53,73 @@ class ScrollableSideRail extends StatelessWidget {
     return Container(
       // 設定整個側邊導覽區塊的背景色。
       color: navBgColor,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              // 當內容高度不足時，仍強制最小高度等於可用高度，
-              // 確保背景色可以完整鋪滿整個側邊區域。
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: NavigationRail(
-                  // 背景由外層 Container 負責繪製，因此這裡設為透明。
-                  backgroundColor: Colors.transparent,
+      child: items.isEmpty
+          ? const Icon(Icons.hourglass_empty)
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    // 當內容高度不足時，仍強制最小高度等於可用高度，
+                    // 確保背景色可以完整鋪滿整個側邊區域。
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: NavigationRail(
+                        // 背景由外層 Container 負責繪製，因此這裡設為透明。
+                        backgroundColor: Colors.transparent,
 
-                  // 指定目前選取中的導覽項目索引。
-                  selectedIndex: currentIndex,
+                        // 指定目前選取中的導覽項目索引。
+                        selectedIndex: currentIndex,
 
-                  // 當使用者選取目的地項目時，將索引值透過回呼傳出。
-                  onDestinationSelected: onTap,
+                        // 當使用者選取目的地項目時，將索引值透過回呼傳出。
+                        onDestinationSelected: onTap,
 
-                  // 顯示所有導覽項目的文字標籤。
-                  labelType: NavigationRailLabelType.all,
+                        // 顯示所有導覽項目的文字標籤。
+                        labelType: NavigationRailLabelType.all,
 
-                  // 已選取項目的圖示樣式。
-                  selectedIconTheme: IconThemeData(color: activeColor),
+                        // 已選取項目的圖示樣式。
+                        selectedIconTheme: IconThemeData(color: activeColor),
 
-                  // 已選取項目的文字樣式。
-                  selectedLabelTextStyle: TextStyle(
-                    color: activeColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-
-                  // 未選取項目的圖示樣式。
-                  // 使用較低透明度呈現次要狀態。
-                  unselectedIconTheme: IconThemeData(
-                    color: activeColor.withValues(alpha: 0.5),
-                  ),
-
-                  // 未選取項目的文字樣式。
-                  unselectedLabelTextStyle: TextStyle(
-                    color: activeColor.withValues(alpha: 0.5),
-                  ),
-
-                  // 已選取項目的背景指示器顏色。
-                  // 以較低透明度呈現柔和的高亮效果。
-                  indicatorColor: activeColor.withValues(alpha: 0.15),
-
-                  // 將導覽項目清單轉換為 NavigationRail 所需的目的地列表。
-                  destinations: items
-                      .map(
-                        (e) => NavigationRailDestination(
-                          // 導覽項目的圖示。
-                          icon: Icon(e.icon),
-
-                          // 導覽項目的顯示文字。
-                          label: Text(e.title),
+                        // 已選取項目的文字樣式。
+                        selectedLabelTextStyle: TextStyle(
+                          color: activeColor,
+                          fontWeight: FontWeight.bold,
                         ),
-                      )
-                      .toList(),
-                ),
-              ),
+
+                        // 未選取項目的圖示樣式。
+                        // 使用較低透明度呈現次要狀態。
+                        unselectedIconTheme: IconThemeData(
+                          color: activeColor.withValues(alpha: 0.5),
+                        ),
+
+                        // 未選取項目的文字樣式。
+                        unselectedLabelTextStyle: TextStyle(
+                          color: activeColor.withValues(alpha: 0.5),
+                        ),
+
+                        // 已選取項目的背景指示器顏色。
+                        // 以較低透明度呈現柔和的高亮效果。
+                        indicatorColor: activeColor.withValues(alpha: 0.15),
+
+                        // 將導覽項目清單轉換為 NavigationRail 所需的目的地列表。
+                        destinations: items
+                            .map(
+                              (e) => NavigationRailDestination(
+                                // 導覽項目的圖示。
+                                icon: Icon(e.icon),
+
+                                // 導覽項目的顯示文字。
+                                label: Text(e.title),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

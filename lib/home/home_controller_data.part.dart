@@ -110,7 +110,7 @@ mixin HomeControllerData on ChangeNotifier {
     final current = self.currentItem;
 
     // 建立副本並修改標題
-    final newItem = current.copyWith(title: "${current.title}2");
+    final newItem = current.copyWith(title: current.title);
 
     // 插入到原項目後方
     self.items.insert(self._currentIndex + 1, newItem);
@@ -122,17 +122,30 @@ mixin HomeControllerData on ChangeNotifier {
   /// 刪除目前項目，必要時自動修正索引或補回預設資料。
   void deleteCurrentItem() async {
     final self = this as HomeController;
+    final String? pathToDelete = self.currentItem.backgroundImagePath;
 
-    // 刪除目前項目的物理檔案
-    await FileService.deleteFile(self.currentItem.backgroundImagePath);
+    // 检查是否还有其他项在使用这个路径
+    if (pathToDelete != null && pathToDelete.isNotEmpty) {
+      // 统计列表中使用该路径的总次数
+      int usageCount = self.items
+          .where((item) => item.backgroundImagePath == pathToDelete)
+          .length;
 
+      // 只有当使用次数等于 1 时（即只有当前这一项在用），才执行物理删除
+      if (usageCount == 1) {
+        await FileService.deleteFile(pathToDelete);
+        debugPrint('这是该图片的最后一个引用，已执行物理删除。');
+      } else {
+        debugPrint('该图片仍被其他项目使用（剩余 ${usageCount - 1} 个引用），跳过物理删除。');
+      }
+    }
+
+    // 执行内存删除
     self.items.removeAt(self._currentIndex);
 
     if (self.items.isEmpty) {
-      // 若刪除後無項目，由 clearAllData 重置資料
       await clearAllData();
     } else {
-      // 修正索引，避免越界
       if (self._currentIndex >= self.items.length) {
         self._currentIndex = self.items.length - 1;
       }

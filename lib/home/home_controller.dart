@@ -62,9 +62,11 @@ enum NavSide {
 class HomeController extends ChangeNotifier
     with HomeControllerData, HomeControllerSensors, HomeControllerVolume {
   /// 控制器是否已初始化完成。
+  @override
   bool _isInitialized = false;
 
   /// 控制器初始化狀態的 getter。
+  @override
   bool get isInitialized => _isInitialized;
 
   /// 儲存首頁所有可顯示的項目清單。

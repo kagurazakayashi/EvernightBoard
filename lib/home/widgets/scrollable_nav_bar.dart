@@ -4,6 +4,8 @@
 /// 並以膠囊式背景突顯當前選取狀態。
 ///
 /// 搭配 [HomeItem] 清單使用，並透過 [onTap] 將點擊的索引回傳給外部。
+library;
+
 import 'package:flutter/material.dart';
 import '../home_model.dart';
 
