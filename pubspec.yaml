@@ -2,7 +2,7 @@ name: evernight_board
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -42,6 +42,7 @@ dependencies:
   shared_preferences: ^2.5.4
   path_provider: ^2.1.5
   path: ^1.9.1
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -59,7 +60,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -97,3 +97,31 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/appicon/launcher_icons.png"
+  #
+  android: true
+  adaptive_icon_background: "assets/appicon/adaptive_icon_background.png"
+  adaptive_icon_foreground: "assets/appicon/adaptive_icon_foreground.png"
+  web_round_icon: "assets/appicon/web_round_icon.png"
+  #
+  ios: true
+  remove_alpha_ios: true
+  image_path_ios: "assets/appicon/launcher_icons.png"
+  #
+  web:
+    generate: true
+    image_path: "assets/appicon/launcher_icons.png"
+    background_color: "#1d1e22"
+    theme_color: "#7a212e"
+  #
+  windows:
+    generate: true
+    image_path: "assets/appicon/launcher_icons.png"
+    icon_size: 256
+  #
+  macos:
+    generate: true
+    image_path: "assets/appicon/launcher_icons.png"
