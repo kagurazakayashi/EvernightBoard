@@ -103,7 +103,7 @@ flutter_launcher_icons:
   image_path: "assets/appicon/launcher_icons.png"
   #
   android: true
-  adaptive_icon_background: "assets/appicon/adaptive_icon_background.png"
+  adaptive_icon_background: "assets/appicon/adaptive_icon_round_background.png"
   adaptive_icon_foreground: "assets/appicon/adaptive_icon_foreground.png"
   web_round_icon: "assets/appicon/web_round_icon.png"
   #
@@ -113,15 +113,15 @@ flutter_launcher_icons:
   #
   web:
     generate: true
-    image_path: "assets/appicon/launcher_icons.png"
+    image_path: "assets/appicon/launcher_round_icons.png"
     background_color: "#1d1e22"
     theme_color: "#7a212e"
   #
   windows:
     generate: true
-    image_path: "assets/appicon/launcher_icons.png"
+    image_path: "assets/appicon/launcher_round_icons.png"
     icon_size: 256
   #
   macos:
     generate: true
-    image_path: "assets/appicon/launcher_icons.png"
+    image_path: "assets/appicon/launcher_round_icons.png"
