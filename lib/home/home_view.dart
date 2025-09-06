@@ -1,76 +1,115 @@
 import 'package:flutter/material.dart';
+
+/// 匯入圖示挑選器的設定模型，用於限制可選圖示來源與對話框行為。
 import 'package:flutter_iconpicker/Models/configuration.dart';
+
+/// 匯入首頁控制器，負責首頁資料與互動邏輯管理。
 import 'home_controller.dart';
+
+/// 匯入內容顯示區元件，用於呈現目前選中的頁面內容。
 import 'widgets/display_area.dart';
+
+/// 匯入觸控層元件，用於處理左右切換等手勢操作。
 import 'widgets/touch_layer.dart';
+
+/// 匯入可橫向捲動的底部導覽列元件。
 import 'widgets/scrollable_nav_bar.dart';
+
+/// 匯入可捲動的側邊導覽列元件。
 import 'widgets/scrollable_side_rail.dart';
+
+/// 匯入管理功能選單元件，用於編輯、複製、刪除與設定操作。
 import 'widgets/management_grid_menu.dart';
+
+/// 匯入圖示挑選器套件，用於顯示圖示選擇對話框。
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+
+/// 匯入顏色挑選器套件，用於選取文字或背景顏色。
 import 'package:flex_color_picker/flex_color_picker.dart';
 
-/// 主頁面元件
+/// 匯入設定頁面。
+import '../settings/settings_view.dart';
+
+/// 首頁畫面元件。
 ///
-/// 此元件為應用首頁的主要畫面，負責呈現整體 UI，包括：
-/// - 底部導航列 (橫向模式時)
-/// - 側邊導航列 (直向模式時)
-/// - 觸控層，用於滑動切換前後項目
-/// - 內容顯示區
+/// 此頁面負責：
+/// - 顯示目前選中的內容項目
+/// - 根據直向或橫向方向切換不同版面
+/// - 開啟管理選單以編輯圖示、標題、文字、圖片與顏色
+/// - 導向設定頁面
 class HomeView extends StatefulWidget {
+  /// 建立首頁畫面。
   const HomeView({super.key});
 
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
+/// [HomeView] 的狀態類別。
 class _HomeViewState extends State<HomeView> {
-  /// 控制首頁狀態與資料的控制器
+  /// 首頁控制器，集中管理目前頁面狀態與資料操作。
   final HomeController _controller = HomeController();
 
   @override
   void initState() {
     super.initState();
 
-    // 監聽控制器狀態改變，畫面已掛載則刷新 UI
+    // 監聽控制器狀態變更，當資料更新時重新建構畫面。
     _controller.addListener(() {
+      // 確保元件仍掛載於 Widget Tree 上，避免在已卸載狀態呼叫 setState。
       if (mounted) {
-        setState(() {}); // 畫面刷新
+        setState(() {});
       }
     });
   }
 
   @override
   void dispose() {
-    // 釋放控制器資源
+    // 釋放控制器資源，避免記憶體洩漏。
     _controller.dispose();
     super.dispose();
   }
 
-  /// 導航列點擊事件處理
+  /// 處理導覽項目點擊事件。
   ///
-  /// 若點擊當前項目則顯示管理選單，否則切換到點擊的索引
+  /// 若使用者再次點擊目前已選取的項目，則開啟管理選單；
+  /// 否則切換到指定索引的項目。
   void _onNavTap(int index) {
     if (index == _controller.currentIndex) {
-      _showManagementMenu(); // 顯示管理選單
+      _showManagementMenu();
     } else {
-      _controller.changeIndex(index); // 切換到新的索引
+      _controller.changeIndex(index);
     }
   }
 
+  /// 開啟顏色挑選器對話框。
+  ///
+  /// [title] 為對話框標題。
+  /// [initialColor] 為初始顏色。
+  /// [onColorChanged] 會在顏色變更時即時回呼。
+  /// [isTextType] 用來判斷目前設定的是文字色還是背景色。
+  ///
+  /// 若使用者確認顏色後，會檢查文字色與背景色是否過於接近；
+  /// 若太相近則還原原始顏色並顯示警告提示。
   Future<void> _openColorPicker({
     required String title,
     required Color? initialColor,
     required Function(Color?) onColorChanged,
     required bool isTextType,
   }) async {
+    // 保留原始顏色，以便取消或驗證失敗時還原。
     final Color? originalColor = initialColor;
+
+    // 記錄使用者最後挑選的顏色。
     Color? latestPickedColor = initialColor;
 
+    // 顯示顏色挑選器對話框，並取得是否確認的結果。
     final bool isConfirmed =
         await ColorPicker(
           color:
               initialColor ?? (isTextType ? Colors.cyanAccent : Colors.black87),
           onColorChanged: (Color color) {
+            // 即時記錄最新顏色，並同步通知外部更新。
             latestPickedColor = color;
             onColorChanged(color);
           },
@@ -79,6 +118,7 @@ class _HomeViewState extends State<HomeView> {
           borderRadius: 22,
           heading: Text(title),
           pickersEnabled: const {
+            // 僅啟用主色盤，不啟用 accent 色盤。
             ColorPickerType.primary: true,
             ColorPickerType.accent: false,
           },
@@ -91,37 +131,40 @@ class _HomeViewState extends State<HomeView> {
           ),
         );
 
+    // 使用者按下確認後，再進行顏色相似度檢查。
     if (isConfirmed == true) {
       final item = _controller.currentItem;
 
-      // 1. 判斷是否為預設圖片狀態 (路徑為空且文字為空)
+      // 當沒有背景圖片且內容為空時，視為預設空白狀態。
       final bool isDefaultImage =
           (item.backgroundImagePath?.isEmpty ?? true) && item.content.isEmpty;
 
-      // 2. 按照你的要求：顯示文字為空 並且 不是預設圖片 -> 判定為“純圖片模式”
-      // 只有這種模式下才會跳過顏色校驗
+      // 當內容為空且已有背景圖片時，視為純圖片模式。
       final bool isPureImageMode = item.content.isEmpty && !isDefaultImage;
 
-      // 3. 如果不是純圖片模式（即：正在顯示文字，或者是預設圖狀態），則執行衝突檢查
+      // 純圖片模式下不檢查文字色與背景色相似度。
       if (!isPureImageMode) {
+        // 若目前設定的是文字色，則比對背景色；反之則比對文字色。
         final Color? otherColor = isTextType
             ? item.backgroundColor
             : item.textColor;
+
+        // 若顏色太接近，還原設定並提示使用者重新選擇。
         if (_controller.isTooSimilar(latestPickedColor, otherColor)) {
-          onColorChanged(originalColor); // 攔截回滾
+          onColorChanged(originalColor);
           _showWarningHint('背景颜色和文字颜色太相近了，请重新设置！');
           return;
         }
       }
-
-      // 如果是圖片模式，或者校驗透過，則不做任何攔截，直接保留 onColorChanged 已更新的狀態
     } else {
-      // 使用者取消：回滾到開啟前的顏色
+      // 若使用者取消，則還原為原始顏色。
       onColorChanged(originalColor);
     }
   }
 
-  /// 顏色相近警告提示
+  /// 顯示警告提示訊息。
+  ///
+  /// 使用黃色 SnackBar 顯示內容，以提升警示辨識度。
   void _showWarningHint(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -134,26 +177,27 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    // 取得當前選中項目
+    // 取得目前選中的項目資料。
     final item = _controller.currentItem;
 
-    // 取得主題資料
+    // 取得目前主題。
     final theme = Theme.of(context);
 
-    // 背景顏色，若項目未設定則使用主題 surface 色
+    // 決定畫面背景色，若未設定則使用主題預設 surface 色。
     final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
 
-    // 主題文字顏色，若未設定則使用主題 primary 色
+    // 決定主題色，通常用於文字或互動元件顏色。
     final Color themeColor = item.textColor ?? theme.colorScheme.primary;
 
     return OrientationBuilder(
       builder: (context, orientation) {
-        final bool isPortrait = orientation == Orientation.portrait; // 判斷直向模式
+        // 判斷目前是否為直向模式。
+        final bool isPortrait = orientation == Orientation.portrait;
 
         return Scaffold(
           backgroundColor: bgColor,
 
-          // 若為橫向，顯示底部可滾動導航列；直向則不顯示
+          // 橫向模式時顯示底部導覽列；直向模式則改用側邊導覽。
           bottomNavigationBar: isPortrait
               ? null
               : ScrollableNavBar(
@@ -164,7 +208,7 @@ class _HomeViewState extends State<HomeView> {
 
           body: Stack(
             children: [
-              // 觸控層，用於滑動切換前後項
+              // 最底層觸控區，負責上一頁／下一頁等手勢互動。
               TouchLayer(
                 isPortrait: isPortrait,
                 themeColor: themeColor,
@@ -172,7 +216,7 @@ class _HomeViewState extends State<HomeView> {
                 onNext: _controller.nextItem,
               ),
 
-              // 根據方向顯示不同的內容區
+              // 依照螢幕方向切換不同版面配置。
               isPortrait ? _buildPortraitLayout(item) : DisplayArea(item: item),
             ],
           ),
@@ -181,54 +225,58 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// 建立直向模式下的頁面佈局
+  /// 建立直向模式下的版面配置。
   ///
-  /// 左側或右側為側邊導航列，另一側為內容區
+  /// 直向模式會以左右排列方式顯示側邊導覽與內容區，
+  /// 並依據目前設定決定導覽列顯示在左側或右側。
   Widget _buildPortraitLayout(var item) {
-    // 側邊導航列
+    // 建立側邊導覽列。
     final nav = ScrollableSideRail(
       items: _controller.items,
       currentIndex: _controller.currentIndex,
       onTap: _onNavTap,
     );
 
-    // 內容區，使用 Expanded 填滿剩餘空間
+    // 建立主內容區。
     final content = Expanded(child: DisplayArea(item: _controller.currentItem));
 
-    // 根據目前側邊導航列位置返回 Row
     return Row(
       children: _controller.currentSide == NavSide.left
-          ? [nav, content] // 側邊在左
-          : [content, nav], // 側邊在右
+          ? [nav, content]
+          : [content, nav],
     );
   }
 
-  /// 顯示管理選單
+  /// 顯示管理功能選單。
   ///
-  /// 提供操作：新增、複製、刪除、上下移動、編輯標題、編輯圖示與文字、文字顏色、背景顏色
+  /// 使用底部彈出面板提供各種管理操作，例如：
+  /// - 編輯圖示與標題
+  /// - 設定全螢幕文字或背景圖片
+  /// - 修改文字色與背景色
+  /// - 調整項目順序
+  /// - 新增、複製、刪除項目
+  /// - 開啟設定頁
   void _showManagementMenu() {
     showModalBottomSheet(
       context: context,
-      showDragHandle: true, // 顯示拖動手把
+      showDragHandle: true,
       builder: (context) => ManagementGridMenu(
-        // 第一行操作：編輯圖示、編輯標題、文字、圖片
         onEditIcon: () async {
-          // 1. 先關閉底部選單，避免 UI 疊加
+          // 先關閉管理選單，再開啟圖示選擇器。
           Navigator.pop(context);
 
-          // 2. 顯示圖示選擇器
           IconPickerIcon? selectedIcon = await showIconPicker(
             context,
             configuration: const SinglePickerConfiguration(
+              // 僅允許選擇 Material 圖示。
               iconPackModes: [IconPack.material],
               searchHintText: '',
               title: Text(''),
             ),
           );
 
-          // 3. 處理返回結果
+          // 若有成功選取圖示，則更新目前項目的圖示。
           if (selectedIcon != null) {
-            // 更新 Controller 中的圖示資料
             _controller.updateIcon(selectedIcon.data);
           }
         },
@@ -250,25 +298,20 @@ class _HomeViewState extends State<HomeView> {
             isMultiline: true,
           );
         },
-        // 設為圖片
+
         onSetImage: () async {
           Navigator.pop(context);
 
-          // 1. 獲取螢幕尺寸
+          // 取得螢幕尺寸，並以較長邊作為圖片選擇或處理的尺寸上限。
           final Size screenSize = MediaQuery.sizeOf(context);
 
-          // 2. 計算螢幕最長邊 (取寬高的最大值)
-          // 比如手機豎屏是 390x844，則 limit 為 844
-          // 這樣圖片匯入後，最長的一邊不會超過 844，且比例不變
           final double limit = screenSize.width > screenSize.height
               ? screenSize.width
               : screenSize.height;
 
-          // 3. 傳入限制值進行圖片挑選
           await _controller.pickImage(limit);
         },
 
-        // 第二行操作：設定文字顏色、背景顏色、上下移動
         onSetTextColor: () async {
           Navigator.pop(context);
           await _openColorPicker(
@@ -288,30 +331,28 @@ class _HomeViewState extends State<HomeView> {
           );
         },
         onMoveUp: () {
-          _controller.moveUp(); // 上移項目
+          // 將目前項目往前移動一格。
+          _controller.moveUp();
         },
         onMoveDown: () {
-          _controller.moveDown(); // 下移項目
+          // 將目前項目往後移動一格。
+          _controller.moveDown();
         },
 
-        // 第三行操作：新增、複製、刪除
         onAdd: () {
           Navigator.pop(context);
-          _controller.addItem(); // 新增項目
+          _controller.addItem();
         },
         onCopy: () {
           Navigator.pop(context);
-          _controller.copyCurrentItem(); // 複製當前項目
+          _controller.copyCurrentItem();
         },
         onDelete: () {
-          // 1. 先關閉宮格選單
           Navigator.pop(context);
 
-          // 2. 執行刪除邏輯
-          // 控制器會自動判斷：若列表空則新增預設項目
+          // 刪除目前項目後，顯示簡短提示訊息。
           _controller.deleteCurrentItem();
 
-          // 顯示提示
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('已刪除該項'),
@@ -319,40 +360,36 @@ class _HomeViewState extends State<HomeView> {
             ),
           );
         },
+        onOpenSettings: () {
+          Navigator.pop(context);
+
+          // 導向設定頁面，並共用同一個控制器實例。
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SettingsView(controller: _controller),
+            ),
+          );
+        },
       ),
     );
   }
 
-  /// 顏色取反提示資訊
-  // void _showInvertHint(String message) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Row(
-  //         children: [
-  //           const Icon(Icons.auto_fix_high, color: Colors.white),
-  //           const SizedBox(width: 10),
-  //           Text(message),
-  //         ],
-  //       ),
-  //       backgroundColor: Colors.blueAccent,
-  //       behavior: SnackBarBehavior.floating,
-  //       duration: const Duration(seconds: 2),
-  //     ),
-  //   );
-  // }
-
-  /// 顯示文字或標題編輯對話框
+  /// 顯示文字編輯對話框。
   ///
-  /// [title] 對話框標題
-  /// [initialValue] 初始文字
-  /// [onConfirm] 確認後回調
+  /// [title] 為對話框標題。
+  /// [initialValue] 為文字輸入框的初始內容。
+  /// [onConfirm] 為使用者按下確認後的回呼。
+  /// [isMultiline] 控制是否允許多行輸入。
   void _showEditDialog(
     String title,
     String initialValue,
     Function(String) onConfirm, {
     bool isMultiline = false,
   }) {
+    // 建立文字輸入控制器，並帶入原始內容。
     final textController = TextEditingController(text: initialValue);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -360,7 +397,8 @@ class _HomeViewState extends State<HomeView> {
         content: TextField(
           controller: textController,
           autofocus: true,
-          // 如果是多行模式，不限制行數，並允許回車換行
+
+          // 多行模式下不限制行數；單行模式僅允許 1 行。
           maxLines: isMultiline ? null : 1,
           keyboardType: isMultiline
               ? TextInputType.multiline
@@ -372,11 +410,13 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           TextButton(
+            // 關閉對話框，不儲存變更。
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
+              // 將輸入內容回傳給呼叫端處理，然後關閉對話框。
               onConfirm(textController.text);
               Navigator.pop(context);
             },

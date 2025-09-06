@@ -23,6 +23,7 @@ echo "Detected OS: $OS"
 flutter clean
 flutter pub get
 bash generate_icons.sh
+dart run flutter_iconpicker:generate_packs --packs material
 echo "Running: flutter build $TARGET"
 flutter build "$TARGET" -v --no-tree-shake-icons
 
