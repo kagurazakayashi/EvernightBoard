@@ -4,9 +4,14 @@ mixin HomeControllerData on ChangeNotifier {
   // 是否已完成初始化
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
+  bool useVolumeKeys = false; // 預設停用音量鍵
+  bool useSideTap = true; // 預設開啟半屏點選
 
   // 本機儲存資料的 Key
   static const String _storageKey = 'demo_master_items';
+  static const String _configKey = 'demo_config_options';
+  bool get _isVolumeSupported =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   // ===============================
   // 初始化與資料持久化流程
@@ -19,7 +24,6 @@ mixin HomeControllerData on ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? jsonStr = prefs.getString(_storageKey);
-
       if (jsonStr != null && jsonStr.isNotEmpty) {
         // 將 JSON 字串解析為 HomeItem 列表
         final List<dynamic> jsonData = jsonDecode(jsonStr);
@@ -31,6 +35,14 @@ mixin HomeControllerData on ChangeNotifier {
         // 若本地沒有資料，初始化預設項目
         _setDefaultData();
       }
+      final String? configJson = prefs.getString(_configKey);
+      if (configJson != null) {
+        final Map<String, dynamic> config = jsonDecode(configJson);
+        useVolumeKeys = _isVolumeSupported
+            ? (config['useVolumeKeys'] ?? false)
+            : false;
+        useSideTap = config['useSideTap'] ?? true;
+      }
     } catch (e) {
       // 發生任何錯誤時，初始化預設資料
       _setDefaultData();
@@ -38,6 +50,27 @@ mixin HomeControllerData on ChangeNotifier {
       _isInitialized = true; // 標記初始化完成
       notifyListeners();
     }
+  }
+
+  Future<void> _syncConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _configKey,
+      jsonEncode({'useVolumeKeys': useVolumeKeys, 'useSideTap': useSideTap}),
+    );
+  }
+
+  void toggleVolumeKeys(bool value) {
+    if (!_isVolumeSupported) return;
+    useVolumeKeys = value;
+    notifyListeners();
+    _syncConfig();
+  }
+
+  void toggleSideTap(bool value) {
+    useSideTap = value;
+    notifyListeners();
+    _syncConfig();
   }
 
   /// 清除所有使用者資料，並還原為預設狀態。
@@ -57,6 +90,10 @@ mixin HomeControllerData on ChangeNotifier {
     self.items.clear();
     _setDefaultData();
     self._currentIndex = 0;
+
+    useVolumeKeys = false;
+    useSideTap = true;
+    await _syncConfig();
 
     notifyListeners();
     debugPrint('所有資料與物理檔案已清理完成。');

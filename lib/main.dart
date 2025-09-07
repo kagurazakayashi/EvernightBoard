@@ -30,7 +30,7 @@ class DemoMasterApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       // 提供深色主題設定，讓應用程式在深色模式下使用對應配色。
-      darkTheme: ThemeData(colorScheme: ColorScheme.dark()),
+      // darkTheme: ThemeData(colorScheme: ColorScheme.dark()),
 
       // 主題模式跟隨系統設定，自動於淺色與深色模式間切換。
       themeMode: ThemeMode.system,

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../home/home_controller.dart';
 
@@ -8,11 +11,39 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isVolumeSupported =
+        !kIsWeb && (Platform.isAndroid || Platform.isIOS);
     return Scaffold(
       appBar: AppBar(title: const Text('应用设置'), centerTitle: true),
 
       body: ListView(
         children: [
+          const _SettingsSectionTitle(title: '翻页交互'),
+          SwitchListTile(
+            secondary: const Icon(Icons.touch_app),
+            title: const Text('点击半屏翻页'),
+            subtitle: const Text('横屏时按左右半屏、竖屏时按上下半屏。'),
+            value: controller.useSideTap, // 现在这里会随 notifyListeners 更新
+            onChanged: (val) => controller.toggleSideTap(val),
+          ),
+          SwitchListTile(
+            secondary: Icon(
+              Icons.volume_up,
+              color: isVolumeSupported ? null : Colors.grey, // 不支持时图标变灰
+            ),
+            title: const Text('音量键翻页'),
+            // 如果不支持，显示提示文字
+            subtitle: Text(
+              isVolumeSupported ? '使用物理音量按键切换项目' : '当前平台不支持物理音量键翻页',
+              style: TextStyle(color: isVolumeSupported ? null : Colors.grey),
+            ),
+            value: controller.useVolumeKeys,
+            onChanged: isVolumeSupported
+                ? (val) => controller.toggleVolumeKeys(val)
+                : null,
+          ),
+
+          const Divider(),
           const _SettingsSectionTitle(title: '数据管理'),
 
           ListTile(

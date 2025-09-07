@@ -53,14 +53,13 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-
     // 監聽控制器狀態變更，當資料更新時重新建構畫面。
-    _controller.addListener(() {
-      // 確保元件仍掛載於 Widget Tree 上，避免在已卸載狀態呼叫 setState。
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _controller.addListener(_updateUI);
+  }
+
+  void _updateUI() {
+    // 確保元件仍掛載於 Widget Tree 上，避免在已卸載狀態呼叫 setState。
+    if (mounted) setState(() {});
   }
 
   @override
@@ -208,16 +207,17 @@ class _HomeViewState extends State<HomeView> {
 
           body: Stack(
             children: [
+              // 依照螢幕方向切換不同版面配置。
+              isPortrait ? _buildPortraitLayout(item) : DisplayArea(item: item),
               // 最底層觸控區，負責上一頁／下一頁等手勢互動。
               TouchLayer(
                 isPortrait: isPortrait,
                 themeColor: themeColor,
-                onPrevious: _controller.previousItem,
-                onNext: _controller.nextItem,
+                onPrevious: _controller.useSideTap
+                    ? _controller.previousItem
+                    : null,
+                onNext: _controller.useSideTap ? _controller.nextItem : null,
               ),
-
-              // 依照螢幕方向切換不同版面配置。
-              isPortrait ? _buildPortraitLayout(item) : DisplayArea(item: item),
             ],
           ),
         );

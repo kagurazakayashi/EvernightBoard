@@ -23,18 +23,18 @@ class TouchLayer extends StatelessWidget {
   final Color themeColor;
 
   /// 點擊上一區塊時觸發的回呼函式。
-  final VoidCallback onPrevious;
+  final VoidCallback? onPrevious;
 
   /// 點擊下一區塊時觸發的回呼函式。
-  final VoidCallback onNext;
+  final VoidCallback? onNext;
 
   /// 建立 [TouchLayer]。
   const TouchLayer({
     super.key,
     required this.isPortrait,
     required this.themeColor,
-    required this.onPrevious,
-    required this.onNext,
+    this.onPrevious,
+    this.onNext,
   });
 
   @override
@@ -49,17 +49,19 @@ class TouchLayer extends StatelessWidget {
     //
     // 使用 Expanded 讓每個區塊平均分配剩餘空間，
     // 並透過 InkWell 提供點擊事件與觸控視覺回饋。
-    Widget buildButton(VoidCallback tap) => Expanded(
+    Widget buildButton(VoidCallback? tap) => Expanded(
       child: InkWell(
-        // 使用者點擊區塊時執行對應動作。
-        onTap: tap,
-
+        // 當 tap 為 null 時，InkWell 會自動禁用點擊與水波紋效果
+        onTap: () {
+          if (tap != null) {
+            tap();
+          }
+        },
         // 點擊時的水波紋顏色。
-        splashColor: splash,
-
+        splashColor: tap == null ? Colors.transparent : splash,
         // 按壓時的高亮顏色。
-        highlightColor: highlight,
-
+        highlightColor: tap == null ? Colors.transparent : highlight,
+        hoverColor: Colors.transparent,
         // 讓子元件撐滿可用空間，使整個區塊都可點擊。
         child: const SizedBox.expand(),
       ),
@@ -68,7 +70,6 @@ class TouchLayer extends StatelessWidget {
     return Material(
       // 使用透明背景，僅保留觸控層與 InkWell 效果。
       color: Colors.transparent,
-
       child: isPortrait
           // 直向模式：以上下兩區排列。
           ? Column(children: [buildButton(onPrevious), buildButton(onNext)])

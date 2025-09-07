@@ -30,6 +30,7 @@ mixin HomeControllerVolume on ChangeNotifier {
 
     // 註冊音量變化監聽器
     FlutterVolumeController.addListener((volume) {
+      if (!self.useVolumeKeys) return;
       // 若目前音量大於前一次音量，表示使用者按了音量增加鍵
       if (volume > self._lastVolume) {
         self.previousItem();
