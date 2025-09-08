@@ -4,10 +4,31 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../home/home_controller.dart';
 
-class SettingsView extends StatelessWidget {
+class SettingsView extends StatefulWidget {
   final HomeController controller;
 
   const SettingsView({super.key, required this.controller});
+
+  /// 建立首頁畫面。
+  @override
+  State<SettingsView> createState() => _SettingsViewState();
+}
+
+/// [SettingsView] 的狀態類別。
+class _SettingsViewState extends State<SettingsView> {
+  void toggleSideTap(bool val) {
+    widget.controller.toggleSideTap(val);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void toggleVolumeKeys(bool val) {
+    widget.controller.toggleVolumeKeys(val);
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +44,8 @@ class SettingsView extends StatelessWidget {
             secondary: const Icon(Icons.touch_app),
             title: const Text('点击半屏翻页'),
             subtitle: const Text('横屏时按左右半屏、竖屏时按上下半屏。'),
-            value: controller.useSideTap, // 现在这里会随 notifyListeners 更新
-            onChanged: (val) => controller.toggleSideTap(val),
+            value: widget.controller.useSideTap, // 现在这里会随 notifyListeners 更新
+            onChanged: (val) => toggleSideTap(val),
           ),
           SwitchListTile(
             secondary: Icon(
@@ -37,9 +58,9 @@ class SettingsView extends StatelessWidget {
               isVolumeSupported ? '使用物理音量按键切换项目' : '当前平台不支持物理音量键翻页',
               style: TextStyle(color: isVolumeSupported ? null : Colors.grey),
             ),
-            value: controller.useVolumeKeys,
+            value: widget.controller.useVolumeKeys,
             onChanged: isVolumeSupported
-                ? (val) => controller.toggleVolumeKeys(val)
+                ? (val) => toggleVolumeKeys(val)
                 : null,
           ),
 
@@ -86,7 +107,7 @@ class SettingsView extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              controller.clearAllData();
+              widget.controller.clearAllData();
 
               Navigator.pop(context);
 

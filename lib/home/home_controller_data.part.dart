@@ -69,8 +69,8 @@ mixin HomeControllerData on ChangeNotifier {
 
   void toggleSideTap(bool value) {
     useSideTap = value;
-    notifyListeners();
     _syncConfig();
+    notifyListeners();
   }
 
   /// 清除所有使用者資料，並還原為預設狀態。

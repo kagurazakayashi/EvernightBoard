@@ -36,7 +36,9 @@ class ScrollableNavBar extends StatelessWidget {
     final theme = Theme.of(context);
 
     // 取得目前選中的項目資料。
-    final currentItem = items[currentIndex];
+    final currentItem = items.isEmpty
+        ? HomeItem(title: "...", content: "", icon: Icons.hourglass_empty)
+        : items[currentIndex];
 
     // 顏色回退邏輯：優先使用目前項目的自訂文字顏色，否則使用主題主色。
     final Color activeColor =

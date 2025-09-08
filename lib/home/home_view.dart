@@ -188,7 +188,8 @@ class _HomeViewState extends State<HomeView> {
     // 決定主題色，通常用於文字或互動元件顏色。
     final Color themeColor = item.textColor ?? theme.colorScheme.primary;
 
-    return OrientationBuilder(
+    return ListenableBuilder(
+      listenable: _controller,
       builder: (context, orientation) {
         // 判斷目前是否為直向模式。
         final bool isPortrait = orientation == Orientation.portrait;
