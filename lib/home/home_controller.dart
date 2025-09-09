@@ -105,7 +105,6 @@ class HomeController extends ChangeNotifier
   /// 初始化資料後，更新狀態並通知 UI。
   /// 若目前平台為 Web 或非 Android/iOS，則略過感測器與音量控制。
   Future<void> _setup() async {
-    // clearAllData(); // 可選：清除歷史資料
     await initData(); // 等待資料初始化完成
     _isInitialized = true; // 標記初始化完成
     notifyListeners(); // 通知監聽者更新畫面

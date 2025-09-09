@@ -52,11 +52,12 @@ class FileService {
       final directory = await getApplicationDocumentsDirectory();
 
       // 組合完整檔案路徑
-      final file = File(p.join(directory.path, fileName));
+      final path = p.join(directory.path, fileName);
+      final file = File(path);
       if (await file.exists()) {
         // 刪除檔案
         await file.delete();
-        debugPrint('已刪除本地檔案: $fileName');
+        debugPrint('已刪除本地檔案: $path');
       }
     } catch (e) {
       // 捕捉並列印錯誤

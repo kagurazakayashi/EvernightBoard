@@ -171,24 +171,20 @@ mixin HomeControllerData on ChangeNotifier {
       // 只有当使用次数等于 1 时（即只有当前这一项在用），才执行物理删除
       if (usageCount == 1) {
         await FileService.deleteFile(pathToDelete);
-        debugPrint('这是该图片的最后一个引用，已执行物理删除。');
+        debugPrint('這是該圖片的最後一個引用，已執行物理刪除。');
       } else {
-        debugPrint('该图片仍被其他项目使用（剩余 ${usageCount - 1} 个引用），跳过物理删除。');
+        debugPrint('該圖片仍被其他專案使用（剩餘 ${usageCount - 1} 個引用），跳過物理刪除。');
       }
     }
 
     // 执行内存删除
     self.items.removeAt(self._currentIndex);
 
-    if (self.items.isEmpty) {
-      await clearAllData();
-    } else {
-      if (self._currentIndex >= self.items.length) {
-        self._currentIndex = self.items.length - 1;
-      }
-      notifyListeners();
-      _syncToDisk();
+    if (self._currentIndex >= self.items.length) {
+      self._currentIndex = self.items.length - 1;
     }
+    notifyListeners();
+    _syncToDisk();
   }
 
   /// 將目前項目往上移動一格，採循環式排序。

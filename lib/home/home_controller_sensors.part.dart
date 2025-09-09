@@ -38,7 +38,7 @@ mixin HomeControllerSensors on ChangeNotifier {
       },
       // 感測器事件流發生例外時輸出除錯訊息。
       onError: (error) {
-        debugPrint('传感器流异常: $error');
+        debugPrint('感測器流異常: $error');
       },
       // 發生錯誤後自動取消監聽，避免持續接收異常事件。
       cancelOnError: true,
