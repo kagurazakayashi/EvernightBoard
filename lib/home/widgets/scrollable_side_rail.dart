@@ -8,11 +8,18 @@ import '../home_model.dart';
 ///
 /// 此元件會依據目前選取的 [HomeItem]，動態套用對應頁面的文字色彩與背景色彩；
 /// 若項目未提供自訂色彩，則會自動回退為目前主題中的預設色彩。
+///
+/// 版面配置上，外層使用 [Container] 負責繪製整體背景色，
+/// 內層再透過 [LayoutBuilder]、[ConstrainedBox] 與 [IntrinsicHeight]
+/// 確保在內容不足一頁高度時，側邊欄仍能完整撐滿可用空間。
 class ScrollableSideRail extends StatelessWidget {
   /// 側邊導覽列要顯示的導覽項目清單。
   final List<HomeItem> items;
 
   /// 目前已選取的導覽項目索引。
+  ///
+  /// 此值會對應到 [NavigationRail.selectedIndex]，
+  /// 用來決定目前高亮顯示的目的地項目。
   final int currentIndex;
 
   /// 使用者點擊導覽項目時觸發的回呼函式。
@@ -34,8 +41,12 @@ class ScrollableSideRail extends StatelessWidget {
     final theme = Theme.of(context);
 
     // 取得目前選取中的項目，用來決定導覽列的主色與背景色。
-    // 若清單為空，先顯示載入中的提示文字。
+    // 若清單為空，則建立一個暫時的占位項目，避免後續色彩計算無法進行。
     // if (items.isEmpty) return Text("Loading...");
+    if (items.isEmpty) {
+      debugPrint('[ScrollableSideRail] items 為空，顯示預設的載入中圖示。');
+    }
+
     final currentItem = items.isEmpty
         ? HomeItem(title: "...", content: "", icon: Icons.hourglass_empty)
         : items[currentIndex];
@@ -57,6 +68,8 @@ class ScrollableSideRail extends StatelessWidget {
           ? const Icon(Icons.hourglass_empty)
           : LayoutBuilder(
               builder: (context, constraints) {
+                // 使用可捲動容器包住 NavigationRail，
+                // 讓目的地項目數量過多時仍可垂直瀏覽所有項目。
                 return SingleChildScrollView(
                   child: ConstrainedBox(
                     // 當內容高度不足時，仍強制最小高度等於可用高度，
@@ -65,6 +78,8 @@ class ScrollableSideRail extends StatelessWidget {
                       minHeight: constraints.maxHeight,
                     ),
                     child: IntrinsicHeight(
+                      // 讓子元件依內容高度自我測量，
+                      // 搭配最小高度限制，使側邊欄在不同內容量下都能維持合理外觀。
                       child: NavigationRail(
                         // 背景由外層 Container 負責繪製，因此這裡設為透明。
                         backgroundColor: Colors.transparent,
@@ -94,6 +109,7 @@ class ScrollableSideRail extends StatelessWidget {
                         ),
 
                         // 未選取項目的文字樣式。
+                        // 與未選取圖示維持一致的透明度，降低視覺權重。
                         unselectedLabelTextStyle: TextStyle(
                           color: activeColor.withValues(alpha: 0.5),
                         ),

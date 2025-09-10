@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 /// IconSelectorPage
 ///
-/// 這個頁面提供一個圖標選擇器，使用者可以透過搜尋或瀏覽圖示列表來選擇想要的圖標。
-/// 選擇圖標後會透過 Navigator.pop 回傳所選的 IconData。
+/// 提供圖示選擇介面，讓使用者可透過搜尋或瀏覽圖示清單來挑選圖示。
+/// 當使用者點選某個圖示後，會使用 `Navigator.pop` 將選取的 `IconData` 回傳給上一頁。
 class IconSelectorPage extends StatefulWidget {
   const IconSelectorPage({super.key});
 
@@ -11,8 +11,17 @@ class IconSelectorPage extends StatefulWidget {
   State<IconSelectorPage> createState() => _IconSelectorPageState();
 }
 
+/// `IconSelectorPage` 的狀態類別。
+///
+/// 負責管理：
+/// - 圖示資料來源
+/// - 搜尋關鍵字
+/// - 篩選後的顯示結果
 class _IconSelectorPageState extends State<IconSelectorPage> {
-  /// 圖示對照表，key 為圖示名稱，value 為對應的 IconData
+  /// 圖示名稱與 `IconData` 的對照表。
+  ///
+  /// - key：圖示識別名稱，供搜尋與畫面顯示使用
+  /// - value：實際對應的 Material icon
   final Map<String, IconData> _iconMap = {
     'home': Icons.home,
     'search': Icons.search,
@@ -75,22 +84,32 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
     'key': Icons.key,
   };
 
-  /// 圖示名稱列表，方便搜尋與排序
+  /// 圖示名稱清單。
+  ///
+  /// 會在 `initState` 中由 `_iconMap` 的 key 轉換而來，
+  /// 方便後續進行搜尋、篩選與清單渲染。
   late List<String> _keys;
 
-  /// 搜尋框文字
+  /// 目前搜尋欄位中的文字。
+  ///
+  /// 預設為空字串，代表顯示全部圖示。
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    // 初始化圖示名稱列表
+
+    // 初始化圖示名稱清單，後續搜尋會以這份資料為基礎進行篩選。
     _keys = _iconMap.keys.toList();
+
+    debugPrint('[IconSelectorPage] 已初始化，共載入 ${_keys.length} 個圖示。');
   }
 
   @override
   Widget build(BuildContext context) {
-    // 過濾出符合搜尋條件的圖示名稱
+    // 依目前搜尋關鍵字篩選圖示名稱。
+    //
+    // 這裡將輸入內容轉為小寫後比對，避免因大小寫不同而影響搜尋結果。
     final filteredKeys = _keys
         .where((k) => k.contains(_searchQuery.toLowerCase()))
         .toList();
@@ -103,8 +122,17 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: SearchBar(
-              hintText: '搜索图标 (例如: home, edit...)',
-              onChanged: (value) => setState(() => _searchQuery = value),
+              hintText: '搜索图标',
+              onChanged: (value) {
+                // 更新搜尋條件並重新建構畫面，以即時反映篩選結果。
+                setState(() {
+                  _searchQuery = value;
+                });
+
+                debugPrint(
+                  '[IconSelectorPage] 搜尋關鍵字已更新："$value"，目前符合 ${filteredKeys.length} 個圖示。',
+                );
+              },
               leading: const Icon(Icons.search),
               elevation: WidgetStateProperty.all(1),
             ),
@@ -113,7 +141,8 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
-        // 使用固定列數的網格布局
+
+        // 使用固定欄數的網格版面配置，讓圖示以整齊的矩陣方式顯示。
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
           mainAxisSpacing: 12,
@@ -121,20 +150,28 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
         ),
         itemCount: filteredKeys.length,
         itemBuilder: (context, index) {
+          // 取得目前格位對應的圖示名稱與圖示資料。
           final name = filteredKeys[index];
-          final icon = _iconMap[name]!; // 確保一定有對應 IconData
+
+          // 此處使用 `!` 是因為 `filteredKeys` 來源即為 `_iconMap` 的 key，
+          // 理論上一定能找到對應的 `IconData`。
+          final icon = _iconMap[name]!;
 
           return Column(
             children: [
               Expanded(
                 child: InkWell(
-                  // 點擊圖示時回傳 IconData
-                  onTap: () => Navigator.pop(context, icon),
+                  // 點選圖示後，將所選 `IconData` 回傳給上一頁。
+                  onTap: () {
+                    debugPrint('[IconSelectorPage] 使用者已選取圖示：$name');
+                    Navigator.pop(context, icon);
+                  },
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      // 背景色使用表面容器最高層並調整透明度
+                      // 使用主題中的容器色系作為背景，並降低透明度，
+                      // 讓圖示卡片在不同主題下都能維持柔和的視覺層次。
                       color: Theme.of(context)
                           .colorScheme
                           .surfaceContainerHighest
@@ -146,7 +183,9 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
                 ),
               ),
               const SizedBox(height: 4),
-              // 顯示圖示名稱，超出以省略號表示
+
+              // 顯示圖示名稱。
+              // 若文字長度超出可用寬度，則以省略號顯示，避免破版。
               Text(
                 name,
                 style: const TextStyle(fontSize: 10),

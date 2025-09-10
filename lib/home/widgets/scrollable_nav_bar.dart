@@ -12,6 +12,9 @@ import '../home_model.dart';
 /// 一個可左右捲動的導覽列元件。
 ///
 /// 適合用在項目數量較多、無法於單一畫面寬度內完整顯示的情境。
+///
+/// 此元件本身不管理選取狀態，需由外部透過 [currentIndex] 傳入目前狀態，
+/// 並在 [onTap] 中處理點擊後的切換邏輯。
 class ScrollableNavBar extends StatelessWidget {
   /// 導覽列要顯示的所有項目資料。
   final List<HomeItem> items;
@@ -32,115 +35,130 @@ class ScrollableNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 取得目前主題設定，供顏色與樣式回退使用。
+    // 取得目前主題，供顏色與樣式回退使用。
     final theme = Theme.of(context);
 
-    // 取得目前選中的項目資料。
-    final currentItem = items.isEmpty
-        ? HomeItem(title: "...", content: "", icon: Icons.hourglass_empty)
-        : items[currentIndex];
+    // 檢查目前索引是否落在有效範圍內，避免清單為空或索引越界時直接存取失敗。
+    final bool hasValidCurrentIndex =
+        items.isNotEmpty && currentIndex >= 0 && currentIndex < items.length;
 
-    // 顏色回退邏輯：優先使用目前項目的自訂文字顏色，否則使用主題主色。
+    // 當索引無效時輸出偵錯資訊，協助排查外部狀態管理或資料同步問題。
+    if (!hasValidCurrentIndex) {
+      debugPrint(
+        '[ScrollableNavBar] currentIndex 無效，items.length=${items.length}，currentIndex=$currentIndex',
+      );
+    }
+
+    // 取得目前選中的項目資料；若目前沒有可用項目或索引無效，則使用暫時的預設項目避免例外。
+    final currentItem = hasValidCurrentIndex
+        ? items[currentIndex]
+        : HomeItem(title: "...", content: "", icon: Icons.hourglass_empty);
+
+    // 目前作用中的主色：
+    // 優先使用目前項目的自訂文字顏色，若未提供則退回主題的 primary 色。
     final Color activeColor =
         currentItem.textColor ?? theme.colorScheme.primary;
 
-    // 導覽列背景色：優先使用目前項目的自訂背景色，否則使用主題 surface 色。
+    // 導覽列背景色：
+    // 優先使用目前項目的自訂背景色，若未提供則退回主題的 surface 色。
     final Color navBgColor =
         currentItem.backgroundColor ?? theme.colorScheme.surface;
 
     return Container(
-      // 套用導覽列背景色。
+      // 套用整個導覽列的背景色。
       color: navBgColor,
 
-      // 固定高度，對齊 Material 3 常見的導覽列高度設計。
-      height: 85, // 适配 Material 3 标准高度
+      // 固定導覽列高度，以符合常見底部導覽列的視覺比例。
+      height: 85,
 
       child: SingleChildScrollView(
-        // 設定為水平捲動。
+        // 啟用水平捲動，讓較多項目仍可完整顯示。
         scrollDirection: Axis.horizontal,
 
-        // 左右保留內距，避免內容貼齊邊界。
+        // 在左右兩側加入內距，避免內容緊貼容器邊界。
         padding: const EdgeInsets.symmetric(horizontal: 12),
 
         child: Row(
-          // 依據項目數量動態產生每一個導覽按鈕。
+          // 根據資料清單動態建立每一個導覽項目。
           children: List.generate(items.length, (index) {
             // 取得目前迭代的項目資料。
             final item = items[index];
 
-            // 判斷目前這個項目是否為選中狀態。
+            // 判斷目前項目是否為選取狀態。
             final bool isSelected = currentIndex == index;
 
             return InkWell(
-              // 點擊時將索引傳回外部處理。
-              onTap: () => onTap(index),
+              // 點擊時將索引回傳給外部，由外部更新選取狀態。
+              onTap: () {
+                debugPrint(
+                  '[ScrollableNavBar] 點擊導覽項目：index=$index, title=${item.title}',
+                );
+                onTap(index);
+              },
 
-              // 移除預設水波紋與高亮背景，改用自訂膠囊背景表現選中狀態。
-              // 去掉默认的水波纹背景，使用自定义的胶囊背景
+              // 移除預設水波紋與高亮效果，改由自訂膠囊背景呈現互動狀態。
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
 
               child: Padding(
-                // 每個導覽項目左右保留間距，讓排版更舒適。
+                // 每個導覽項目左右保留間距，提升可讀性與點擊舒適度。
                 padding: const EdgeInsets.symmetric(horizontal: 12),
 
                 child: Column(
-                  // 讓圖示與文字在可用高度內垂直置中。
+                  // 讓圖示與文字在可用高度中垂直置中。
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 以動畫容器模擬選中時的膠囊背景效果。
-                    // 模拟选中的胶囊背景
+                    // 使用動畫容器呈現選取時的膠囊式背景轉場效果。
                     AnimatedContainer(
-                      // 切換選中狀態時的動畫時間。
+                      // 設定選取狀態切換時的動畫時間。
                       duration: const Duration(milliseconds: 250),
 
-                      // 動畫曲線使用平滑的 easeInOut。
+                      // 使用平滑的動畫曲線，讓切換更自然。
                       curve: Curves.easeInOut,
 
-                      // 膠囊背景內部留白，控制圖示周圍空間。
+                      // 膠囊背景的內距，控制圖示周圍留白。
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 4,
                       ),
 
                       decoration: BoxDecoration(
-                        // 若為選中狀態，顯示淡色膠囊背景；否則為透明。
+                        // 選取時顯示淡色膠囊背景，未選取時維持透明。
                         color: isSelected
                             ? activeColor.withValues(alpha: 0.15)
                             : Colors.transparent,
 
-                        // 設定圓角形成膠囊外觀。
+                        // 以較大圓角形成膠囊外觀。
                         borderRadius: BorderRadius.circular(20),
                       ),
 
                       child: Icon(
-                        // 顯示項目對應的圖示。
+                        // 顯示該導覽項目對應的圖示。
                         item.icon,
 
-                        // 選中時使用完整強調色，未選中時降低透明度。
+                        // 選取時使用完整強調色，未選取時降低透明度以形成層級。
                         color: isSelected
                             ? activeColor
                             : activeColor.withValues(alpha: 0.5),
                       ),
                     ),
 
-                    // 圖示與文字之間的垂直間距。
+                    // 圖示與標題之間的垂直間距。
                     const SizedBox(height: 4),
 
                     // 顯示導覽項目的標題文字。
-                    // 标题文字
                     Text(
                       item.title,
                       style: TextStyle(
-                        // 選中時使用完整強調色，未選中時降低透明度。
+                        // 選取時使用完整強調色，未選取時降低透明度。
                         color: isSelected
                             ? activeColor
                             : activeColor.withValues(alpha: 0.5),
 
-                        // 導覽列文字大小。
+                        // 導覽列標題字級。
                         fontSize: 12,
 
-                        // 選中時加粗，未選中時維持一般字重。
+                        // 選取時加粗，讓目前頁籤更明顯。
                         fontWeight: isSelected
                             ? FontWeight.bold
                             : FontWeight.normal,
