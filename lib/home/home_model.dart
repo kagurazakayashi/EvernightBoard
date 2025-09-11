@@ -83,14 +83,18 @@ class HomeItem {
   /// - `imagePath` 對應到 [backgroundImagePath]
   factory HomeItem.fromJson(Map<String, dynamic> json) {
     return HomeItem(
-      title: json['title'],
-      content: json['content'],
-      icon: IconData(json['icon'], fontFamily: 'MaterialIcons'),
+      title: json['title'] ?? '未命名项目',
+      content: json['content'] ?? '',
+      // 如果 icon 轉換失敗，給一個預設圖示
+      icon: IconData(
+        json['icon'] ?? Icons.help_outline.codePoint,
+        fontFamily: 'MaterialIcons',
+      ),
       textColor: json['textColor'] != null ? Color(json['textColor']) : null,
       backgroundColor: json['backgroundColor'] != null
           ? Color(json['backgroundColor'])
           : null,
-      backgroundImagePath: json['imagePath'],
+      backgroundImagePath: json['imagePath'] ?? '',
     );
   }
 

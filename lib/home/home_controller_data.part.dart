@@ -514,4 +514,65 @@ mixin HomeControllerData on ChangeNotifier {
   ///
   /// 比較依據為 ARGB 整數值。
   bool isSameColor(Color a, Color b) => a.toARGB32() == b.toARGB32();
+
+  // ===============================
+  // 匯入匯出
+  // ===============================
+
+  /// 匯出所有資料為 JSON 字串
+  Future<void> exportData(BuildContext context) async {
+    final self = this as HomeController;
+    // 將 items 列表轉為 JSON
+    final String jsonStr = jsonEncode(
+      self.items.map((e) => e.toJson()).toList(),
+    );
+
+    final bool success = await DataExportService.exportJson(jsonStr);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(success ? '数据导出成功' : '导出已取消')));
+    }
+  }
+
+  /// 從 JSON 檔案匯入資料
+  Future<void> importData(BuildContext context) async {
+    final self = this as HomeController;
+    final String? jsonStr = await DataExportService.importJson();
+
+    if (jsonStr != null) {
+      try {
+        final List<dynamic> decoded = jsonDecode(jsonStr);
+        final List<HomeItem> newItems = decoded
+            .map((e) => HomeItem.fromJson(e))
+            .toList();
+
+        if (newItems.isNotEmpty) {
+          final int importCount = newItems.length;
+          self.items.clear();
+          self.items.addAll(newItems);
+          self._currentIndex = 0; // 重置到第一頁
+          notifyListeners();
+          _syncToDisk(); // 同步到本地 SharedPreferences
+
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('导入成功！已加载 $importCount 个项目'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('文件格式不正确，导入失败')));
+        }
+      }
+    }
+  }
 }

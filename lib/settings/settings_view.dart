@@ -85,6 +85,19 @@ class _SettingsViewState extends State<SettingsView> {
           const Divider(),
           const _SettingsSectionTitle(title: '数据管理'),
           ListTile(
+            leading: const Icon(Icons.file_upload, color: Colors.blueAccent),
+            title: const Text('导出配置'),
+            subtitle: const Text('将当前所有屏幕配置保存为 JSON 文件'),
+            onTap: () => widget.controller.exportData(context),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.file_download, color: Colors.green),
+            title: const Text('导入配置'),
+            subtitle: const Text('从备份文件恢复配置 (会覆盖当前数据)'),
+            onTap: () => _confirmImport(context),
+          ),
+          ListTile(
             leading: const Icon(Icons.restore, color: Colors.redAccent),
             title: const Text('恢复出厂设置'),
             subtitle: const Text('清除所有保存的项目、颜色和图片配置'),
@@ -98,11 +111,28 @@ class _SettingsViewState extends State<SettingsView> {
             title: const Text('版本信息'),
             subtitle: const Text('v1.0.0'),
           ),
-          ListTile(
-            leading: const Icon(Icons.import_export, color: Colors.blueGrey),
-            title: const Text('数据导出'),
-            // 功能尚未開放，先以停用狀態呈現。
-            enabled: false,
+        ],
+      ),
+    );
+  }
+
+  void _confirmImport(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('确认导入'),
+        content: const Text('导入新配置将覆盖当前所有已保存的内容，此操作不可撤销。确定要继续吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.controller.importData(context);
+            },
+            child: const Text('确定导入'),
           ),
         ],
       ),

@@ -33,6 +33,9 @@ import 'dart:io';
 /// 匯入 Flutter 基礎工具，例如判斷是否在 Web 平台。
 import 'package:flutter/foundation.dart';
 
+// 匯入匯出
+import '../settings/data_export_service.dart';
+
 /// 使用 `part` 將控制器拆分為多個檔案，以利將不同職責的邏輯模組化。
 ///
 /// 這些 `part` 檔案與目前檔案屬於同一個 library，
