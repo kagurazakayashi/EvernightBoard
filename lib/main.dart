@@ -1,43 +1,65 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
 import 'home/home_view.dart';
+// import 'restart_widget.dart';
 
 /// 應用程式進入點。
 ///
-/// 負責先初始化 Flutter 綁定，確保在執行應用程式前，
-/// Flutter 與平台層之間的溝通機制已就緒，接著再啟動根元件。
+/// 會先確保 Flutter 繫結初始化完成，
+/// 再啟動整個應用程式。
 void main() {
-  // 確保 Flutter 引擎綁定已完成初始化。
-  // 若後續需要在 runApp 前呼叫平台通道、載入設定、
-  // 初始化外部服務或執行其他前置作業，通常都應先執行這一行。
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 啟動應用程式，並將 DemoMasterApp 設為整體應用程式的根元件。
-  runApp(DemoMasterApp());
+  // 若未來需要支援整體 Widget 樹重建，可改用 RestartWidget 包裝根元件。
+  // runApp(const RestartWidget(child: EvernightBoardAPP()));
+  runApp(EvernightBoardAPP());
 }
 
-/// 應用程式的根元件。
+/// Evernight Board 應用程式根元件。
 ///
-/// 此元件負責建立整體 [MaterialApp] 設定，包含：
-/// 顯示模式、主題模式，以及應用程式啟動後進入的首頁畫面。
-class DemoMasterApp extends StatelessWidget {
+/// 負責建立全域 [MaterialApp]，並統一設定：
+/// - 亮色／暗色主題
+/// - 全域色彩種子
+/// - 主題模式
+/// - 首頁入口
+class EvernightBoardAPP extends StatelessWidget {
   /// 建立應用程式根元件。
-  const DemoMasterApp({super.key});
+  const EvernightBoardAPP({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // 定義基礎主題色，供亮色與暗色主題共同衍生色彩系統使用。
+    const Color seedColor = Colors.red;
+
     return MaterialApp(
-      // 隱藏右上角的 Debug 橫幅，讓畫面更接近正式版本呈現。
       debugShowCheckedModeBanner: false,
 
-      // 可在此提供深色主題設定，讓應用程式於深色模式下使用指定配色。
-      // darkTheme: ThemeData(colorScheme: ColorScheme.dark()),
+      // 亮色主題設定。
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColor,
+          brightness: Brightness.light,
+        ),
+        // 可於此集中調整全域元件樣式，例如 AppBar 外觀。
+        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+      ),
 
-      // 主題模式跟隨系統設定，自動於淺色與深色模式之間切換。
+      // 暗色主題設定。
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColor,
+          brightness: Brightness.dark, // 指定使用暗色亮度配置
+        ),
+        // 暗色模式下額外指定頁面背景色，避免預設背景不符合整體視覺風格。
+        scaffoldBackgroundColor: const Color(0xFF121212), // 經典深色背景
+      ),
+
+      // 設定主題模式跟隨系統。
       themeMode: ThemeMode.system,
 
-      // 應用程式啟動後顯示的首頁畫面。
-      home: HomeView(),
+      // 應用程式首頁入口。
+      home: const HomeView(),
     );
   }
 }

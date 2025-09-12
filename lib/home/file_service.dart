@@ -1,72 +1,58 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/foundation.dart';
 
-/// 本地檔案服務工具類別。
+/// 本機檔案服務類別。
 ///
-/// 負責處理應用程式文件目錄中的圖片檔案保存與刪除流程，
-/// 主要用途包含：
-/// 1. 將暫存圖片複製到可長期保存的文件目錄。
-/// 2. 依檔名刪除先前已保存的本地檔案。
+/// 負責處理圖片檔案於應用程式文件目錄中的保存、刪除，
+/// 以及圖片檔案與 Base64 字串之間的轉換。
 ///
-/// 此類別僅提供靜態方法，不需要建立實例。
+/// 注意事項：
+/// - 僅處理儲存在 App 文件目錄中的檔案。
+/// - 若路徑為 `assets/` 開頭，代表為應用程式內建資源，不應嘗試刪除或轉換。
 class FileService {
-  /// 將圖片從暫存路徑複製到應用程式文件目錄中。
+  /// 將暫存路徑中的圖片複製到應用程式文件目錄，並回傳新檔名。
   ///
-  /// 會使用目前時間戳記搭配原始副檔名產生唯一檔名，
-  /// 以避免同名檔案互相覆蓋。
+  /// [tempPath] 為來源圖片的暫存完整路徑。
   ///
-  /// [tempPath] 為暫存檔案的完整路徑。
+  /// 執行流程：
+  /// 1. 取得應用程式文件目錄。
+  /// 2. 以目前時間戳建立唯一檔名，並保留原始副檔名。
+  /// 3. 將暫存檔複製到正式保存位置。
   ///
-  /// 成功時回傳新檔名（不含完整路徑）；
-  /// 若來源檔案不存在或處理失敗，則回傳 `null`。
+  /// 成功時回傳新檔名；若來源檔不存在或發生例外，則回傳 `null`。
   static Future<String?> saveImageToDocs(String tempPath) async {
     try {
-      // 取得應用程式可持久化保存檔案的文件目錄。
       final directory = await getApplicationDocumentsDirectory();
-
-      // 以時間戳記建立唯一檔名，並保留原始副檔名。
       final String fileName =
           'img_${DateTime.now().millisecondsSinceEpoch}${p.extension(tempPath)}';
-
-      // 組合目標檔案的完整保存路徑。
       final String permanentPath = p.join(directory.path, fileName);
-
       final File tempFile = File(tempPath);
 
-      // 僅在來源暫存檔確實存在時才執行複製。
       if (await tempFile.exists()) {
-        // 將暫存檔複製到應用程式文件目錄，作為長期保存版本。
         await tempFile.copy(permanentPath);
         debugPrint('[FileService] 檔案已成功持久化至: $permanentPath');
-
-        // 僅回傳檔名，讓呼叫端可自行決定後續如何組合完整路徑。
         return fileName;
       }
 
-      // 來源檔案不存在時輸出除錯資訊，協助追查來源路徑異常問題。
-      debugPrint('[FileService] 找不到暫存檔案: $tempPath');
+      debugPrint('[FileService] 找不到暫存圖片檔案: $tempPath');
     } catch (e) {
-      // 捕捉保存過程中的例外，避免中斷呼叫端流程。
       debugPrint('[FileService] 持久化檔案失敗: $e');
     }
-
     return null;
   }
 
   /// 安全刪除應用程式文件目錄中的指定檔案。
   ///
-  /// [fileName] 應為先前保存後取得的檔名，而非完整路徑。
+  /// [fileName] 應為儲存在 App 文件目錄中的檔名，而非完整路徑。
   ///
   /// 以下情況會直接略過，不執行刪除：
-  /// 1. [fileName] 為 `null`
-  /// 2. [fileName] 為空字串
-  /// 3. [fileName] 指向 `assets/` 目錄資源
-  ///
-  /// 這樣可避免誤刪應用程式內建資源，並降低無效路徑操作。
+  /// - [fileName] 為 `null`
+  /// - [fileName] 為空字串
+  /// - [fileName] 以 `assets/` 開頭（代表為內建資源）
   static Future<void> deleteFile(String? fileName) async {
-    // 避免刪除空值、空字串，或誤刪內建資源檔。
     if (fileName == null ||
         fileName.isEmpty ||
         fileName.startsWith('assets/')) {
@@ -74,24 +60,85 @@ class FileService {
     }
 
     try {
-      // 取得應用程式文件目錄，供組合實際檔案路徑使用。
       final directory = await getApplicationDocumentsDirectory();
-
-      // 將文件目錄與檔名組合成完整路徑。
       final path = p.join(directory.path, fileName);
       final file = File(path);
 
-      // 僅在檔案存在時才執行刪除，避免不必要的例外。
       if (await file.exists()) {
         await file.delete();
         debugPrint('[FileService] 已刪除本地檔案: $path');
       } else {
-        // 補上不存在時的除錯資訊，方便確認是否為重複刪除或路徑錯誤。
-        debugPrint('[FileService] 欲刪除的檔案不存在: $path');
+        debugPrint('[FileService] 欲刪除的檔案不存在，已略過: $path');
       }
     } catch (e) {
-      // 捕捉刪除過程中的例外，避免影響其他業務流程。
       debugPrint('[FileService] 刪除檔案失敗: $e');
     }
+  }
+
+  /// 讀取本機圖片檔案並轉換為 Base64 字串。
+  ///
+  /// 此方法常用於資料匯出、備份，或需以字串形式傳輸圖片內容的情境。
+  ///
+  /// [fileName] 應為儲存在 App 文件目錄中的檔名，而非完整路徑。
+  ///
+  /// 若 [fileName] 無效、為內建資源，或檔案不存在／讀取失敗，則回傳 `null`。
+  static Future<String?> getBase64Image(String? fileName) async {
+    if (fileName == null ||
+        fileName.isEmpty ||
+        fileName.startsWith('assets/')) {
+      return null;
+    }
+
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final path = p.join(directory.path, fileName);
+      final file = File(path);
+
+      if (await file.exists()) {
+        final bytes = await file.readAsBytes();
+        return base64Encode(bytes);
+      }
+
+      debugPrint('[FileService] 找不到欲轉換 Base64 的圖片檔案: $path');
+    } catch (e) {
+      debugPrint('[FileService] 讀取 Base64 失敗: $e');
+    }
+    return null;
+  }
+
+  /// 將匯入的 Base64 圖片字串還原為本機檔案，並回傳新檔名。
+  ///
+  /// [base64String] 為圖片的 Base64 編碼內容。
+  /// [originalPath] 用於保留原始副檔名，避免遺失檔案格式資訊。
+  ///
+  /// 執行流程：
+  /// 1. 將 Base64 字串解碼為位元組資料。
+  /// 2. 取得應用程式文件目錄。
+  /// 3. 依時間戳與雜湊值建立唯一檔名，降低重名風險。
+  /// 4. 將圖片內容寫入本機檔案。
+  ///
+  /// 成功時回傳新檔名；失敗時回傳 `null`。
+  static Future<String?> saveBase64Image(
+    String base64String,
+    String originalPath,
+  ) async {
+    try {
+      final bytes = base64Decode(base64String);
+      final directory = await getApplicationDocumentsDirectory();
+
+      // 建立唯一檔名，並保留原始副檔名，避免匯入後遺失格式資訊。
+      final String extension = p.extension(originalPath);
+      final String fileName =
+          'img_imp_${DateTime.now().millisecondsSinceEpoch}_${base64String.hashCode.abs()}$extension';
+      final String permanentPath = p.join(directory.path, fileName);
+
+      final file = File(permanentPath);
+      await file.writeAsBytes(bytes);
+      debugPrint('[FileService] 匯入圖片已儲存: $permanentPath');
+      return fileName;
+    } catch (e) {
+      debugPrint('[FileService] 還原 Base64 圖片失敗: $e');
+    }
+    return null;
   }
 }

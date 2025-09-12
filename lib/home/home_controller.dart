@@ -24,22 +24,25 @@ import 'file_service.dart';
 /// 匯入 JSON 編碼功能，用於將資料轉為 JSON 字串。
 import 'dart:convert';
 
-/// 匯入本機簡單資料儲存套件，用於儲存設定與狀態。
+/// 匯入本機簡易資料儲存套件，用於保存設定與狀態資料。
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 匯入平台與檔案系統相關 API。
 import 'dart:io';
 
-/// 匯入 Flutter 基礎工具，例如判斷是否在 Web 平台。
+/// 匯入 Flutter 基礎工具，例如判斷是否執行於 Web 平台。
 import 'package:flutter/foundation.dart';
 
-// 匯入匯出
+/// 匯入資料匯出相關服務。
 import '../settings/data_export_service.dart';
 
-/// 使用 `part` 將控制器拆分為多個檔案，以利將不同職責的邏輯模組化。
+// 重啟程式
+// import '../restart_widget.dart';
+
+/// 使用 `part` 將控制器拆分為多個檔案，以利依職責模組化管理。
 ///
 /// 這些 `part` 檔案與目前檔案屬於同一個 library，
-/// 因此可以直接存取彼此的私有成員，適合拆分控制器內部實作。
+/// 因此可直接存取彼此的私有成員，適合拆分控制器內部實作細節。
 part 'home_controller_data.part.dart';
 
 /// 感測器相關邏輯模組。
@@ -65,13 +68,14 @@ enum NavSide {
 /// - 初始化感測器與音量監聽
 /// - 在狀態改變時通知 UI 更新
 ///
-/// 透過混入（mixin）將資料、感測器與音量邏輯拆分到不同 part 檔案中，
-/// 讓主控制器保留一致的對外操作介面。
+/// 透過 mixin 將資料、感測器與音量邏輯拆分至不同 part 檔案，
+/// 讓主控制器維持一致的對外操作介面，同時保有較佳的可讀性與維護性。
 class HomeController extends ChangeNotifier
     with HomeControllerData, HomeControllerSensors, HomeControllerVolume {
   /// 表示控制器是否已完成初始化。
   ///
-  /// 此欄位會在 [_setup] 完成資料初始化後設為 `true`。
+  /// 此欄位會在 [_setup] 完成資料初始化後設為 `true`，
+  /// 可避免 UI 或其他邏輯在資料尚未準備完成時提前存取。
   @override
   bool _isInitialized = false;
 
@@ -94,12 +98,12 @@ class HomeController extends ChangeNotifier
 
   /// 記錄上一個系統音量值。
   ///
-  /// 可用於比對音量變化方向或避免重複處理相同音量事件。
+  /// 可用於判斷音量變化方向，或避免重複處理相同音量事件。
   double _lastVolume = 0.5;
 
-  /// 加速度感測器訂閱物件。
+  /// 加速度感測器事件訂閱物件。
   ///
-  /// 控制器釋放時需取消訂閱，以避免資源洩漏。
+  /// 控制器釋放時需取消訂閱，以避免資源洩漏或背景持續接收事件。
   StreamSubscription<AccelerometerEvent>? _sensorSub;
 
   /// 目前顯示項目的索引。
@@ -122,13 +126,14 @@ class HomeController extends ChangeNotifier
   /// 執行控制器初始化流程。
   ///
   /// 會先完成資料初始化，再更新初始化狀態並通知 UI。
-  /// 若目前平台為 Web，或不是 Android / iOS，則略過感測器與音量控制初始化。
+  /// 若目前平台為 Web，或不是 Android / iOS，則略過感測器與音量控制初始化，
+  /// 避免在不支援的平台上呼叫對應 API。
   Future<void> _setup() async {
     debugPrint('[HomeController] 開始執行初始化');
 
     await initData(); // 等待首頁資料初始化完成
 
-    _isInitialized = true; // 標記初始化完成
+    _isInitialized = true; // 標記初始化已完成
     notifyListeners(); // 通知監聽者更新畫面
 
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) {
@@ -158,7 +163,7 @@ class HomeController extends ChangeNotifier
       );
     }
 
-    // 邊界保護，避免索引超出清單範圍。
+    // 進行索引邊界保護，避免索引超出清單範圍。
     final index = _currentIndex.clamp(0, items.isEmpty ? 0 : items.length - 1);
     return items[index];
   }
@@ -170,7 +175,7 @@ class HomeController extends ChangeNotifier
       return;
     }
 
-    _currentIndex = (_currentIndex + 1) % items.length; // 循環切換
+    _currentIndex = (_currentIndex + 1) % items.length; // 以循環方式切換到下一個項目
     debugPrint('[HomeController] 切換到下一個項目，currentIndex=$_currentIndex');
     notifyListeners(); // 通知 UI 更新
   }
@@ -182,15 +187,16 @@ class HomeController extends ChangeNotifier
       return;
     }
 
-    _currentIndex = (_currentIndex - 1 + items.length) % items.length; // 循環切換
+    _currentIndex =
+        (_currentIndex - 1 + items.length) % items.length; // 以循環方式切換到前一個項目
     debugPrint('[HomeController] 切換到前一個項目，currentIndex=$_currentIndex');
     notifyListeners(); // 通知 UI 更新
   }
 
   /// 直接切換到指定索引的項目。
   ///
-  /// 只有在目標索引與目前索引不同時才會更新狀態，
-  /// 以避免不必要的重繪通知。
+  /// 僅在目標索引合法，且與目前索引不同時才更新狀態，
+  /// 以避免不必要的重繪與通知。
   ///
   /// [index] 目標項目索引。
   void changeIndex(int index) {
@@ -205,7 +211,7 @@ class HomeController extends ChangeNotifier
     }
 
     if (_currentIndex != index) {
-      _currentIndex = index; // 更新索引
+      _currentIndex = index; // 更新目前索引
       debugPrint('[HomeController] 已變更目前索引，currentIndex=$_currentIndex');
       notifyListeners(); // 通知 UI 更新
     }
@@ -219,9 +225,9 @@ class HomeController extends ChangeNotifier
   void dispose() {
     debugPrint('[HomeController] 釋放控制器資源');
 
-    _sensorSub?.cancel(); // 取消感測器訂閱
-    FlutterVolumeController.removeListener(); // 移除音量監聽
+    _sensorSub?.cancel(); // 取消感測器事件訂閱
+    FlutterVolumeController.removeListener(); // 移除音量監聽器
 
-    super.dispose(); // 呼叫父類別釋放資源
+    super.dispose(); // 呼叫父類別完成資源釋放
   }
 }

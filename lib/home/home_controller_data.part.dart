@@ -4,12 +4,19 @@ part of 'home_controller.dart';
 ///
 /// 主要負責：
 /// - 初始化與載入本機資料
-/// - 設定值持久化
-/// - 項目新增、複製、刪除、排序
+/// - 控制項設定持久化
+/// - 項目新增、複製、刪除與排序
 /// - 項目屬性編輯
 /// - 顏色相關工具方法
+/// - 設定資料的匯入與匯出
+///
+/// 此 mixin 依附於 [HomeController]，
+/// 會透過 `this as HomeController` 存取主控制器中的狀態與資料。
 mixin HomeControllerData on ChangeNotifier {
   /// 是否已完成資料初始化。
+  ///
+  /// 此旗標主要用於資料層初始化流程，
+  /// 與主控制器中的初始化狀態相互配合。
   bool _isInitialized = false;
 
   /// 對外提供目前初始化狀態。
@@ -44,8 +51,8 @@ mixin HomeControllerData on ChangeNotifier {
   /// 啟動時載入本機儲存的資料與設定。
   ///
   /// 流程包含：
-  /// - 讀取已儲存的首頁項目
-  /// - 讀取音量鍵與側邊點擊設定
+  /// - 讀取已儲存的首頁項目資料
+  /// - 還原音量鍵與半屏點擊等操作設定
   /// - 若資料不存在或解析失敗，則建立預設資料
   ///
   /// 無論成功或失敗，最後都會標記初始化完成並通知畫面更新。
@@ -74,7 +81,7 @@ mixin HomeControllerData on ChangeNotifier {
 
       final String? configJson = prefs.getString(_configKey);
       if (configJson != null) {
-        // 還原使用者設定；若平台不支援音量功能，強制維持停用。
+        // 還原使用者設定；若平台不支援音量功能，則強制維持停用。
         final Map<String, dynamic> config = jsonDecode(configJson);
         useVolumeKeys = _isVolumeSupported
             ? (config['useVolumeKeys'] ?? false)
@@ -99,7 +106,11 @@ mixin HomeControllerData on ChangeNotifier {
     }
   }
 
-  /// 將目前設定同步寫入本機儲存。
+  /// 將目前控制設定同步寫入本機儲存。
+  ///
+  /// 目前包含：
+  /// - [useVolumeKeys]
+  /// - [useSideTap]
   Future<void> _syncConfig() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
@@ -139,28 +150,51 @@ mixin HomeControllerData on ChangeNotifier {
   /// 此流程會：
   /// - 刪除各項目對應的背景圖片檔案
   /// - 清除 SharedPreferences 中的項目資料
-  /// - 重設記憶體中的資料與索引
+  /// - 保留設定頁面原本的關閉流程
   /// - 還原控制選項為預設值
-  Future<void> clearAllData() async {
+  ///
+  /// 注意：
+  /// 目前此方法並未清空 `self.items` 記憶體資料，
+  /// 而是保留既有程式流程與行為不變。
+  Future<void> clearAllData(BuildContext context) async {
     final self = this as HomeController;
 
     debugPrint('[HomeControllerData] 開始清除所有資料');
 
-    // 1. 刪除所有項目的實體圖片檔案。
+    // 刪除所有項目對應的實體圖片檔案。
     for (var item in self.items) {
       await FileService.deleteFile(item.backgroundImagePath);
     }
 
-    // 2. 清除 SharedPreferences 中儲存的項目資料。
+    // 清空記憶體中的項目資料並重置索引
+    self.items.clear();
+    self._currentIndex = 0;
+    // 還原為預設項目（這會自動 addItem 並同步到磁碟）
+    _setDefaultData();
+
+    // 清除 SharedPreferences 中儲存的項目資料。
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
+    debugPrint('[HomeControllerData] 已清除本機儲存的項目資料');
 
-    // 3. 重設記憶體資料與目前索引。
-    self.items.clear();
-    _setDefaultData();
-    self._currentIndex = 0;
+    // 還原操作設定為預設值。
+    useVolumeKeys = false;
+    useSideTap = true;
+    await _syncConfig();
 
-    // 4. 還原操作設定為預設值。
+    // 通知所有監聽者（如主螢幕）刷新 UI
+    notifyListeners();
+
+    // 若畫面仍存在，顯示提示並關閉目前頁面。
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已清空数据'), duration: Duration(seconds: 1)),
+      );
+      Navigator.pop(context);
+      // RestartWidget.restartApp(context);
+    }
+
+    // 還原操作設定為預設值。
     useVolumeKeys = false;
     useSideTap = true;
     await _syncConfig();
@@ -178,6 +212,8 @@ mixin HomeControllerData on ChangeNotifier {
   }
 
   /// 將目前項目資料同步寫入本機儲存。
+  ///
+  /// 會先將 [HomeItem] 清單序列化為 JSON 字串後再寫入。
   Future<void> _syncToDisk() async {
     final self = this as HomeController;
     final prefs = await SharedPreferences.getInstance();
@@ -217,6 +253,9 @@ mixin HomeControllerData on ChangeNotifier {
   }
 
   /// 複製目前項目，並將副本插入在原項目後方。
+  ///
+  /// 目前採用淺層資料複製方式，
+  /// 會保留原本項目的欄位內容。
   void copyCurrentItem() {
     final self = this as HomeController;
 
@@ -375,6 +414,8 @@ mixin HomeControllerData on ChangeNotifier {
   }
 
   /// 將目前項目設為文字模式，並清空背景圖片路徑。
+  ///
+  /// 設定後會保留文字內容，並移除圖片模式相關路徑資料。
   void setAsText(String text) {
     final self = this as HomeController;
 
@@ -394,7 +435,8 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 從相簿選取圖片，並將目前項目切換為圖片模式。
   ///
-  /// [maxDimension] 會同時套用到選圖時的最大寬度與最大高度。
+  /// [maxDimension] 會同時套用到選圖時的最大寬度與最大高度，
+  /// 用於降低圖片尺寸與儲存負擔。
   Future<void> pickImage(double maxDimension) async {
     final self = this as HomeController;
     final ImagePicker picker = ImagePicker();
@@ -487,6 +529,8 @@ mixin HomeControllerData on ChangeNotifier {
   /// - 若任一顏色為 `null`，視為不相近
   /// - 若兩者 ARGB 完全一致，直接視為相同
   /// - 否則依據相對亮度差判斷，若差距小於 `0.15` 則視為過於接近
+  ///
+  /// 此方法可用於避免文字與背景色之間的對比不足。
   bool isTooSimilar(Color? a, Color? b) {
     if (a == null || b == null) return false;
 
@@ -519,59 +563,133 @@ mixin HomeControllerData on ChangeNotifier {
   // 匯入匯出
   // ===============================
 
-  /// 匯出所有資料為 JSON 字串
+  /// 匯出所有資料為 JSON 字串，並視需要嵌入圖片 Base64 資料。
+  ///
+  /// 每個項目若存在背景圖片，會先讀取本機檔案並轉成 Base64，
+  /// 再附加至輸出 JSON 中。
   Future<void> exportData(BuildContext context) async {
     final self = this as HomeController;
-    // 將 items 列表轉為 JSON
-    final String jsonStr = jsonEncode(
-      self.items.map((e) => e.toJson()).toList(),
-    );
 
+    debugPrint('[HomeControllerData] 開始匯出資料');
+
+    // 建立一個包含圖片 Base64 的匯出列表。
+    List<Map<String, dynamic>> exportList = [];
+
+    for (var item in self.items) {
+      Map<String, dynamic> itemJson = item.toJson();
+
+      // 檢查是否有背景圖片，並將其編碼。
+      if (item.backgroundImagePath != null &&
+          item.backgroundImagePath!.isNotEmpty) {
+        String? base64Data = await FileService.getBase64Image(
+          item.backgroundImagePath,
+        );
+        if (base64Data != null) {
+          itemJson['image_data_base64'] = base64Data;
+        } else {
+          debugPrint('[HomeControllerData] 背景圖片轉 Base64 失敗，略過嵌入圖片資料');
+        }
+      }
+      exportList.add(itemJson);
+    }
+
+    final String jsonStr = jsonEncode(exportList);
     final bool success = await DataExportService.exportJson(jsonStr);
+
+    debugPrint('[HomeControllerData] 匯出流程結束，success=$success');
 
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(success ? '数据导出成功' : '导出已取消')));
+      ).showSnackBar(SnackBar(content: Text(success ? '已成功导出配置文件' : '导出已取消')));
     }
   }
 
-  /// 從 JSON 檔案匯入資料
+  /// 從 JSON 檔案匯入資料，還原圖片並顯示匯入結果。
+  ///
+  /// 若匯入資料包含 `image_data_base64`，會先嘗試還原為本機檔案，
+  /// 再將對應的路徑寫回資料結構。
   Future<void> importData(BuildContext context) async {
     final self = this as HomeController;
     final String? jsonStr = await DataExportService.importJson();
 
-    if (jsonStr != null) {
-      try {
-        final List<dynamic> decoded = jsonDecode(jsonStr);
-        final List<HomeItem> newItems = decoded
-            .map((e) => HomeItem.fromJson(e))
-            .toList();
+    if (jsonStr == null) {
+      debugPrint('[HomeControllerData] 匯入流程取消或未取得資料');
+      return;
+    }
 
-        if (newItems.isNotEmpty) {
-          final int importCount = newItems.length;
-          self.items.clear();
-          self.items.addAll(newItems);
-          self._currentIndex = 0; // 重置到第一頁
-          notifyListeners();
-          _syncToDisk(); // 同步到本地 SharedPreferences
+    debugPrint('[HomeControllerData] 開始匯入資料');
 
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('导入成功！已加载 $importCount 个项目'),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-              ),
+    try {
+      final List<dynamic> decoded = jsonDecode(jsonStr);
+      final List<HomeItem> newItems = [];
+
+      for (var itemData in decoded) {
+        if (itemData is Map<String, dynamic>) {
+          Map<String, dynamic> map = Map<String, dynamic>.from(itemData);
+
+          String? base64 = map['image_data_base64'];
+          String? originalPath = map['imagePath'];
+
+          // 若包含 Base64，則先還原為本機文件，再更新路徑。
+          if (base64 != null &&
+              originalPath != null &&
+              originalPath.isNotEmpty) {
+            String? newFileName = await FileService.saveBase64Image(
+              base64,
+              originalPath,
             );
+            if (newFileName != null) {
+              map['imagePath'] = newFileName;
+            } else {
+              debugPrint('[HomeControllerData] 圖片 Base64 還原失敗，保留原始路徑資料');
+            }
           }
+
+          newItems.add(HomeItem.fromJson(map));
+        } else {
+          debugPrint('[HomeControllerData] 偵測到非預期的匯入資料格式，已略過一筆資料');
         }
-      } catch (e) {
+      }
+
+      if (newItems.isNotEmpty) {
+        self.items.clear();
+        self.items.addAll(newItems);
+        self._currentIndex = 0;
+        notifyListeners();
+        _syncToDisk();
+        debugPrint('[HomeControllerData] 匯入成功，項目數量：${newItems.length}');
+
+        // 匯入成功後的提示。
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('导入了 ${newItems.length} 个屏幕设置'),
+              backgroundColor: Colors.green.shade700,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 1),
+            ),
+          );
+          Navigator.pop(context);
+          // RestartWidget.restartApp(context);
+        }
+      } else {
+        debugPrint('[HomeControllerData] 匯入完成，但未取得有效項目資料');
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('文件格式不正确，导入失败')));
+          ).showSnackBar(const SnackBar(content: Text('无效的配置文件')));
         }
+      }
+    } catch (e) {
+      debugPrint('[HomeControllerData] 匯入解析失敗: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('无效的配置文件'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }
