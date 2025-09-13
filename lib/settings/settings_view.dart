@@ -131,12 +131,14 @@ class _SettingsViewState extends State<SettingsView>
                 ),
                 title: const Text('导出配置'),
                 subtitle: const Text('将当前所有屏幕配置保存为 JSON 文件'),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () => widget.controller.exportData(context),
               ),
               ListTile(
                 leading: const Icon(Icons.file_download, color: Colors.green),
                 title: const Text('导入配置'),
                 subtitle: const Text('从备份文件恢复配置 (会覆盖当前数据)'),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () => _confirmImport(context),
               ),
               ListTile(
@@ -152,6 +154,7 @@ class _SettingsViewState extends State<SettingsView>
                 leading: const Icon(Icons.info_outline),
                 title: const Text('版本信息'),
                 subtitle: const Text('v1.0.0'),
+                trailing: const Icon(Icons.chevron_right),
               ),
               if (!kIsWeb)
                 ListTile(

@@ -1,31 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 
-/// 负责处理颜色选择器开启流程与结果回传的工具类。
+/// 負責處理顏色選擇器開啟流程與結果回傳的工具類。
 ///
-/// 主要职责包含：
-/// - 显示颜色选择对话框。
-/// - 即时回传使用者目前挑选的颜色。
-/// - 在确认时检查与另一颜色是否过于相近。
-/// - 若使用者取消选择，则还原为原始颜色。
+/// 此類別主要封裝：
+/// - 顏色選擇對話框的顯示流程
+/// - 使用者選色時的即時回呼
+/// - 確認／取消後的結果處理
+/// - 必要的除錯輸出
 class ColorPickerHandler {
-  /// 显示颜色选择器对话框。
+  /// 顯示顏色選擇器對話框。
   ///
-  /// 参数说明：
-  /// - [context]：当前页面的 `BuildContext`，用于开启对话框与显示提示讯息。
-  /// - [title]：颜色选择器标题。
-  /// - [initialColor]：初始颜色，若为 `null` 会依 [isTextType] 提供预设值。
-  /// - [isTextType]：是否为文字颜色类型，用于决定预设颜色。
-  /// - [onColorChanged]：当颜色变更时触发的回呼，包含即时选择、取消还原与确认后回写。
-  /// - [checkSimilarity]：用于检查目前选择颜色与 [otherColor] 是否过于接近的函数。
-  /// - [otherColor]：用于进行相似度／对比度检查的另一颜色。
+  /// [context] 用於顯示對話框。
+  /// [title] 為對話框標題。
+  /// [initialColor] 為目前已設定的顏色，可為 `null`。
+  /// [isTextType] 用於區分預設顏色應採用文字色或背景色邏輯。
+  /// [onColorChanged] 會在使用者調整顏色時即時回傳最新顏色，
+  /// 並在取消操作時回復原始顏色。
+  /// [checkSimilarity] 預留給顏色相似度檢查邏輯使用。
+  /// [otherColor] 為另一個可用來比對對比度或相似度的顏色。
   ///
-  /// 流程说明：
-  /// 1. 开启颜色选择器。
-  /// 2. 使用者每次选色时，立即更新 [latestPickedColor] 并透过 [onColorChanged] 通知外部。
-  /// 3. 若使用者按下确认，则检查与 [otherColor] 的相似度。
-  /// 4. 若对比度不足，则还原原始颜色并显示警告。
-  /// 5. 若使用者取消，则直接还原原始颜色。
+  /// 修正說明：
+  /// 改用標準 showDialog 以避免非同步 Context 失效導致的 Null check 報錯。
   static Future<void> show({
     required BuildContext context,
     required String title,
@@ -35,91 +31,99 @@ class ColorPickerHandler {
     required bool Function(Color?, Color?) checkSimilarity,
     Color? otherColor,
   }) async {
-    /// 记录开启选择器前的原始颜色，供取消或验证失败时还原。
+    // 保留開啟前的原始顏色，以便使用者取消時還原。
     final Color? originalColor = initialColor;
 
-    /// 记录目前最新一次被挑选的颜色。
-    ///
-    /// 初始值先沿用 [initialColor]，后续会在 `onColorChanged` 中持续更新。
-    Color? latestPickedColor = initialColor;
+    // 建立初始顯示顏色：
+    // 若外部已有傳入顏色則優先使用，
+    // 否則依用途決定文字模式或背景模式的預設值。
+    Color latestPickedColor =
+        initialColor ?? (isTextType ? Colors.cyanAccent : Colors.black87);
 
-    debugPrint(
-      '[ColorPickerHandler] 開啟顏色選擇器：title=$title, initialColor=$initialColor, isTextType=$isTextType',
-    );
+    debugPrint('[ColorPickerHandler] 開啟顏色選擇器：$title');
 
-    final bool isConfirmed =
-        await ColorPicker(
-          // 若未提供初始颜色，则依类型提供较合理的预设值。
-          color:
-              initialColor ?? (isTextType ? Colors.cyanAccent : Colors.black87),
+    // 使用 Flutter 標準 showDialog，
+    // 可確保 Navigator 的 pop 操作使用的是對話框自身的 BuildContext。
+    final bool? isConfirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogCtx) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              // 設定顏色選擇器初始顏色。
+              color: latestPickedColor,
 
-          // 使用者每次调整颜色时都会即时触发。
-          onColorChanged: (Color color) {
-            latestPickedColor = color;
-            debugPrint('顏色已變更：$color');
-            onColorChanged(color);
-          },
+              // 使用者每次調整顏色時即時同步最新值，
+              // 並回呼外部以更新預覽或暫存狀態。
+              onColorChanged: (Color color) {
+                latestPickedColor = color;
+                debugPrint('[ColorPickerHandler] 顏色已變更：$color');
+                onColorChanged(color);
+              },
+              width: 44,
+              height: 44,
+              borderRadius: 22,
 
-          // 颜色方块宽度。
-          width: 44,
-
-          // 颜色方块高度。
-          height: 44,
-
-          // 颜色方块圆角半径。
-          borderRadius: 22,
-
-          // 对话框标题。
-          heading: Text(title),
-
-          // 仅启用主色盘，不启用强调色盘。
-          pickersEnabled: const {
-            ColorPickerType.primary: true,
-            ColorPickerType.accent: false,
-          },
-        ).showPickerDialog(
-          context,
-
-          // 限制对话框尺寸，避免在不同装置上显示过大或过小。
-          constraints: const BoxConstraints(
-            minHeight: 400,
-            minWidth: 300,
-            maxWidth: 320,
+              // 內部標題設為空，因為外層 AlertDialog 已提供 title。
+              heading: null,
+              subheading: const Text('选择色调'),
+              pickersEnabled: const {
+                ColorPickerType.primary: true,
+                ColorPickerType.accent: false,
+              },
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx, false),
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx, true),
+              child: const Text('确定'),
+            ),
+          ],
         );
-
-    debugPrint(
-      '[ColorPickerHandler] 顏色選擇器已關閉，是否確認：$isConfirmed，latestPickedColor=$latestPickedColor',
+      },
     );
+
+    debugPrint('[ColorPickerHandler] 選擇器關閉，確認狀態：$isConfirmed');
 
     if (isConfirmed == true) {
-      // 使用者确认后，检查当前选择颜色与另一颜色是否过于相近。
-      if (checkSimilarity(latestPickedColor, otherColor)) {
-        debugPrint('[ColorPickerHandler] 顏色相似度檢查未通過，還原為原始顏色：$originalColor');
-        onColorChanged(originalColor);
-        _showWarning(context, '颜色对比度不足，请重新设置！');
-      } else {
-        debugPrint('[ColorPickerHandler] 顏色確認完成，最終顏色：$latestPickedColor');
-      }
+      // 目前確認流程僅保留最終顏色，不額外覆寫。
+      // 若未來重新啟用相似度檢查，可在此加入對比不足提示與還原邏輯。
+      debugPrint('[ColorPickerHandler] 已確認顏色：$latestPickedColor');
+
+      // 確認後的相似度檢查
+      // if (checkSimilarity(latestPickedColor, otherColor)) {
+      //   debugPrint('[ColorPickerHandler] 對比度不足，還原原始顏色');
+      //   onColorChanged(originalColor);
+      //   // 確保在對話框關閉後，原本的 context 仍然可用才顯示警告
+      //   if (context.mounted) {
+      //     _showWarning(context, '颜色对比度不足，请重新设置！');
+      //   }
+      // } else {
+      //   debugPrint('[ColorPickerHandler] 最終確認顏色：$latestPickedColor');
+      // }
     } else {
-      // 使用者取消选择时，还原为原始颜色。
-      debugPrint('[ColorPickerHandler] 使用者取消顏色選擇，還原為原始顏色：$originalColor');
+      // 使用者取消或點擊外部關閉時，將顏色還原為開啟前的原始值。
+      debugPrint('[ColorPickerHandler] 取消操作，還原顏色');
       onColorChanged(originalColor);
     }
   }
 
-  /// 显示警告用的浮动式 `SnackBar`。
+  /// 顯示警告訊息。
   ///
-  /// 通常用于提示颜色对比度不足等需要使用者重新操作的情况。
-  static void _showWarning(BuildContext context, String message) {
-    debugPrint('[ColorPickerHandler] 顯示警告訊息：$message');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message, style: const TextStyle(color: Colors.black)),
-        backgroundColor: Colors.yellow,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
+  /// 目前此方法仍保留為註解，供未來重新啟用顏色對比不足提示時使用。
+  // static void _showWarning(BuildContext context, String message) {
+  //   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(message, style: const TextStyle(color: Colors.black)),
+  //       backgroundColor: Colors.yellow.shade700,
+  //       behavior: SnackBarBehavior.floating,
+  //     ),
+  //   );
+  // }
 }

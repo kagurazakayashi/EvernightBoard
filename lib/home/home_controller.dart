@@ -72,13 +72,6 @@ enum NavSide {
 /// 讓主控制器維持一致的對外操作介面，同時保有較佳的可讀性與維護性。
 class HomeController extends ChangeNotifier
     with HomeControllerData, HomeControllerSensors, HomeControllerVolume {
-  /// 表示控制器是否已完成初始化。
-  ///
-  /// 此欄位會在 [_setup] 完成資料初始化後設為 `true`，
-  /// 可避免 UI 或其他邏輯在資料尚未準備完成時提前存取。
-  @override
-  bool _isInitialized = false;
-
   /// 控制器初始化狀態。
   ///
   /// 可供 UI 判斷是否已可安全讀取控制器中的主要資料。
