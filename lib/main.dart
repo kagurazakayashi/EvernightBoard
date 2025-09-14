@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home/home_view.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 // import 'restart_widget.dart';
 
 /// 應用程式進入點。
@@ -7,7 +9,20 @@ import 'home/home_view.dart';
 /// 會先確保 Flutter 繫結初始化完成，
 /// 再啟動整個應用程式。
 void main() {
+  // 確保外掛與原生層初始化（在非同步呼叫前必須執行）
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 註冊你的自定義許可
+  LicenseRegistry.addLicense(() async* {
+    // 讀取 LICENSE 檔案內容
+    final license = await rootBundle.loadString('LICENSE');
+    final licensezh = await rootBundle.loadString('LICENSE.zh-CN');
+    // 返回一個 LicenseEntry
+    yield LicenseEntryWithLineBreaks([
+      '\u0001 EvernightBoard (English)',
+    ], license);
+    yield LicenseEntryWithLineBreaks(['\u0001 长夜看板 (中文)'], licensezh);
+  });
 
   // 若未來需要支援整體 Widget 樹重建，可改用 RestartWidget 包裝根元件。
   // runApp(const RestartWidget(child: EvernightBoardAPP()));

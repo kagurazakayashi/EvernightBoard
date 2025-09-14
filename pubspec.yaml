@@ -1,5 +1,5 @@
 name: evernight_board
-description: "A new Flutter project."
+description: "EvernightBoard is an assistive tool for continuous communication via preset text and images when touch input is limited."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -44,6 +44,8 @@ dependencies:
   path: ^1.9.1
   flutter_launcher_icons: ^0.14.4
   file_picker: ^10.3.10
+  url_launcher: ^6.3.2
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +68,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - LICENSE
+    - LICENSE.zh-CN
     - assets/default.png
+    - assets/appicon/adaptive_icon_foreground.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

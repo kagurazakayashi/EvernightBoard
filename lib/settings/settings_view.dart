@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../home/home_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 /// 設定頁面。
 ///
@@ -33,10 +35,14 @@ class _SettingsViewState extends State<SettingsView>
   late AnimationController _exitAnimationController;
   late Animation<double> _blackOutAnimation;
   bool _isExiting = false;
+  // String _appName = 'EvernightBoard';
+  String _version = '0.0.0';
+  String _buildNumber = '0';
 
   @override
   void initState() {
     super.initState();
+    _initPackageInfo();
     // 初始化黑屏動畫
     _exitAnimationController = AnimationController(
       vsync: this,
@@ -57,6 +63,17 @@ class _SettingsViewState extends State<SettingsView>
         exit(0);
       }
     });
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        // _appName = info.appName;
+        _version = info.version;
+        _buildNumber = info.buildNumber;
+      });
+    }
   }
 
   /// 切換是否啟用半屏點擊翻頁。
@@ -152,9 +169,10 @@ class _SettingsViewState extends State<SettingsView>
               const _SettingsSectionTitle(title: '关于'),
               ListTile(
                 leading: const Icon(Icons.info_outline),
-                title: const Text('版本信息'),
-                subtitle: const Text('v1.0.0'),
+                title: const Text('帮助和信息'),
+                subtitle: Text('版本: $_version ($_buildNumber)'),
                 trailing: const Icon(Icons.chevron_right),
+                onTap: () => _about(context),
               ),
               if (!kIsWeb)
                 ListTile(
@@ -246,12 +264,109 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
+  void _about(BuildContext context) {
+    debugPrint('[_SettingsViewState] 顯示關於對話框');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, mSetState) {
+            return AboutDialog(
+              applicationName: "长夜看板",
+              applicationIcon: SizedBox(
+                width: 64,
+                height: 64,
+                child: Image.asset(
+                  'assets/appicon/adaptive_icon_foreground.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              applicationVersion: "$_version+$_buildNumber",
+              applicationLegalese: "© 2026 KagurazakaYashi(KagurazakaMiyabi)",
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => jumpUrL(
+                        path:
+                            "/kagurazakayashi/EvernightBoard/blob/main/README.md",
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "使用说明",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => jumpUrL(
+                        path: "/kagurazakayashi/EvernightBoard/issues",
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "问题反馈",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () =>
+                          jumpUrL(path: "/kagurazakayashi/EvernightBoard"),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "源代码",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   // 執行退出動畫的邏輯（不需確認）
   void _performExitWithAnimation() {
     debugPrint('[_SettingsViewState] 執行退出。已經正在退出: $_isExiting');
     if (_isExiting) return;
     setState(() => _isExiting = true);
     _exitAnimationController.forward();
+  }
+}
+
+Future jumpUrL({
+  String scheme = "https",
+  String host = "github.com",
+  String path = "",
+}) async {
+  if (host == "") {
+    return;
+  }
+  final url = Uri(scheme: scheme, host: host, path: path);
+  try {
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      debugPrint("[_SettingsViewState] 無法開啟 URL : $url");
+    }
+  } catch (e) {
+    debugPrint("[_SettingsViewState] 無法開啟 URL : $url : $e");
   }
 }
 
