@@ -12,9 +12,9 @@ part of 'home_controller.dart';
 mixin HomeControllerSensors on ChangeNotifier {
   /// 初始化加速度感測器監聽。
   ///
-  /// 目前透過 `accelerometerEventStream()` 監聽裝置傾斜狀態：
-  /// - 當 `event.x > 2.5` 時，判定為切換到左側
-  /// - 當 `event.x < -1` 時，判定為切換到右側
+  /// 目前透過 `accelerometerEventStream()` 監聽裝置傾斜狀態
+  /// - 當 `event.x > y` 時，判定為切換到左側
+  /// - 當 `event.x < y` 時，判定為切換到右側
   ///
   /// 建立的訂閱會存放到 [HomeController] 的 `_sensorSub`，
   /// 以利控制器在 `dispose()` 時統一取消監聽，避免資源未釋放。
@@ -30,7 +30,7 @@ mixin HomeControllerSensors on ChangeNotifier {
       (AccelerometerEvent event) {
         // 當 X 軸數值大於門檻時，
         // 視為裝置朝特定方向傾斜，對應切換為左側導覽。
-        if (event.x > 2.5) {
+        if (event.x > 1) {
           _updateSide(NavSide.left);
 
           // 當 X 軸數值小於負向門檻時，

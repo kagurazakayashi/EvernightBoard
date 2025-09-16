@@ -106,9 +106,6 @@ class _HomeViewState extends State<HomeView> {
             TouchLayer(
               isPortrait: isPortrait,
               themeColor: themeColor,
-
-              // 若啟用半屏點擊操作，則綁定前後切換事件；
-              // 否則傳入 null 停用互動。
               onPrevious: _controller.useSideTap
                   ? _controller.previousItem
                   : null,
@@ -118,36 +115,96 @@ class _HomeViewState extends State<HomeView> {
         );
 
         Widget body;
+        Widget? bottomNavigationBarWidget;
 
-        // 豎屏時顯示側邊欄，並依目前側別決定導覽列在左或右。
+        // 提取複用的水平（底部/頂部）導航和垂直（左側/右側）導航生成函式
+        Widget buildHorizontalNav() => ScrollableNavBar(
+          items: _controller.items,
+          currentIndex: _controller.currentIndex,
+          onTap: _onNavTap,
+        );
+
+        Widget buildVerticalNav() => ScrollableSideRail(
+          items: _controller.items,
+          currentIndex: _controller.currentIndex,
+          onTap: _onNavTap,
+        );
+
+        // 根据横竖屏以及用户选择的设置来构建不同的布局排版
         if (isPortrait) {
-          final nav = ScrollableSideRail(
-            items: _controller.items,
-            currentIndex: _controller.currentIndex,
-            onTap: _onNavTap,
-          );
-
-          body = Row(
-            children: _controller.currentSide == NavSide.left
-                ? [nav, Expanded(child: mainContent)]
-                : [Expanded(child: mainContent), nav],
-          );
+          switch (_controller.portraitNavPosition) {
+            case PortraitNavPosition.auto:
+              body = Row(
+                children: _controller.currentSide == NavSide.left
+                    ? [buildVerticalNav(), Expanded(child: mainContent)]
+                    : [Expanded(child: mainContent), buildVerticalNav()],
+              );
+              break;
+            case PortraitNavPosition.left:
+              body = Row(
+                children: [
+                  buildVerticalNav(),
+                  Expanded(child: mainContent),
+                ],
+              );
+              break;
+            case PortraitNavPosition.right:
+              body = Row(
+                children: [
+                  Expanded(child: mainContent),
+                  buildVerticalNav(),
+                ],
+              );
+              break;
+            case PortraitNavPosition.bottom:
+              body = mainContent;
+              bottomNavigationBarWidget = buildHorizontalNav();
+              break;
+            case PortraitNavPosition.top:
+              body = Column(
+                children: [
+                  buildHorizontalNav(),
+                  Expanded(child: mainContent),
+                ],
+              );
+              break;
+          }
         } else {
-          // 橫屏時僅顯示主內容，底部再搭配導覽列。
-          body = mainContent;
+          switch (_controller.landscapeNavPosition) {
+            case LandscapeNavPosition.bottom:
+              body = mainContent;
+              bottomNavigationBarWidget = buildHorizontalNav();
+              break;
+            case LandscapeNavPosition.top:
+              body = Column(
+                children: [
+                  buildHorizontalNav(),
+                  Expanded(child: mainContent),
+                ],
+              );
+              break;
+            case LandscapeNavPosition.left:
+              body = Row(
+                children: [
+                  buildVerticalNav(),
+                  Expanded(child: mainContent),
+                ],
+              );
+              break;
+            case LandscapeNavPosition.right:
+              body = Row(
+                children: [
+                  Expanded(child: mainContent),
+                  buildVerticalNav(),
+                ],
+              );
+              break;
+          }
         }
 
         return Scaffold(
           backgroundColor: bgColor,
-
-          // 橫屏時顯示底部導覽列；豎屏時不顯示底部導覽列。
-          bottomNavigationBar: isPortrait
-              ? null
-              : ScrollableNavBar(
-                  items: _controller.items,
-                  currentIndex: _controller.currentIndex,
-                  onTap: _onNavTap,
-                ),
+          bottomNavigationBar: bottomNavigationBarWidget,
           body: body,
         );
       },

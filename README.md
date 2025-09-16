@@ -12,53 +12,66 @@ Android | iOS | Windows | macOS | Linux
 
 ## Use Cases
 
+`(￣▽￣)"` _A scenario where using a touchscreen is difficult and speaking is also difficult... when would such a situation occur?_
+
 - When verbal communication is limited and **touchscreen precision is extremely low** (e.g., wearing gloves) or **the touchscreen is unusable**, use preset large text or images to quickly convey information to others.
+- Presenting prompts to the stage from offstage.
 - Scenarios where you simply need to display text messages or images in large sizes on the screen and be able to turn pages.
 
 ### Supported Page-Turning Methods
 
-- Switching screen tabs via the navigation bar
-- Switching screen tabs by tapping half of the screen
-  - Top and bottom halves in portrait mode
-  - Left and right halves in landscape mode
+- **Switch screens using icon buttons in the navigation bar**: The most standard method for page navigation.
+  - In portrait mode, the navigation bar automatically shifts to the slightly tilted side of the phone, ensuring the thumb of either hand can easily reach it.
+  - In landscape mode, the navigation bar always remains at the bottom.
+- **Touch half of the screen to switch screens**: Enables accurate page turning even with low touch precision.
+  - Portrait mode: Top and bottom halves.
+  - Landscape mode: Left and right halves.
+- **Use volume buttons to turn pages**: Physical buttons serve as your most reliable backup. This feature must be enabled separately in the software settings.
 
 ## How to Use
 
 ### Preparation
 
-1. After launching the App, you will see blank content and an initial tab (**New Screen**). You will see two areas:
-    1. **Navigation Bar Area**: Contains multiple buttons that can be modified and added by yourself; each button represents a "**Screen**".
-    2. **Blank Area**: This is the current "**Screen**", where you can specify whether it displays text or an image.
-2. Press the **currently selected** tab (if it's your first time using it, it will be the only tab) to open the menu. The menu includes the following items:
-    1. **Navigation Bar Tab Related** (Light Blue)
-        1. **Sidebar Icon**: You can change the icon of the current item in the sidebar by selecting one from the opened icon library.
-        2. **Sidebar Title**: The label below the icon. Line breaks are not supported, and it is recommended to keep the content as brief as possible.
-    2. **Navigation Bar Tab Order Adjustment** (Green)
-        1. **Move Up**: Moves this icon to the previous position in the navigation bar. If it is already at the front, it will automatically move to the back.
-        2. **Move Down**: Moves this icon to the next position in the navigation bar. If it is already at the back, it will automatically move to the front.
-    3. **Set Current Screen Content** (Orange)
-        1. **Set to Text**: The current screen will display a text segment you set. Line breaks are supported, and the text will automatically fill the screen and be maximized.
-        2. **Set to Image**: The current screen will display an image you set. Be careful not to use image files that are too large to avoid wasting RAM.
-    4. **Set Color** (Pink): The colors adjusted here also apply to the navigation bar **located on the current screen**.
-        1. **Text Color**: Set the text color of the **text mode** on the current screen and the text color of the navigation bar on the current screen.
-        2. **Background Color**: Set the background color of the current screen and the background color of the navigation bar on the current screen. Be careful not to set it to the same color as the text.
-    5. **Add or Delete Screen** (Blue)
-        1. **Add Screen**: Create a new screen. You can tap the new screen button in the navigation bar to switch to it, and **tap it again** to open the menu for editing.
-        2. **Duplicate Screen**: Copy the current screen to a new screen, including the text/image/color.
-    6. **Delete Screen** (Red): This will remove the current screen, and all content on the current screen will be lost.
-    7. **App Settings** (Gray): Display more functions.
-        1. Page-Turning Interaction
-            1. **Half-Screen Tap Page Turn** Switch: When turned on, you can switch screens by tapping half of the screen (top and bottom halves in portrait mode, left and right halves in landscape mode).
-            2. **Volume Button Page Turn** Switch: Use the device's volume buttons to switch screens, suitable for situations where the touchscreen is completely unusable.
-        2. Configuration Management: Allocates **Screen Settings** and **Data Settings**.
-            1. **Export Configuration**: Export **Screen Configuration** to a JSON file. If there are images, they will be embedded, causing the exported file to become significantly larger.
-            2. **Import Configuration**: Import **Screen Configuration** from a JSON file. It is recommended to only import configurations from the same App version.
-            3. **Restore Factory Settings**: Clear all **Screen Settings** and **Software Settings**.
-        3. About
-            1. **Help and Information**: Open the about window.
-                1. **Instructions**, **Feedback**, **Source Code**: Open the browser to visit relevant web pages.
-                2. **View License**: List the licensing agreements of this software and all third-party libraries used by this software.
-            2. **Exit Program**: Completely exit the program and release RAM. It will not be kept in the background.
+1. After launching the APP, you will see blank content and an initial tab (**New Screen**). There are two main areas:
+   1. **Navigation Bar Area**: Contains multiple customizable buttons; each button represents a "**Screen**."
+   2. **Blank Area**: The current "**Screen**," where you can choose to display text or an image.
+2. Tap the **currently selected** tab (the only one available if using it for the first time) to open the menu. The menu includes the following items:
+   1. **Navigation Tab Related** (Light Blue)
+      1. **Sidebar Icon**: Change the icon for the current item in the sidebar by selecting one from the icon library.
+      2. **Sidebar Title**: The label below the icon. It does not support line breaks, and content should be kept as short as possible.
+   2. **Navigation Tab Order Adjustment** (Green)
+      1. **Move Up**: Move this icon to the previous position in the navigation bar. If it's already at the beginning, it moves to the end.
+      2. **Move Down**: Move this icon to the next position in the navigation bar. If it's already at the end, it moves to the beginning.
+   3. **Set Current Screen Content** (Orange)
+      1. **Set as Text**: The current screen will display text you enter. It supports line breaks, and the text will auto-fill and be maximized.
+      2. **Set as Image**: The current screen will display an image you select. Note: Avoid large image files to save RAM.
+   4. **Set Color** (Pink): Color adjustments here also apply to the navigation bar **on the current screen**.
+      1. **Text Color**: Sets the text color for the **Text Mode** on the current screen and the text color of the current navigation bar.
+      2. **Background Color**: Sets the background color for the current screen and its navigation bar. Be careful not to set it to the same color as the text.
+   5. **Add or Delete Screen** (Blue)
+      1. **Add New Screen**: Create a new screen. You can tap the new button in the navigation bar to switch to it, and **tap it again** to open the edit menu.
+      2. **Copy Screen**: Copy the current screen (including text/images/colors) to a new screen.
+   6. **Delete Screen** (Red): Removes the current screen; all content on this screen will be lost.
+   7. **App Settings** (Gray): Displays additional functions.
+      1. Paging Interaction
+         1. **Half-Screen Paging** Toggle: When enabled, tap either half of the screen to switch screens (top/bottom for portrait, left/right for landscape).
+         2. **Volume Key Paging** Toggle: Use the device's volume buttons to switch screens, useful when the touchscreen is unavailable.
+      2. Navigation Bar Position
+         1. Position in **Landscape Mode**:
+            1. **Always at Bottom** (Default).
+            2. Can be changed to: Always at Top, Always on Left, or Always on Right.
+         2. Position in **Portrait Mode**:
+            1. **Auto-move to Slightly Tilted Side** (Default): The navigation bar automatically moves to the side the phone is slightly tilted toward (Left or Right) for easy thumb access.
+            2. Can be changed to: Always at Top, Always on Left, Always on Right, or Always at Bottom.
+      3. Configuration Management: Manage **Screen Settings** and **Data Settings**.
+         1. **Export Config**: Export **Screen Configuration** to a JSON file. Embedded images will significantly increase the file size.
+         2. **Import Config**: Import **Screen Configuration** from a JSON file. It is recommended to only import configs from the same APP version.
+         3. **Restore Factory Settings**: Clear all **Screen Settings** and **Software Settings**.
+      4. About
+         1. **Help and Info**: Open the "About" window.
+            1. **User Guide**, **Feedback**, **Source Code**: Opens the browser to visit related webpages.
+            2. **View Licenses**: Lists the license agreements for this software and all third-party libraries used.
+         2. **Exit Program**: Completely close the program and release RAM; no background processes will remain.
 
 #### Other Suggestions
 
@@ -90,7 +103,7 @@ After preparing multiple preset images or texts according to the preparation ste
 14. "My phone is running out of battery"
 15. (Social Media Account QR Code)
 
-So, can you guess what scenario this application was originally designed for? `^_^`
+`^ ✪ ω ✪ ^` _So, can you guess what scenario this application was originally designed for?_
 
 ## Compilation
 

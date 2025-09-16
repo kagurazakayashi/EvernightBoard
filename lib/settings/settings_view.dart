@@ -140,6 +140,72 @@ class _SettingsViewState extends State<SettingsView>
                     : null,
               ),
               const Divider(),
+              const _SettingsSectionTitle(title: '导航栏位置'),
+              ListTile(
+                leading: const Icon(Icons.stay_current_landscape),
+                title: const Text('横屏状态下'),
+                trailing: DropdownButton<LandscapeNavPosition>(
+                  value: widget.controller.landscapeNavPosition,
+                  onChanged: (val) {
+                    if (val != null)
+                      widget.controller.setLandscapeNavPosition(val);
+                    if (mounted) setState(() {});
+                  },
+                  items: const [
+                    DropdownMenuItem(
+                      value: LandscapeNavPosition.bottom,
+                      child: Text('始终在底端'),
+                    ),
+                    DropdownMenuItem(
+                      value: LandscapeNavPosition.left,
+                      child: Text('始终在左侧'),
+                    ),
+                    DropdownMenuItem(
+                      value: LandscapeNavPosition.right,
+                      child: Text('始终在右侧'),
+                    ),
+                    DropdownMenuItem(
+                      value: LandscapeNavPosition.top,
+                      child: Text('始终在顶部'),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.stay_current_portrait),
+                title: const Text('竖屏状态下'),
+                trailing: DropdownButton<PortraitNavPosition>(
+                  value: widget.controller.portraitNavPosition,
+                  onChanged: (val) {
+                    if (val != null)
+                      widget.controller.setPortraitNavPosition(val);
+                    if (mounted) setState(() {});
+                  },
+                  items: const [
+                    DropdownMenuItem(
+                      value: PortraitNavPosition.auto,
+                      child: Text('自动移到微倾斜侧'),
+                    ),
+                    DropdownMenuItem(
+                      value: PortraitNavPosition.bottom,
+                      child: Text('始终在底端'),
+                    ),
+                    DropdownMenuItem(
+                      value: PortraitNavPosition.left,
+                      child: Text('始终在左侧'),
+                    ),
+                    DropdownMenuItem(
+                      value: PortraitNavPosition.right,
+                      child: Text('始终在右侧'),
+                    ),
+                    DropdownMenuItem(
+                      value: PortraitNavPosition.top,
+                      child: Text('始终在顶部'),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
               const _SettingsSectionTitle(title: '数据管理'),
               ListTile(
                 leading: const Icon(

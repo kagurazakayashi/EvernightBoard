@@ -23,14 +23,18 @@ mixin HomeControllerData on ChangeNotifier {
   bool get isInitialized => _isInitialized;
 
   /// 是否啟用音量鍵切換。
-  ///
   /// 預設為停用，且僅在支援的平台上可啟用。
   bool useVolumeKeys = false;
 
   /// 是否啟用左右半屏點擊切換。
-  ///
   /// 預設為啟用。
   bool useSideTap = true;
+
+  /// 橫屏時的導航欄位置，預設為底端
+  LandscapeNavPosition landscapeNavPosition = LandscapeNavPosition.bottom;
+
+  /// 豎屏時的導航欄位置，預設為自動傾斜
+  PortraitNavPosition portraitNavPosition = PortraitNavPosition.auto;
 
   /// 儲存首頁項目資料的本機 Key。
   static const String _storageKey = 'evernight_board_storage';
@@ -88,6 +92,14 @@ mixin HomeControllerData on ChangeNotifier {
             : false;
         useSideTap = config['useSideTap'] ?? true;
 
+        // 讀取導航欄位置設定
+        landscapeNavPosition =
+            LandscapeNavPosition.values[config['landscapeNavPosition'] ??
+                LandscapeNavPosition.bottom.index];
+        portraitNavPosition =
+            PortraitNavPosition.values[config['portraitNavPosition'] ??
+                PortraitNavPosition.auto.index];
+
         debugPrint(
           '[HomeControllerData] 已載入設定：useVolumeKeys=$useVolumeKeys, useSideTap=$useSideTap',
         );
@@ -115,7 +127,12 @@ mixin HomeControllerData on ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _configKey,
-      jsonEncode({'useVolumeKeys': useVolumeKeys, 'useSideTap': useSideTap}),
+      jsonEncode({
+        'useVolumeKeys': useVolumeKeys,
+        'useSideTap': useSideTap,
+        'landscapeNavPosition': landscapeNavPosition.index,
+        'portraitNavPosition': portraitNavPosition.index,
+      }),
     );
     debugPrint(
       '[HomeControllerData] 已同步設定：useVolumeKeys=$useVolumeKeys, useSideTap=$useSideTap',
@@ -411,6 +428,18 @@ mixin HomeControllerData on ChangeNotifier {
     notifyListeners();
     _syncToDisk();
     debugPrint('[HomeControllerData] 已更新目前項目圖示');
+  }
+
+  void setLandscapeNavPosition(LandscapeNavPosition pos) {
+    landscapeNavPosition = pos;
+    _syncConfig();
+    notifyListeners();
+  }
+
+  void setPortraitNavPosition(PortraitNavPosition pos) {
+    portraitNavPosition = pos;
+    _syncConfig();
+    notifyListeners();
   }
 
   /// 將目前項目設為文字模式，並清空背景圖片路徑。

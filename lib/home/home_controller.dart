@@ -60,6 +60,23 @@ enum NavSide {
   right,
 }
 
+/// 橫屏導航欄位置選項
+enum LandscapeNavPosition {
+  bottom, // 始終在底端
+  left, // 始終在左側
+  right, // 始終在右側
+  top, // 始終在頂部
+}
+
+/// 豎屏導航欄位置選項
+enum PortraitNavPosition {
+  auto, // 自動移到稍微傾斜的一側
+  bottom, // 始終在底端
+  left, // 始終在左側
+  right, // 始終在右側
+  top, // 始終在頂部
+}
+
 /// 首頁控制器，負責管理首頁畫面狀態與互動邏輯。
 ///
 /// 主要職責包含：
