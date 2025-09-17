@@ -42,21 +42,24 @@ class EvernightBoardAPP extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 定義基礎主題色，供亮色與暗色主題共同衍生色彩系統使用。
+    // 定義基礎主題色，供亮色與暗色主題共同衍生色彩系統使用
     const Color seedColor = Colors.red;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      // 亮色主題設定。
+      // 亮色主題設定
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: seedColor,
           brightness: Brightness.light,
         ),
-        // 可於此集中調整全域元件樣式，例如 AppBar 外觀。
+        // 集中調整全域元件樣式
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+        snackBarTheme: SnackBarThemeData(
+          behavior: SnackBarBehavior.floating, // 強制使用浮動樣式，不會緊貼底部
+        ),
       ),
 
       // 暗色主題設定。

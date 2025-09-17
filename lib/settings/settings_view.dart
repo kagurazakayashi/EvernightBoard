@@ -6,44 +6,48 @@ import '../home/home_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-/// 設定頁面。
+/// 設定頁面視圖元件。
 ///
-/// 用於顯示與操作應用程式的各項設定，包含：
-/// - 翻頁互動方式
-/// - 資料匯入與匯出
-/// - 還原設定
-/// - 版本資訊顯示
+/// 負責呈現應用程式的全域配置選項，包括互動行為、資料備份、
+/// 介面佈局調整以及關於資訊。
 class SettingsView extends StatefulWidget {
-  /// 首頁控制器。
-  ///
-  /// 負責管理設定狀態，以及資料匯入、匯出與清除等邏輯。
+  /// 關聯的首頁控制器，用於存取與修改全域狀態。
   final HomeController controller;
 
-  /// 建立設定頁面。
+  /// 建立設定頁面實例。
   const SettingsView({super.key, required this.controller});
 
-  /// 建立 [SettingsView] 對應的狀態物件。
   @override
   State<SettingsView> createState() => _SettingsViewState();
 }
 
-/// [SettingsView] 的狀態類別。
+/// [SettingsView] 的狀態管理類別。
 ///
-/// 負責處理頁面上的互動事件，並將使用者操作轉交給 [HomeController]。
+/// 處理設定頁面的生命週期、退出動畫以及與 [HomeController] 的資料互動。
 class _SettingsViewState extends State<SettingsView>
     with TickerProviderStateMixin {
+  /// 控制退出程式時的黑屏淡出動畫控制器。
   late AnimationController _exitAnimationController;
+
+  /// 處理背景變黑效果的數值動畫。
   late Animation<double> _blackOutAnimation;
+
+  /// 標記當前是否處於執行退出程序的狀態。
   bool _isExiting = false;
-  // String _appName = 'EvernightBoard';
+
+  /// 儲存應用程式版本號。
   String _version = '0.0.0';
+
+  /// 儲存應用程式建置序號。
   String _buildNumber = '0';
 
   @override
   void initState() {
     super.initState();
+    debugPrint('[_SettingsViewState] 正在初始化設定頁面狀態...');
     _initPackageInfo();
-    // 初始化黑屏動畫
+
+    // 初始化退出動畫設定：時長 600 毫秒
     _exitAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -56,42 +60,47 @@ class _SettingsViewState extends State<SettingsView>
       ),
     );
 
-    // 動畫結束後執行退出
+    // 監聽動畫狀態，當全黑動畫完成後，強制結束應用程式進程
     _exitAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        debugPrint('[_SettingsViewState] 再見。歡迎再次使用 EvernightBoardAPP 。');
+        debugPrint('[_SettingsViewState] 動畫執行完畢，正在結束應用程式。');
         exit(0);
       }
     });
   }
 
+  /// 從平台層獲取套件版本資訊。
   Future<void> _initPackageInfo() async {
-    final info = await PackageInfo.fromPlatform();
-    if (mounted) {
-      setState(() {
-        // _appName = info.appName;
-        _version = info.version;
-        _buildNumber = info.buildNumber;
-      });
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _version = info.version;
+          _buildNumber = info.buildNumber;
+        });
+        debugPrint('[_SettingsViewState] 成功載入版本資訊: $_version+$_buildNumber');
+      }
+    } catch (e) {
+      debugPrint('[_SettingsViewState] 獲取套件資訊失敗: $e');
     }
   }
 
-  /// 切換是否啟用半屏點擊翻頁。
+  /// 切換側邊觸控翻頁功能的開關狀態。
   ///
-  /// 變更設定後會同步通知控制器，並在元件仍掛載時重新整理畫面。
+  /// [val] 新的布林值狀態。
   void toggleSideTap(bool val) {
-    debugPrint('[_SettingsViewState] 切換點擊半屏翻頁：$val');
+    debugPrint('[_SettingsViewState] 變更點擊半屏翻頁狀態為: $val');
     widget.controller.toggleSideTap(val);
     if (mounted) {
       setState(() {});
     }
   }
 
-  /// 切換是否啟用音量鍵翻頁。
+  /// 切換實體音量鍵翻頁功能的開關狀態。
   ///
-  /// 變更設定後會同步通知控制器，並在元件仍掛載時重新整理畫面。
+  /// [val] 新的布林值狀態。
   void toggleVolumeKeys(bool val) {
-    debugPrint('[_SettingsViewState] 切換音量鍵翻頁：$val');
+    debugPrint('[_SettingsViewState] 變更音量鍵翻頁狀態為: $val');
     widget.controller.toggleVolumeKeys(val);
     if (mounted) {
       setState(() {});
@@ -100,7 +109,7 @@ class _SettingsViewState extends State<SettingsView>
 
   @override
   Widget build(BuildContext context) {
-    // 僅在非 Web 且平台為 Android / iOS 時，才支援實體音量鍵翻頁。
+    // 檢查目前運行平台是否具備物理音量鍵支援（排除 Web 並限制在 iOS/Android）
     final bool isVolumeSupported =
         !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
@@ -115,26 +124,22 @@ class _SettingsViewState extends State<SettingsView>
                 secondary: const Icon(Icons.touch_app),
                 title: const Text('点击半屏翻页'),
                 subtitle: const Text('横屏时按左右半屏、竖屏时按上下半屏。'),
-                // 直接讀取控制器中的目前設定狀態。
                 value: widget.controller.useSideTap,
                 onChanged: (val) => toggleSideTap(val),
               ),
               SwitchListTile(
                 secondary: Icon(
                   Icons.volume_up,
-                  // 平台不支援時，將圖示顯示為灰色，以降低可操作提示。
                   color: isVolumeSupported ? null : Colors.grey,
                 ),
                 title: const Text('音量键翻页'),
                 subtitle: Text(
                   isVolumeSupported ? '使用物理音量按键切换项目' : '当前平台不支持物理音量键翻页',
-                  // 平台不支援時，提示文字同步顯示為灰色。
                   style: TextStyle(
                     color: isVolumeSupported ? null : Colors.grey,
                   ),
                 ),
                 value: widget.controller.useVolumeKeys,
-                // 若平台不支援，將 onChanged 設為 null 以停用此開關。
                 onChanged: isVolumeSupported
                     ? (val) => toggleVolumeKeys(val)
                     : null,
@@ -147,8 +152,10 @@ class _SettingsViewState extends State<SettingsView>
                 trailing: DropdownButton<LandscapeNavPosition>(
                   value: widget.controller.landscapeNavPosition,
                   onChanged: (val) {
-                    if (val != null)
+                    if (val != null) {
+                      debugPrint('[_SettingsViewState] 變更橫屏導航位置為: $val');
                       widget.controller.setLandscapeNavPosition(val);
+                    }
                     if (mounted) setState(() {});
                   },
                   items: const [
@@ -177,8 +184,10 @@ class _SettingsViewState extends State<SettingsView>
                 trailing: DropdownButton<PortraitNavPosition>(
                   value: widget.controller.portraitNavPosition,
                   onChanged: (val) {
-                    if (val != null)
+                    if (val != null) {
+                      debugPrint('[_SettingsViewState] 變更豎屏導航位置為: $val');
                       widget.controller.setPortraitNavPosition(val);
+                    }
                     if (mounted) setState(() {});
                   },
                   items: const [
@@ -215,7 +224,10 @@ class _SettingsViewState extends State<SettingsView>
                 title: const Text('导出配置'),
                 subtitle: const Text('将当前所有屏幕配置保存为 JSON 文件'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => widget.controller.exportData(context),
+                onTap: () {
+                  debugPrint('[_SettingsViewState] 使用者觸發資料匯出');
+                  widget.controller.exportData(context);
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.file_download, color: Colors.green),
@@ -250,12 +262,13 @@ class _SettingsViewState extends State<SettingsView>
             ],
           ),
         ),
+        // 遮罩層：用於顯示退出時的黑屏動畫
         IgnorePointer(
-          ignoring: !_isExiting, // 只有在正在退出時才攔截點擊
+          ignoring: !_isExiting,
           child: FadeTransition(
-            opacity: _blackOutAnimation, // 繫結透明度動畫
+            opacity: _blackOutAnimation,
             child: Container(
-              color: Colors.black, // 純黑背景
+              color: Colors.black,
               width: double.infinity,
               height: double.infinity,
             ),
@@ -265,11 +278,11 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  /// 顯示匯入確認對話框。
+  /// 顯示匯入組態確認對話框。
   ///
-  /// 匯入操作會覆蓋目前所有已儲存內容，因此先要求使用者再次確認。
+  /// 此操作具有破壞性，會覆蓋現有資料，故需進行二次確認。
   void _confirmImport(BuildContext context) {
-    debugPrint('[_SettingsViewState] 顯示匯入確認對話框');
+    debugPrint('[_SettingsViewState] 顯示匯入確認彈窗');
 
     showDialog(
       context: context,
@@ -279,14 +292,14 @@ class _SettingsViewState extends State<SettingsView>
         actions: [
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 取消匯入');
+              debugPrint('[_SettingsViewState] 使用者取消匯入');
               Navigator.pop(context);
             },
             child: const Text('取消'),
           ),
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 確認匯入，開始處理資料');
+              debugPrint('[_SettingsViewState] 使用者確認匯入，呼叫控制器邏輯');
               Navigator.pop(context);
               widget.controller.importData(context);
             },
@@ -297,11 +310,11 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  /// 顯示重設確認對話框。
+  /// 顯示還原出廠設定確認對話框。
   ///
-  /// 使用者確認後會清除所有資料，並以 SnackBar 提示操作結果。
+  /// 執行後將清除所有本地儲存的持久化資料。
   void _confirmReset(BuildContext context) {
-    debugPrint('[_SettingsViewState] 顯示重設確認對話框');
+    debugPrint('[_SettingsViewState] 顯示還原重設確認彈窗');
 
     showDialog(
       context: context,
@@ -318,10 +331,9 @@ class _SettingsViewState extends State<SettingsView>
           ),
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 確認重設，開始清除資料');
+              debugPrint('[_SettingsViewState] 執行全域資料清空程序');
               widget.controller.clearAllData(context);
               Navigator.pop(context);
-              debugPrint('[_SettingsViewState] 資料已清除並顯示提示訊息');
             },
             child: const Text('确定重置', style: TextStyle(color: Colors.red)),
           ),
@@ -330,8 +342,11 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
+  /// 顯示「關於」資訊對話框。
+  ///
+  /// 展示應用程式名稱、圖示、版本資訊、法律聲明以及開發者連結。
   void _about(BuildContext context) {
-    debugPrint('[_SettingsViewState] 顯示關於對話框');
+    debugPrint('[_SettingsViewState] 開啟「關於」資訊視窗');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -409,47 +424,53 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  // 執行退出動畫的邏輯（不需確認）
+  /// 啟動退出動畫程序，並在完成後徹底關閉應用程式。
   void _performExitWithAnimation() {
-    debugPrint('[_SettingsViewState] 執行退出。已經正在退出: $_isExiting');
+    debugPrint('[_SettingsViewState] 執行退出動畫，準備釋放記憶體');
     if (_isExiting) return;
     setState(() => _isExiting = true);
     _exitAnimationController.forward();
   }
 }
 
+/// 開啟外部瀏覽器跳轉至指定的 URL。
+///
+/// [scheme] 協定類型，預設為 https。
+/// [host] 域名，預設為 github.com。
+/// [path] 資源路徑。
 Future jumpUrL({
   String scheme = "https",
   String host = "github.com",
   String path = "",
 }) async {
   if (host == "") {
+    debugPrint('[_SettingsViewState] 跳轉失敗：無效的 Host 內容');
     return;
   }
   final url = Uri(scheme: scheme, host: host, path: path);
   try {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      debugPrint("[_SettingsViewState] 無法開啟 URL : $url");
+      debugPrint('[_SettingsViewState] 無法呼叫外部應用程式開啟 URL: $url');
     }
   } catch (e) {
-    debugPrint("[_SettingsViewState] 無法開啟 URL : $url : $e");
+    debugPrint('[_SettingsViewState] 執行 jumpUrL 時發生例外: $e');
   }
 }
 
-/// 設定區塊標題元件。
+/// 設定頁面專用的區塊標題元件。
 ///
-/// 用於在設定頁中區分不同功能群組，提升畫面層次與可讀性。
+/// 負責呈現具有一致間距與主題色彩的群組化標題。
 class _SettingsSectionTitle extends StatelessWidget {
-  /// 區塊標題文字。
+  /// 顯示的標題文字。
   final String title;
 
-  /// 建立設定區塊標題。
+  /// 建立區塊標題。
   const _SettingsSectionTitle({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // 提供與清單項目一致的左右留白，以及區塊上下間距。
+      // 確保標題與清單項目對齊，並提供足夠的垂直間距
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,
