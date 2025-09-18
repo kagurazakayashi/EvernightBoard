@@ -1,94 +1,96 @@
 name: evernight_board
 description: "EvernightBoard is an assistive tool for continuous communication via preset text and images when touch input is limited."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
+# 以下這一行可防止套件被意外發佈到 pub.dev。
+# 這通常用於私人套件。
+publish_to: "none" # 如果你想發佈到 pub.dev，請刪除此行
+
+# 以下定義了應用程式的版本號與編譯編號 (build number)。
+# 版本號是由三個點分隔的數字組成，例如 1.2.43，
+# 後方跟著一個可選的編譯編號，並以 + 號分隔。
+# 版本號與編譯編號都可以在執行 flutter build 時
+# 分別透過 --build-name 和 --build-number 進行覆蓋。
+# 在 Android 中，build-name 用作 versionName，而 build-number 用作 versionCode。
+# 詳閱 Android 版本原則：https://developer.android.com/studio/publish/versioning
+# 在 iOS 中，build-name 用作 CFBundleShortVersionString，而 build-number 用作 CFBundleVersion。
+# 詳閱 iOS 版本原則：
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
+# 在 Windows 中，build-name 用作產品與檔案版本的主要、次要與修補部分 (major, minor, patch)，
+# 而 build-number 則用作編譯後綴。
 version: 1.0.0+1
 
 environment:
   sdk: ^3.10.4
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
+# 相依性 (Dependencies) 指定了此套件運作時所需的其他套件。
+# 若要自動將套件相依性升級到最新版本，請考慮執行 `flutter pub upgrade --major-versions`。
+# 或者，也可以手動更改下方的版本號來更新相依性。
+# 若要查看哪些套件有新版本，請執行 `flutter pub outdated`。
 dependencies:
-  flutter:
+  flutter: # 3.41
     sdk: flutter
+  flutter_localizations: # 語系支援
+    sdk: flutter
+  intl: any # 國際化與在地化工具
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # 以下將 Cupertino Icons 字型添加到應用程式中。
+  # 用於 iOS 風格的圖示 (CupertinoIcons 類別)。
   cupertino_icons: ^1.0.8
-  sensors_plus: ^7.0.0
-  flutter_volume_controller: ^1.3.4
-  flutter_iconpicker: ^4.0.3
-  image_picker: ^1.2.1
-  flex_color_picker: ^3.8.0
-  shared_preferences: ^2.5.4
-  path_provider: ^2.1.5
-  path: ^1.9.1
-  flutter_launcher_icons: ^0.14.4
-  file_picker: ^10.3.10
-  url_launcher: ^6.3.2
-  package_info_plus: ^9.0.0
+  sensors_plus: ^7.0.0 # 感測器 (加速度計、陀螺儀等)
+  flutter_volume_controller: ^1.3.4 # 音量控制
+  flutter_iconpicker: ^4.0.3 # 圖示選擇器
+  image_picker: ^1.2.1 # 圖片選取器
+  flex_color_picker: ^3.8.0 # 進階顏色選擇器
+  shared_preferences: ^2.5.4 # 本地輕量級資料儲存 (偏好設定)
+  path_provider: ^2.1.5 # 存取常用的檔案系統路徑
+  path: ^1.9.1 # 路徑字串處理
+  flutter_launcher_icons: ^0.14.4 # 快速生成 APP 圖示
+  file_picker: ^10.3.10 # 檔案選取器
+  url_launcher: ^6.3.2 # 開啟瀏覽器或外部連結
+  package_info_plus: ^9.0.0 # 讀取應用程式套件資訊
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  # 下方的 "flutter_lints" 套件包含一組推薦的 Lint 規則，以鼓勵良好的編碼實作。
+  # 該 Lint 規則集在專案根目錄下的 `analysis_options.yaml` 檔案中啟用。
+  # 請參閱該檔案以了解如何停用特定規則或新增額外規則。
   flutter_lints: ^6.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+# 關於本檔案中通用 Dart 部分的資訊，請參閱以下頁面：
+# https://dart.dev/tools/pub/pubspec
 
-# The following section is specific to Flutter packages.
-flutter:
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
+# 以下區塊專屬於 Flutter 套件。
+flutter: # 3.41
+  # 以下這一行確保應用程式包含 Material Icons 字型，
+  # 讓你可以使用 Material Icons 類別中的圖示。
   uses-material-design: true
+  
+  # 自動生成本地化程式碼 (搭配 intl)
+  generate: true
+
+  # 素材資源 (Assets) 區塊
   assets:
     - LICENSE
     - LICENSE.zh-CN
     - assets/default.png
     - assets/appicon/adaptive_icon_foreground.png
 
-  # To add assets to your application, add an assets section, like this:
+  # 若要將圖片等資源添加到應用程式，請像這樣新增 assets 區塊：
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
-  # An image asset can refer to one or more resolution-specific "variants", see
+  # 圖片資源可以參考一個或多個「解析度特定」的變體，請參閱：
   # https://flutter.dev/to/resolution-aware-images
 
-  # For details regarding adding assets from package dependencies, see
+  # 關於從套件相依性中添加資源的細節，請參閱：
   # https://flutter.dev/to/asset-from-package
 
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
+  # 若要為應用程式添加自定義字型，請在此 "flutter" 區塊下新增 fonts 區塊。
+  # 列表中的每個項目都應具有 "family" (字型家族名稱) 與 "fonts" (包含資源路徑與其他描述的列表)。
+  # 例如：
   # fonts:
   #   - family: Schyler
   #     fonts:
@@ -101,33 +103,34 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+  # 關於從套件相依性中添加字型的細節，請參閱：
+  # https://flutter.dev/to/font-from-package
 
-# flutter pub run flutter_launcher_icons
+# 執行指令：flutter pub run flutter_launcher_icons
+# APP 圖示設定
 flutter_launcher_icons:
   image_path: "assets/appicon/launcher_icons.png"
-  #
+  # Android 設定
   android: true
-  adaptive_icon_background: "assets/appicon/adaptive_icon_round_background.png"
-  adaptive_icon_foreground: "assets/appicon/adaptive_icon_foreground.png"
-  web_round_icon: "assets/appicon/web_round_icon.png"
-  #
+  adaptive_icon_background: "assets/appicon/adaptive_icon_round_background.png" # 適應性圖示背景
+  adaptive_icon_foreground: "assets/appicon/adaptive_icon_foreground.png" # 適應性圖示前景
+  web_round_icon: "assets/appicon/web_round_icon.png" # Web 圓形圖示
+  # iOS 設定
   ios: true
-  remove_alpha_ios: true
+  remove_alpha_ios: true # 移除 iOS 圖示的透明通道
   image_path_ios: "assets/appicon/launcher_icons.png"
-  #
+  # Web 設定
   web:
     generate: true
     image_path: "assets/appicon/launcher_round_icons.png"
     background_color: "#1d1e22"
     theme_color: "#7a212e"
-  #
+  # Windows 設定
   windows:
     generate: true
     image_path: "assets/appicon/launcher_round_icons.png"
     icon_size: 256
-  #
+  # macOS 設定
   macos:
     generate: true
     image_path: "assets/appicon/launcher_round_icons.png"

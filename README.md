@@ -107,35 +107,41 @@ After preparing multiple preset images or texts according to the preparation ste
 
 ## Compilation
 
-### Environment Requirements
+### Prerequisites
 
-1. Flutter: You can see the optimal Flutter version in the comments at `dependencies:flutter:` in the `pubspec.yaml` file.
-2. Run the `flutter doctor` command and follow the prompts to complete various configurations.
+1. Flutter: You can find the optimal Flutter version in the comments under `dependencies:flutter:` in the `pubspec.yaml` file.
+2. Run the `flutter doctor` command and complete the various configurations according to the prompts.
 3. `cd` into the folder where this project is located.
 
-### Compile in Windows
+### Debugging
+
+1. Run `flutter clean` to clear the cache.
+2. Run `flutter pub get` to download the required third-party libraries.
+3. Run `generate_icons.bat` or `./generate_icons` to generate application icons of various specifications and styles.
+4. Run `flutter gen-l10n` to build localization strings.
+5. Run `dart.bat run flutter_iconpicker:generate_packs --packs material` to prepare icon resources.
+6. Run `flutter run` to start debugging.
+
+If you need to edit the source code, steps 1 through 5 must be completed before launching the IDE.
+
+### Compiling on Windows
 
 - Compile as a Windows application and run: `build.bat`.
 - Compile as an Android application and install: `build_apk.bat`.
 
-### Compile in macOS or Linux
+### Compiling on macOS or Linux
 
 - Compile as a macOS or Linux application and run: `./build`.
 - Compile as an Android application and install: `./build_apk`.
 
-### Compile for macOS or iOS
+### Compiling for macOS or iOS
 
-1. Try to compile it once first.
-2. Use Xcode to open `Runner.xcworkspace` in the `macos` or `ios` folder to configure it (e.g., certificates and provisioning profiles).
-3. Then proceed with the official compilation.
-
-### Debugging
-
-1. Run `flutter clean`.
-2. Run `flutter pub get` to download required third-party libraries.
-3. Run `generate_icons.bat` or `./generate_icons` to generate application icons of various specifications and styles.
-4. Run `dart.bat run flutter_iconpicker:generate_packs --packs material` to prepare icon resources.
-5. Run `flutter run` to start debugging.
+1. Perform steps 1 through 5 from the "Debugging" section above.
+2. Run `flutter build macos` or `flutter build ios`; this might fail, but you can ignore it for now.
+3. Run `cd macos` or `cd ios` to enter the respective platform folder.
+4. Run `pod install` to download the required third-party libraries.
+5. Launch Xcode and open `Runner.xcworkspace` in the `macos` or `ios` folder to configure settings (e.g., certificates and provisioning profiles).
+6. Proceed with the formal compilation.
 
 ## License
 

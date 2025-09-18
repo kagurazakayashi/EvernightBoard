@@ -516,13 +516,15 @@ mixin HomeControllerData on ChangeNotifier {
         }
       } else {
         debugPrint('[HomeControllerData] 匯入失敗：檔案內容為空或無效。');
-        if (context.mounted)
+        if (context.mounted) {
           _showSnackBar(context, '配置文件无效或不包含任何项目', isError: true);
+        }
       }
     } catch (e) {
       debugPrint('[HomeControllerData] 匯入解析過程中發生錯誤: $e');
-      if (context.mounted)
+      if (context.mounted) {
         _showSnackBar(context, '配置文件解析失败，请检查文件格式', isError: true);
+      }
     }
   }
 }

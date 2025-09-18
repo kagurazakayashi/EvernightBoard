@@ -1,4 +1,5 @@
 /evernight_board
+lib/l10n/app_localizations*.dart
 assets/appicon/*_*.png
 web/icons/*.png
 macos/Runner/Assets.xcassets/AppIcon.appiconset/*.png

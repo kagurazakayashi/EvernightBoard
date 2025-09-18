@@ -107,35 +107,41 @@ Android | iOS | Windows | macOS | Linux
 
 ## 編譯
 
-### 環境要求
+### 環境需求
 
-1. Flutter : 您可以在 `pubspec.yaml` 檔案的 `dependencies:flutter:` 處的註解看到最佳的 Flutter 版本。
-2. 執行 `flutter doctor` 指令，根據提示完成各種設定。
+1. Flutter：您可以在 `pubspec.yaml` 檔案中 `dependencies:flutter:` 處的註解看到最佳的 Flutter 版本。
+2. 執行 `flutter doctor` 指令，根據提示完成各種配置。
 3. `cd` 進入本專案所在的資料夾。
-
-### 在 Windows 中編譯
-
-- 編譯為 Windows 應用程式並執行: `build.bat` 。
-- 編譯為 Android 應用程式並安裝: `build_apk.bat` 。
-
-### 在 macOS 或 Linux 中編譯
-
-- 編譯為 macOS 或 Linux 應用程式並執行: `./build` 。
-- 編譯為 Android 應用程式並安裝: `./build_apk` 。
-
-### 編譯為 macOS 或 iOS
-
-1. 先嘗試編譯一次。
-2. 使用 Xcode 打開 `macos` 或 `ios` 資料夾中的 `Runner.xcworkspace` 進行設定（例如憑證和描述檔）。
-3. 再進行正式編譯。
 
 ### 偵錯
 
-1. 執行 `flutter clean` 。
-2. 執行 `flutter pub get` 下載所需第三方函式庫。
-3. 執行 `generate_icons.bat` 或 `./generate_icons` 產生各種規格和樣式的應用程式圖示。
-4. 執行 `dart.bat run flutter_iconpicker:generate_packs --packs material` 準備圖示資源。
-5. 執行 `flutter run` 開始偵錯。
+1. 執行 `flutter clean` 清除快取。
+2. 執行 `flutter pub get` 下載所需的第三方函式庫。
+3. 執行 `generate_icons.bat` 或 `./generate_icons` 產生各種規格與樣式的應用程式圖示。
+4. 執行 `flutter gen-l10n` 建置多語系文本。
+5. 執行 `dart.bat run flutter_iconpicker:generate_packs --packs material` 準備圖示資源。
+6. 執行 `flutter run` 開始偵錯。
+
+如果需要編輯原始碼，必須在啟動 IDE 前完成第 1 步到第 5 步。
+
+### 在 Windows 中編譯
+
+- 編譯為 Windows 應用程式並執行：`build.bat`。
+- 編譯為 Android 應用程式並安裝：`build_apk.bat`。
+
+### 在 macOS 或 Linux 中編譯
+
+- 編譯為 macOS 或 Linux 應用程式並執行：`./build`。
+- 編譯為 Android 應用程式並安裝：`./build_apk`。
+
+### 編譯為 macOS 或 iOS
+
+1. 執行上方「偵錯」中的第 1 步到第 5 步。
+2. 執行 `flutter build macos` 或 `flutter build ios` ，這可能會失敗，請先忽略。
+3. 執行 `cd macos` 或 `cd ios` 進入相對應的平台資料夾。
+4. 執行 `pod install` 下載所需的第三方函式庫。
+5. 執行 Xcode，開啟 `macos` 或 `ios` 資料夾中的 `Runner.xcworkspace` 進行配置（例如憑證與描述檔）。
+6. 進行正式編譯。
 
 ## 授權條款
 

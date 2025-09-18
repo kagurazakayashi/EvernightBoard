@@ -2,6 +2,7 @@
 library;
 
 import 'dart:async';
+import 'package:evernight_board/global.dart';
 
 /// 匯入 Flutter Material 元件庫。
 import 'package:flutter/material.dart';
@@ -167,7 +168,7 @@ class HomeController extends ChangeNotifier
       debugPrint('[HomeController] 目前項目清單為空，回傳載入中佔位項目');
 
       return HomeItem(
-        title: 'Loading...',
+        title: t.loading,
         content: '',
         icon: Icons.hourglass_empty,
       );

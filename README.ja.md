@@ -105,37 +105,43 @@ Android | iOS | Windows | macOS | Linux
 
 `^ ✪ ω ✪ ^` _さて、このアプリはもともとどのようなシーンを想定して設計されたと思いますか？_
 
-## ビルド
+## コンパイル
 
 ### 環境要件
 
-1. Flutter : `pubspec.yaml` ファイルの `dependencies:flutter:` のコメントで最適なFlutterバージョンを確認できます。
-2. `flutter doctor` コマンドを実行し、プロンプトに従って各種設定を完了させます。
-3. `cd` コマンドでこのプロジェクトがあるフォルダに移動します。
-
-### Windowsでのビルド
-
-- Windowsアプリケーションとしてビルドして実行: `build.bat`
-- Androidアプリケーションとしてビルドしてインストール: `build_apk.bat`
-
-### macOS または Linux でのビルド
-
-- macOS または Linux アプリケーションとしてビルドして実行: `./build`
-- Android アプリケーションとしてビルドしてインストール: `./build_apk`
-
-### macOS または iOS 用のビルド
-
-1. まず一度ビルドを試みます。
-2. Xcodeを使用して `macos` または `ios` フォルダ内の `Runner.xcworkspace` を開き、設定（証明書やプロビジョニングプロファイルなど）を行います。
-3. その後、正式なビルドを行います。
+1. Flutter: `pubspec.yaml` ファイルの `dependencies:flutter:` セクションにあるコメントで、最適な Flutter バージョンを確認できます。
+2. `flutter doctor` コマンドを実行し、プロンプトに従って各種設定を完了させてください。
+3. `cd` コマンドで本プロジェクトのフォルダに移動します。
 
 ### デバッグ
 
-1. `flutter clean` を実行します。
-2. `flutter pub get` を実行して、必要なサードパーティ製ライブラリをダウンロードします。
-3. `generate_icons.bat` または `./generate_icons` を実行して、さまざまな仕様とスタイルのアプリアイコンを生成します。
-4. `dart.bat run flutter_iconpicker:generate_packs --packs material` を実行してアイコンリソースを準備します。
-5. `flutter run` を実行してデバッグを開始します。
+1. `flutter clean` を実行してキャッシュをクリアします。
+2. `flutter pub get` を実行して必要なサードパーティライブラリをダウンロードします。
+3. `generate_icons.bat` または `./generate_icons` を実行して、さまざまな仕様やスタイルのアプリアイコンを生成します。
+4. `flutter gen-l10n` を実行して多言語テキストをビルドします。
+5. `dart.bat run flutter_iconpicker:generate_packs --packs material` を実行してアイコンリソースを準備します。
+6. `flutter run` を実行してデバッグを開始します。
+
+ソースコードを編集する必要がある場合は、IDE を起動する前にステップ 1 から 5 までを完了させる必要があります。
+
+### Windows でのコンパイル
+
+- Windows アプリケーションとしてコンパイルして実行: `build.bat`
+- Android アプリケーションとしてコンパイルしてインストール: `build_apk.bat`
+
+### macOS または Linux でのコンパイル
+
+- macOS または Linux アプリケーションとしてコンパイルして実行: `./build`
+- Android アプリケーションとしてコンパイルしてインストール: `./build_apk`
+
+### macOS または iOS 用のコンパイル
+
+1. 上記「デバッグ」のステップ 1 から 5 を実行します。
+2. `flutter build macos` または `flutter build ios` を実行します。これは失敗する可能性がありますが、無視して構いません。
+3. `cd macos` または `cd ios` を実行して、対応するプラットフォームのフォルダに移動します。
+4. `pod install` を実行して必要なサードパーティライブラリをダウンロードします。
+5. Xcode を起動し、`macos` または `ios` フォルダ内の `Runner.xcworkspace` を開いて設定（証明書やプロファイルなど）を行います。
+6. 正式なコンパイルを実行します。
 
 ## ライセンス
 

@@ -113,6 +113,17 @@ Android | iOS | Windows | macOS | Linux
 2. 运行 `flutter doctor` 命令，根据提示完成各种配置。
 3. `cd` 进入本项目所在的文件夹。
 
+### 调试
+
+1. 运行 `flutter clean` 清理缓存。
+2. 运行 `flutter pub get` 下载所需第三方库。
+3. 运行 `generate_icons.bat` 或 `./generate_icons` 生成各种规格和样式的应用图标。
+4. 运行 `flutter gen-l10n` 构建多语言文本。
+5. 运行 `dart.bat run flutter_iconpicker:generate_packs --packs material` 准备图标资源。
+6. 运行 `flutter run` 开始调试。
+
+如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
+
 ### 在 Windows 中编译
 
 - 编译为 Windows 应用程序并运行: `build.bat` 。
@@ -125,17 +136,12 @@ Android | iOS | Windows | macOS | Linux
 
 ### 编译为 macOS 或 iOS
 
-1. 先尝试编译一次。
-2. 使用 Xcode 打开 `macos` 或 `ios` 文件夹中的 `Runner.xcworkspace` 进行配置（例如证书和描述文件）。
-3. 再进行正式编译。
-
-### 调试
-
-1. 运行 `flutter clean` 。
-2. 运行 `flutter pub get` 下载所需第三方库。
-3. 运行 `generate_icons.bat` 或 `./generate_icons` 生成各种规格和样式的应用图标。
-4. 运行 `dart.bat run flutter_iconpicker:generate_packs --packs material` 准备图标资源。
-5. 运行 `flutter run` 开始调试。
+1. 运行上面的“调试”中的第 1 步到第 5 步。
+2. 运行 `flutter build macos` 或 `flutter build ios` ，这可能会失败，不用管它。
+3. 运行 `cd macos` 或 `cd ios` 进入相应平台文件夹。
+4. 运行 `pod install` 下载所需第三方库。
+5. 运行 Xcode ，打开 `macos` 或 `ios` 文件夹中的 `Runner.xcworkspace` 进行配置（例如证书和描述文件）。
+6. 进行正式编译。
 
 ## 许可协议
 

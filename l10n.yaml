@@ -1,0 +1,11 @@
+# 存放翻譯檔案的目錄
+arb-dir: lib/l10n
+# 模板檔案（通常以你的預設語言為基準）
+template-arb-file: app_zh.arb
+# 生成的 Dart 類所在的檔名
+output-localization-file: app_localizations.dart
+# 這樣才能在 lib 裡看到並引用生成的 Dart 程式碼
+# synthetic-package: false
+output-dir: lib/l10n
+# 遮蔽 description 警告
+required-resource-attributes: false

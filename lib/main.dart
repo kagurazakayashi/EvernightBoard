@@ -3,6 +3,9 @@ import 'home/home_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 // import 'restart_widget.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:evernight_board/l10n/app_localizations.dart';
+import 'global.dart';
 
 /// 應用程式進入點。
 ///
@@ -47,6 +50,28 @@ class EvernightBoardAPP extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+      // 提供翻譯字典的代理
+      localizationsDelegates: const [
+        AppLocalizations.delegate, // 生成的代理
+        GlobalMaterialLocalizations.delegate, // Material 元件的內建多語言
+        GlobalWidgetsLocalizations.delegate, // Widget 元件的內建多語言
+        GlobalCupertinoLocalizations.delegate, // Cupertino 元件的內建多語言
+      ],
+      // 宣告 APP 支援的語言列表
+      supportedLocales: const [
+        Locale('zh'), // 簡體中文
+        Locale('zh', 'Hant'), // 繁體中文 (語言碼, 腳本碼)
+        Locale('en'), // 英語
+        Locale('ja'), // 日語
+      ],
+      // 使用 builder 攔截 context 並初始化 Global
+      builder: (context, child) {
+        Global.init(context);
+        return child!;
+      },
+      // (可選) 可以在這裡強制指定語言，如果不填則預設跟隨系統語言
+      // locale: const Locale('zh'),
 
       // 亮色主題設定
       theme: ThemeData(
