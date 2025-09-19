@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:evernight_board/global.dart';
 
 /// IconSelectorPage
 ///
@@ -102,7 +103,7 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
     // 初始化圖示名稱清單，後續搜尋會以這份資料為基礎進行篩選。
     _keys = _iconMap.keys.toList();
 
-    debugPrint('[IconSelectorPage] 已初始化，共載入 ${_keys.length} 個圖示。');
+    debugPrint('[IconSelectorPage] 載入 ${_keys.length} 個圖示。');
   }
 
   @override
@@ -122,7 +123,7 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: SearchBar(
-              hintText: '搜索图标',
+              hintText: t.searchicon,
               onChanged: (value) {
                 // 更新搜尋條件並重新建構畫面，以即時反映篩選結果。
                 setState(() {

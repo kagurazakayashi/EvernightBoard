@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../home/home_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:evernight_board/global.dart';
 
 /// 設定頁面視圖元件。
 ///
@@ -116,14 +117,14 @@ class _SettingsViewState extends State<SettingsView>
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(title: const Text('应用设置'), centerTitle: true),
+          appBar: AppBar(title: Text(t.appsettings), centerTitle: true),
           body: ListView(
             children: [
-              const _SettingsSectionTitle(title: '翻页交互'),
+              _SettingsSectionTitle(title: t.pageturning),
               SwitchListTile(
                 secondary: const Icon(Icons.touch_app),
-                title: const Text('点击半屏翻页'),
-                subtitle: const Text('横屏时按左右半屏、竖屏时按上下半屏。'),
+                title: Text(t.halfscreenturnpages1),
+                subtitle: Text(t.halfscreenturnpages2),
                 value: widget.controller.useSideTap,
                 onChanged: (val) => toggleSideTap(val),
               ),
@@ -132,9 +133,9 @@ class _SettingsViewState extends State<SettingsView>
                   Icons.volume_up,
                   color: isVolumeSupported ? null : Colors.grey,
                 ),
-                title: const Text('音量键翻页'),
+                title: Text(t.volumeturnpages1),
                 subtitle: Text(
-                  isVolumeSupported ? '使用物理音量按键切换项目' : '当前平台不支持物理音量键翻页',
+                  isVolumeSupported ? t.volumeturnpages2 : t.volumeturnpages3,
                   style: TextStyle(
                     color: isVolumeSupported ? null : Colors.grey,
                   ),
@@ -145,10 +146,10 @@ class _SettingsViewState extends State<SettingsView>
                     : null,
               ),
               const Divider(),
-              const _SettingsSectionTitle(title: '导航栏位置'),
+              const _SettingsSectionTitle(title: '导航栏的位置'),
               ListTile(
                 leading: const Icon(Icons.stay_current_landscape),
-                title: const Text('横屏状态下'),
+                title: Text(t.currlandscape),
                 trailing: DropdownButton<LandscapeNavPosition>(
                   value: widget.controller.landscapeNavPosition,
                   onChanged: (val) {
@@ -158,29 +159,29 @@ class _SettingsViewState extends State<SettingsView>
                     }
                     if (mounted) setState(() {});
                   },
-                  items: const [
+                  items: [
                     DropdownMenuItem(
                       value: LandscapeNavPosition.bottom,
-                      child: Text('始终在底端'),
+                      child: Text(t.alwaysbottom),
                     ),
                     DropdownMenuItem(
                       value: LandscapeNavPosition.left,
-                      child: Text('始终在左侧'),
+                      child: Text(t.alwaysleft),
                     ),
                     DropdownMenuItem(
                       value: LandscapeNavPosition.right,
-                      child: Text('始终在右侧'),
+                      child: Text(t.alwaysright),
                     ),
                     DropdownMenuItem(
                       value: LandscapeNavPosition.top,
-                      child: Text('始终在顶部'),
+                      child: Text(t.alwaystop),
                     ),
                   ],
                 ),
               ),
               ListTile(
                 leading: const Icon(Icons.stay_current_portrait),
-                title: const Text('竖屏状态下'),
+                title: Text(t.currportrait),
                 trailing: DropdownButton<PortraitNavPosition>(
                   value: widget.controller.portraitNavPosition,
                   onChanged: (val) {
@@ -190,26 +191,26 @@ class _SettingsViewState extends State<SettingsView>
                     }
                     if (mounted) setState(() {});
                   },
-                  items: const [
+                  items: [
                     DropdownMenuItem(
                       value: PortraitNavPosition.auto,
-                      child: Text('自动移到微倾斜侧'),
+                      child: Text(t.navbarlocationauto),
                     ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.bottom,
-                      child: Text('始终在底端'),
+                      child: Text(t.alwaysbottom),
                     ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.left,
-                      child: Text('始终在左侧'),
+                      child: Text(t.alwaysleft),
                     ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.right,
-                      child: Text('始终在右侧'),
+                      child: Text(t.alwaysright),
                     ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.top,
-                      child: Text('始终在顶部'),
+                      child: Text(t.alwaystop),
                     ),
                   ],
                 ),
@@ -295,7 +296,7 @@ class _SettingsViewState extends State<SettingsView>
               debugPrint('[_SettingsViewState] 使用者取消匯入');
               Navigator.pop(context);
             },
-            child: const Text('取消'),
+            child: Text(t.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -303,7 +304,7 @@ class _SettingsViewState extends State<SettingsView>
               Navigator.pop(context);
               widget.controller.importData(context);
             },
-            child: const Text('确定导入'),
+            child: Text(t.ok),
           ),
         ],
       ),
@@ -327,7 +328,7 @@ class _SettingsViewState extends State<SettingsView>
               debugPrint('[_SettingsViewState] 取消重設');
               Navigator.pop(context);
             },
-            child: const Text('取消'),
+            child: Text(t.cancel),
           ),
           TextButton(
             onPressed: () {

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:evernight_board/global.dart';
 
 /// 資料匯入／匯出服務。
 ///
@@ -28,7 +29,7 @@ class DataExportService {
       debugPrint('[DataExportService] 開始匯出 JSON 檔案');
 
       String? outputFile = await FilePicker.platform.saveFile(
-        dialogTitle: '请选择保存位置',
+        dialogTitle: t.savelocation,
         fileName:
             'evernight_backup_${DateTime.now().millisecondsSinceEpoch}.json',
         type: FileType.custom,

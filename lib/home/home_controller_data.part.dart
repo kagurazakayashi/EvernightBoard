@@ -186,7 +186,7 @@ mixin HomeControllerData on ChangeNotifier {
     notifyListeners();
 
     if (context.mounted) {
-      _showSnackBar(context, '所有数据与设置已成功清空');
+      _showSnackBar(context, t.allcleared);
       Navigator.pop(context);
     }
   }
@@ -217,7 +217,7 @@ mixin HomeControllerData on ChangeNotifier {
     final self = this as HomeController;
     self.items.add(
       HomeItem(
-        title: '新屏幕',
+        title: t.newscreen,
         content: '',
         icon: Icons.add_box_outlined,
         backgroundImagePath: '',
@@ -459,10 +459,10 @@ mixin HomeControllerData on ChangeNotifier {
     if (context.mounted) {
       if (success) {
         debugPrint('[HomeControllerData] 匯出成功。');
-        _showSnackBar(context, '配置文件已成功导出');
+        _showSnackBar(context, t.exportok);
       } else {
         debugPrint('[HomeControllerData] 匯出被使用者取消。');
-        _showSnackBar(context, '导出已取消', isError: true);
+        _showSnackBar(context, t.exportcancel, isError: true);
       }
     }
   }
@@ -475,7 +475,8 @@ mixin HomeControllerData on ChangeNotifier {
 
     if (jsonStr == null) {
       debugPrint('[HomeControllerData] 匯入取消：未選擇檔案。');
-      if (context.mounted) _showSnackBar(context, '未选择文件，导入已取消', isError: true);
+      if (context.mounted)
+        _showSnackBar(context, t.nofileselected, isError: true);
       return;
     }
 
@@ -511,19 +512,22 @@ mixin HomeControllerData on ChangeNotifier {
         debugPrint('[HomeControllerData] 成功匯入 ${newItems.length} 個項目。');
 
         if (context.mounted) {
-          _showSnackBar(context, '成功导入了 ${newItems.length} 个屏幕设置');
+          _showSnackBar(
+            context,
+            '${t.importok1} ${newItems.length} ${t.importok2}',
+          );
           Navigator.pop(context);
         }
       } else {
         debugPrint('[HomeControllerData] 匯入失敗：檔案內容為空或無效。');
         if (context.mounted) {
-          _showSnackBar(context, '配置文件无效或不包含任何项目', isError: true);
+          _showSnackBar(context, t.invalidconffile, isError: true);
         }
       }
     } catch (e) {
       debugPrint('[HomeControllerData] 匯入解析過程中發生錯誤: $e');
       if (context.mounted) {
-        _showSnackBar(context, '配置文件解析失败，请检查文件格式', isError: true);
+        _showSnackBar(context, t.conffileparsingfailed, isError: true);
       }
     }
   }

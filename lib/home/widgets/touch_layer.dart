@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:evernight_board/global.dart';
 
 /// 觸控分區圖層元件。
 ///
@@ -102,15 +103,15 @@ class TouchLayer extends StatelessWidget {
           // 直向模式：以上下兩區排列。
           ? Column(
               children: [
-                buildButton(onPrevious, areaName: '上一個'),
-                buildButton(onNext, areaName: '下一個'),
+                buildButton(onPrevious, areaName: t.previous),
+                buildButton(onNext, areaName: t.next),
               ],
             )
           // 橫向模式：以左右兩區排列。
           : Row(
               children: [
-                buildButton(onPrevious, areaName: '上一個'),
-                buildButton(onNext, areaName: '下一個'),
+                buildButton(onPrevious, areaName: t.previous),
+                buildButton(onNext, areaName: t.next),
               ],
             ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:evernight_board/global.dart';
 
 /// 文字编辑对话框。
 ///
@@ -52,7 +53,7 @@ class _EditTextDialogState extends State<EditTextDialog> {
     _textController = TextEditingController(text: widget.initialValue);
 
     debugPrint(
-      '[EditTextDialog] 初始化完成，title: ${widget.title}，'
+      '[EditTextDialog] title: ${widget.title}，'
       'isMultiline: ${widget.isMultiline}，'
       'initialValueLength: ${widget.initialValue.length}',
     );
@@ -85,8 +86,8 @@ class _EditTextDialogState extends State<EditTextDialog> {
 
         // 多行模式使用 multiline 鍵盤，其餘使用一般文字鍵盤。
         keyboardType: keyboardType,
-        decoration: const InputDecoration(
-          hintText: "请输入内容...",
+        decoration: InputDecoration(
+          hintText: t.entercontent,
           border: OutlineInputBorder(),
         ),
       ),
@@ -96,7 +97,7 @@ class _EditTextDialogState extends State<EditTextDialog> {
             debugPrint('[EditTextDialog] 使用者取消編輯');
             Navigator.pop(context);
           },
-          child: const Text('取消'),
+          child: Text(t.cancel),
         ),
         TextButton(
           onPressed: () {
@@ -110,7 +111,7 @@ class _EditTextDialogState extends State<EditTextDialog> {
             // 關閉目前對話框並返回上一層。
             Navigator.pop(context);
           },
-          child: const Text('确定'),
+          child: Text(t.ok),
         ),
       ],
     );

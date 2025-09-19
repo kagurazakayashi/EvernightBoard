@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
+import 'package:evernight_board/global.dart';
 import 'home_controller.dart';
 import 'widgets/display_area.dart';
 import 'widgets/touch_layer.dart';
@@ -244,19 +245,19 @@ class _HomeViewState extends State<HomeView> {
           debugPrint('[HomeView] 觸發圖示選取器');
           final IconPickerIcon? selectedIcon = await showIconPicker(
             context,
-            configuration: const SinglePickerConfiguration(
+            configuration: SinglePickerConfiguration(
               iconPackModes: [IconPack.material],
-              searchHintText: '搜索图标...',
-              title: Text('选择边栏图标'),
+              searchHintText: t.searchicon,
+              title: Text(t.selectsidebarico),
             ),
           );
 
           if (selectedIcon != null) {
             _controller.updateIcon(selectedIcon.data);
-            if (mounted) _showSnackBar('边栏图标已更新');
+            if (mounted) _showSnackBar(t.sidebaricoupdated);
           } else {
             debugPrint('[HomeView] 圖示選取已取消');
-            if (mounted) _showSnackBar('未更改图标', isError: true);
+            if (mounted) _showSnackBar(t.icounchanged, isError: true);
           }
         },
         onEditTitle: () {
@@ -265,11 +266,11 @@ class _HomeViewState extends State<HomeView> {
           showDialog(
             context: context,
             builder: (context) => EditTextDialog(
-              title: '边栏标题',
+              title: t.sidebartitle,
               initialValue: _controller.currentItem.title,
               onConfirm: (val) {
                 _controller.updateTitle(val);
-                _showSnackBar('边栏标题已修改为: $val');
+                _showSnackBar('${t.sidebartitlechanged}: $val');
               },
             ),
           );
@@ -280,12 +281,12 @@ class _HomeViewState extends State<HomeView> {
           showDialog(
             context: context,
             builder: (context) => EditTextDialog(
-              title: '全屏文字',
+              title: t.setastext,
               initialValue: _controller.currentItem.content,
               isMultiline: true,
               onConfirm: (val) {
                 _controller.setAsText(val);
-                _showSnackBar('全屏文字内容已更新');
+                _showSnackBar(t.textupdated);
               },
             ),
           );
@@ -301,9 +302,9 @@ class _HomeViewState extends State<HomeView> {
           if (mounted) {
             if (_controller.currentItem.backgroundImagePath?.isNotEmpty ==
                 true) {
-              _showSnackBar('已成功切换为背景图片模式');
+              _showSnackBar(t.imageupdated);
             } else {
-              _showSnackBar('未选择图片或设置失败', isError: true);
+              _showSnackBar(t.imagefailed, isError: true);
             }
           }
         },
@@ -312,14 +313,16 @@ class _HomeViewState extends State<HomeView> {
           debugPrint('[HomeView] 觸發文字顏色選取器');
           await ColorPickerHandler.show(
             context: context,
-            title: '文字颜色',
+            title: t.textcolor,
             isTextType: true,
             initialColor: _controller.currentItem.textColor,
             otherColor: _controller.currentItem.backgroundColor,
             checkSimilarity: _controller.isTooSimilar,
             onColorChanged: (color) {
               _controller.setTextColor(color);
-              _showSnackBar(color == null ? '已恢复默认文字颜色' : '文字颜色已成功更新');
+              _showSnackBar(
+                color == null ? t.textcolordefault : t.textcolorupdated,
+              );
             },
           );
         },
@@ -328,44 +331,46 @@ class _HomeViewState extends State<HomeView> {
           debugPrint('[HomeView] 觸發背景顏色選取器');
           await ColorPickerHandler.show(
             context: context,
-            title: '背景颜色',
+            title: t.backgroundcolor,
             isTextType: false,
             initialColor: _controller.currentItem.backgroundColor,
             otherColor: _controller.currentItem.textColor,
             checkSimilarity: _controller.isTooSimilar,
             onColorChanged: (color) {
               _controller.setBgColor(color);
-              _showSnackBar(color == null ? '已恢复默认背景颜色' : '背景颜色已成功更新');
+              _showSnackBar(
+                color == null
+                    ? t.backgroundcolordefault
+                    : t.backgroundcolorupdated,
+              );
             },
           );
         },
         onMoveUp: () {
           debugPrint('[HomeView] 項目上移');
           _controller.moveUp();
-          _showSnackBar('当前屏幕已上移');
         },
         onMoveDown: () {
           debugPrint('[HomeView] 項目下移');
           _controller.moveDown();
-          _showSnackBar('当前屏幕已下移');
         },
         onAdd: () {
           Navigator.pop(context);
           debugPrint('[HomeView] 新增項目');
           _controller.addItem();
-          _showSnackBar('已成功新增一个屏幕');
+          _showSnackBar(t.screenadded);
         },
         onCopy: () {
           Navigator.pop(context);
           debugPrint('[HomeView] 複製當前項目');
           _controller.copyCurrentItem();
-          _showSnackBar('当前屏幕副本已创建');
+          _showSnackBar(t.screencopied);
         },
         onDelete: () {
           Navigator.pop(context);
           debugPrint('[HomeView] 刪除當前項目');
           _controller.deleteCurrentItem();
-          _showSnackBar('屏幕已成功删除');
+          _showSnackBar(t.screendeleted);
         },
         onOpenSettings: () {
           Navigator.pop(context);

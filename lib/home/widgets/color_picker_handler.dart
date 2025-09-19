@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:evernight_board/global.dart';
 
 /// 負責處理顏色選擇器開啟流程與結果回傳的工具類。
 ///
@@ -67,7 +68,7 @@ class ColorPickerHandler {
 
               // 內部標題設為空，因為外層 AlertDialog 已提供 title。
               heading: null,
-              subheading: const Text('选择色调'),
+              subheading: Text(t.colortone),
               pickersEnabled: const {
                 ColorPickerType.primary: true,
                 ColorPickerType.accent: false,
@@ -77,11 +78,11 @@ class ColorPickerHandler {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx, false),
-              child: const Text('取消'),
+              child: Text(t.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx, true),
-              child: const Text('确定'),
+              child: Text(t.ok),
             ),
           ],
         );

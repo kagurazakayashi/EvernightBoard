@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:evernight_board/global.dart';
 
 /// 管理功能用的網格式選單元件。
 ///
@@ -93,78 +94,78 @@ class ManagementGridMenu extends StatelessWidget {
       // 第一列：圖示／標題編輯與排序調整功能。
       _GridItemData(
         Icons.category,
-        '边栏图标',
-        () => _handleMenuTap('边栏图标', onEditIcon),
+        t.sidebaricons,
+        () => _handleMenuTap(t.sidebaricons, onEditIcon),
         color: Colors.cyan,
       ),
       _GridItemData(
         Icons.title,
-        '边栏标题',
-        () => _handleMenuTap('边栏标题', onEditTitle),
+        t.sidebartitle,
+        () => _handleMenuTap(t.sidebartitle, onEditTitle),
         color: Colors.cyan,
       ),
       _GridItemData(
         Icons.arrow_upward,
-        '上移',
-        () => _handleMenuTap('上移', onMoveUp),
+        t.moveforward,
+        () => _handleMenuTap(t.moveforward, onMoveUp),
         color: Colors.green,
       ),
       _GridItemData(
         Icons.arrow_downward,
-        '下移',
-        () => _handleMenuTap('下移', onMoveDown),
+        t.movebackward,
+        () => _handleMenuTap(t.movebackward, onMoveDown),
         color: Colors.green,
       ),
 
       // 第二列：內容型態與顏色設定功能。
       _GridItemData(
         Icons.text_fields,
-        '设为文字',
-        () => _handleMenuTap('设为文字', onSetText),
+        t.setastext,
+        () => _handleMenuTap(t.setastext, onSetText),
         color: Colors.orange,
       ),
       _GridItemData(
         Icons.image,
-        '设为图片',
-        () => _handleMenuTap('设为图片', onSetImage),
+        t.setasimage,
+        () => _handleMenuTap(t.setasimage, onSetImage),
         color: Colors.orange,
       ),
       _GridItemData(
         Icons.color_lens,
-        '文字颜色',
-        () => _handleMenuTap('文字颜色', onSetTextColor),
+        t.textcolor,
+        () => _handleMenuTap(t.textcolor, onSetTextColor),
         color: Colors.pinkAccent,
       ),
       _GridItemData(
         Icons.format_color_fill,
-        '背景颜色',
-        () => _handleMenuTap('背景颜色', onSetBgColor),
+        t.backgroundcolor,
+        () => _handleMenuTap(t.backgroundcolor, onSetBgColor),
         color: Colors.pinkAccent,
       ),
 
       // 第三列：項目管理與系統設定功能。
       _GridItemData(
         Icons.add_to_photos,
-        '新增屏幕',
-        () => _handleMenuTap('新增屏幕', onAdd),
+        t.addscreen,
+        () => _handleMenuTap(t.addscreen, onAdd),
         color: Colors.blue,
       ), // 以藍色突顯新增操作，便於使用者快速辨識。
       _GridItemData(
         Icons.content_copy,
-        '复制屏幕',
-        () => _handleMenuTap('复制屏幕', onCopy),
+        t.copyscreen,
+        () => _handleMenuTap(t.copyscreen, onCopy),
         color: Colors.blue,
       ),
       _GridItemData(
         Icons.delete_forever,
-        '删除屏幕',
-        () => _handleMenuTap('删除屏幕', onDelete),
+        t.deletescreen,
+        () => _handleMenuTap(t.deletescreen, onDelete),
         color: Colors.red,
       ), // 以紅色突顯刪除操作，提醒此操作具有破壞性。
       _GridItemData(
         Icons.settings, // 設定功能使用齒輪圖示，符合常見介面慣例。
-        '应用设置',
-        () => _handleMenuTap('应用设置', onOpenSettings),
+        t.appsettings,
+        () => _handleMenuTap(t.appsettings, onOpenSettings),
         color: Colors.grey,
       ),
     ];
