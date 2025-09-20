@@ -17,15 +17,15 @@ import '../settings/settings_view.dart';
 /// 負責統合 [HomeController] 的狀態，並根據螢幕導向（橫向/縱向）與
 /// 使用者設定來動態佈局導覽列與內容顯示區。
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  final HomeController controller;
+  const HomeView({super.key, required this.controller});
 
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
-  /// 控管首頁邏輯與資料狀態的控制器實例。
-  final HomeController _controller = HomeController();
+  HomeController get _controller => widget.controller;
 
   @override
   void initState() {
@@ -49,7 +49,6 @@ class _HomeViewState extends State<HomeView> {
     debugPrint('[HomeView] 正在銷毀元件並釋放資源 (dispose)');
     // 移除監聽器防止記憶體洩漏
     _controller.removeListener(_updateUI);
-    _controller.dispose();
     super.dispose();
   }
 

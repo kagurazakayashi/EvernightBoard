@@ -73,7 +73,10 @@ flutter: # 3.41
   # 素材資源 (Assets) 區塊
   assets:
     - LICENSE
-    - LICENSE.zh-CN
+    - README.md
+    - README.ja.md
+    - README.zh-Hans.md
+    - README.zh-Hant.md
     - assets/default.png
     - assets/appicon/adaptive_icon_foreground.png
 

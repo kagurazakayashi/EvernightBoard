@@ -120,6 +120,44 @@ class _SettingsViewState extends State<SettingsView>
           appBar: AppBar(title: Text(t.appsettings), centerTitle: true),
           body: ListView(
             children: [
+              _SettingsSectionTitle(title: t.language),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(t.language),
+                trailing: DropdownButton<String>(
+                  value: _getLocaleKey(widget.controller.appLocale),
+                  onChanged: (val) {
+                    if (val == 'auto') {
+                      widget.controller.changeLocale(null);
+                    } else if (val == 'zh_Hant') {
+                      widget.controller.changeLocale(
+                        Locale.fromSubtags(
+                          languageCode: 'zh',
+                          scriptCode: 'Hant',
+                        ),
+                      );
+                    } else if (val == 'zh') {
+                      widget.controller.changeLocale(
+                        Locale.fromSubtags(
+                          languageCode: 'zh',
+                          scriptCode: 'Hans',
+                        ),
+                      );
+                    } else {
+                      widget.controller.changeLocale(Locale(val!));
+                    }
+                    if (mounted) setState(() {});
+                  },
+                  items: const [
+                    DropdownMenuItem(value: 'auto', child: Text('自动 (Auto)')),
+                    DropdownMenuItem(value: 'zh', child: Text('简体中文')),
+                    DropdownMenuItem(value: 'zh_Hant', child: Text('繁體中文')),
+                    DropdownMenuItem(value: 'en', child: Text('English')),
+                    DropdownMenuItem(value: 'ja', child: Text('日本語')),
+                  ],
+                ),
+              ),
+              const Divider(),
               _SettingsSectionTitle(title: t.pageturning),
               SwitchListTile(
                 secondary: const Icon(Icons.touch_app),
@@ -146,7 +184,7 @@ class _SettingsViewState extends State<SettingsView>
                     : null,
               ),
               const Divider(),
-              const _SettingsSectionTitle(title: '导航栏的位置'),
+              _SettingsSectionTitle(title: t.navbarlocation),
               ListTile(
                 leading: const Icon(Icons.stay_current_landscape),
                 title: Text(t.currlandscape),
@@ -216,14 +254,14 @@ class _SettingsViewState extends State<SettingsView>
                 ),
               ),
               const Divider(),
-              const _SettingsSectionTitle(title: '数据管理'),
+              _SettingsSectionTitle(title: t.datamanagement),
               ListTile(
                 leading: const Icon(
                   Icons.file_upload,
                   color: Colors.blueAccent,
                 ),
-                title: const Text('导出配置'),
-                subtitle: const Text('将当前所有屏幕配置保存为 JSON 文件'),
+                title: Text(t.exportscreenconf1),
+                subtitle: Text(t.exportscreenconf2),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   debugPrint('[_SettingsViewState] 使用者觸發資料匯出');
@@ -232,32 +270,32 @@ class _SettingsViewState extends State<SettingsView>
               ),
               ListTile(
                 leading: const Icon(Icons.file_download, color: Colors.green),
-                title: const Text('导入配置'),
-                subtitle: const Text('从备份文件恢复配置 (会覆盖当前数据)'),
+                title: Text(t.importscreenconf1),
+                subtitle: Text(t.importscreenconf2),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _confirmImport(context),
               ),
               ListTile(
                 leading: const Icon(Icons.restore, color: Colors.redAccent),
-                title: const Text('恢复出厂设置'),
-                subtitle: const Text('清除所有保存的项目、颜色和图片配置'),
+                title: Text(t.allclear1),
+                subtitle: Text(t.allclear2),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _confirmReset(context),
               ),
               const Divider(),
-              const _SettingsSectionTitle(title: '关于'),
+              _SettingsSectionTitle(title: t.about),
               ListTile(
                 leading: const Icon(Icons.info_outline),
-                title: const Text('帮助和信息'),
-                subtitle: Text('版本: $_version ($_buildNumber)'),
+                title: Text(t.helpinfo),
+                subtitle: Text('${t.version}: $_version ($_buildNumber)'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _about(context),
               ),
               if (!kIsWeb)
                 ListTile(
                   leading: const Icon(Icons.power_settings_new),
-                  title: const Text('退出程序'),
-                  subtitle: const Text('完全释放运行内存并退出'),
+                  title: Text(t.exit),
+                  subtitle: Text(t.exit2),
                   onTap: _isExiting ? null : () => _performExitWithAnimation(),
                 ),
             ],
@@ -288,8 +326,8 @@ class _SettingsViewState extends State<SettingsView>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认导入'),
-        content: const Text('导入新配置将覆盖当前所有已保存的内容，此操作不可撤销。确定要继续吗？'),
+        title: Text(t.importscreenconf1),
+        content: Text(t.importscreenconf3),
         actions: [
           TextButton(
             onPressed: () {
@@ -311,6 +349,14 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
+  String _getLocaleKey(Locale? locale) {
+    if (locale == null) return 'auto';
+    if (locale.languageCode == 'zh' && locale.scriptCode == 'Hant') {
+      return 'zh_Hant';
+    }
+    return locale.languageCode;
+  }
+
   /// 顯示還原出廠設定確認對話框。
   ///
   /// 執行後將清除所有本地儲存的持久化資料。
@@ -320,8 +366,8 @@ class _SettingsViewState extends State<SettingsView>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('清空所有设置'),
-        content: const Text('这将清除所有保存的内容且无法恢复。确定要重置吗？'),
+        title: Text(t.allclear1),
+        content: Text(t.allclear3),
         actions: [
           TextButton(
             onPressed: () {
@@ -336,7 +382,7 @@ class _SettingsViewState extends State<SettingsView>
               widget.controller.clearAllData(context);
               Navigator.pop(context);
             },
-            child: const Text('确定重置', style: TextStyle(color: Colors.red)),
+            child: Text(t.ok, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -354,7 +400,7 @@ class _SettingsViewState extends State<SettingsView>
         return StatefulBuilder(
           builder: (context, mSetState) {
             return AboutDialog(
-              applicationName: "长夜看板",
+              applicationName: t.appTitle,
               applicationIcon: SizedBox(
                 width: 64,
                 height: 64,
@@ -373,12 +419,12 @@ class _SettingsViewState extends State<SettingsView>
                     GestureDetector(
                       onTap: () => jumpUrL(
                         path:
-                            "/kagurazakayashi/EvernightBoard/blob/main/README.md",
+                            "/kagurazakayashi/EvernightBoard/blob/main/${t.readme}",
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "使用说明",
+                          t.help,
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             color: Colors.blue,
@@ -393,7 +439,7 @@ class _SettingsViewState extends State<SettingsView>
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "问题反馈",
+                          t.issues,
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             color: Colors.blue,
@@ -407,7 +453,7 @@ class _SettingsViewState extends State<SettingsView>
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "源代码",
+                          t.srccode,
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             color: Colors.blue,

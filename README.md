@@ -143,6 +143,21 @@ If you need to edit the source code, steps 1 through 5 must be completed before 
 5. Launch Xcode and open `Runner.xcworkspace` in the `macos` or `ios` folder to configure settings (e.g., certificates and provisioning profiles).
 6. Proceed with the formal compilation.
 
+## Privacy
+
+This program is completely open-source, free of charge, and respects your privacy.
+
+This program only uses permissions in the following scenarios, and you can disable all of its permissions in the system settings.
+
+- **Read-only** access to your photo album or file system:
+  - When importing images.
+  - When importing configuration files.
+- **Write** access to your file system:
+  - When exporting configuration files.
+- Network Connectivity:
+  - **This program does not initiate any network connections.**
+  - URL links in the "About" section will open in your web browser.
+
 ## License
 
 ```LICENSE

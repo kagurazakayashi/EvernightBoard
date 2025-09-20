@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:evernight_board/l10n/app_localizations.dart';
 import 'global.dart';
+import 'package:evernight_board/home/home_controller.dart';
+
+final HomeController _appController = HomeController();
 
 /// 應用程式進入點。
 ///
@@ -17,14 +20,16 @@ void main() {
 
   // 註冊你的自定義許可
   LicenseRegistry.addLicense(() async* {
-    // 讀取 LICENSE 檔案內容
     final license = await rootBundle.loadString('LICENSE');
-    final licensezh = await rootBundle.loadString('LICENSE.zh-CN');
-    // 返回一個 LicenseEntry
-    yield LicenseEntryWithLineBreaks([
-      '\u0001 EvernightBoard (English)',
-    ], license);
-    yield LicenseEntryWithLineBreaks(['\u0001 长夜看板 (中文)'], licensezh);
+    yield LicenseEntryWithLineBreaks(['\u0002 ${t.appTitle} LICENSE'], license);
+    final readmeen = await rootBundle.loadString("README.md");
+    yield LicenseEntryWithLineBreaks(['\u0003 Help and Information'], readmeen);
+    final readmechs = await rootBundle.loadString("README.zh-Hans.md");
+    yield LicenseEntryWithLineBreaks(['\u0003 帮助和信息'], readmechs);
+    final readmecht = await rootBundle.loadString("README.zh-Hant.md");
+    yield LicenseEntryWithLineBreaks(['\u0003 說明和資訊'], readmecht);
+    final readmeja = await rootBundle.loadString("README.ja.md");
+    yield LicenseEntryWithLineBreaks(['\u0003 使い方'], readmeja);
   });
 
   // 若未來需要支援整體 Widget 樹重建，可改用 RestartWidget 包裝根元件。
@@ -48,61 +53,65 @@ class EvernightBoardAPP extends StatelessWidget {
     // 定義基礎主題色，供亮色與暗色主題共同衍生色彩系統使用
     const Color seedColor = Colors.red;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return ListenableBuilder(
+      listenable: _appController,
+      builder: (context, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          locale: _appController.appLocale,
 
-      // 提供翻譯字典的代理
-      localizationsDelegates: const [
-        AppLocalizations.delegate, // 生成的代理
-        GlobalMaterialLocalizations.delegate, // Material 元件的內建多語言
-        GlobalWidgetsLocalizations.delegate, // Widget 元件的內建多語言
-        GlobalCupertinoLocalizations.delegate, // Cupertino 元件的內建多語言
-      ],
-      // 宣告 APP 支援的語言列表
-      supportedLocales: const [
-        Locale('zh'), // 簡體中文
-        Locale('zh', 'Hant'), // 繁體中文 (語言碼, 腳本碼)
-        Locale('en'), // 英語
-        Locale('ja'), // 日語
-      ],
-      // 使用 builder 攔截 context 並初始化 Global
-      builder: (context, child) {
-        Global.init(context);
-        return child!;
+          // 提供翻譯字典的代理
+          localizationsDelegates: const [
+            AppLocalizations.delegate, // 生成的代理
+            GlobalMaterialLocalizations.delegate, // Material 元件的內建多語言
+            GlobalWidgetsLocalizations.delegate, // Widget 元件的內建多語言
+            GlobalCupertinoLocalizations.delegate, // Cupertino 元件的內建多語言
+          ],
+          // 宣告 APP 支援的語言列表
+          supportedLocales: const [
+            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+            Locale('en'),
+            Locale('ja'),
+          ],
+          // 使用 builder 攔截 context 並初始化 Global
+          builder: (context, child) {
+            Global.init(context);
+            return child!;
+          },
+
+          // 亮色主題設定
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Brightness.light,
+            ),
+            // 集中調整全域元件樣式
+            appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+            snackBarTheme: SnackBarThemeData(
+              behavior: SnackBarBehavior.floating, // 強制使用浮動樣式，不會緊貼底部
+            ),
+          ),
+
+          // 暗色主題設定。
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Brightness.dark, // 指定使用暗色亮度配置
+            ),
+            // 暗色模式下額外指定頁面背景色，避免預設背景不符合整體視覺風格。
+            scaffoldBackgroundColor: const Color(0xFF121212), // 經典深色背景
+          ),
+
+          // 設定主題模式跟隨系統。
+          themeMode: ThemeMode.system,
+
+          // 應用程式首頁入口。
+          home: HomeView(controller: _appController),
+        );
       },
-      // (可選) 可以在這裡強制指定語言，如果不填則預設跟隨系統語言
-      // locale: const Locale('zh'),
-
-      // 亮色主題設定
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.light,
-        ),
-        // 集中調整全域元件樣式
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-        snackBarTheme: SnackBarThemeData(
-          behavior: SnackBarBehavior.floating, // 強制使用浮動樣式，不會緊貼底部
-        ),
-      ),
-
-      // 暗色主題設定。
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.dark, // 指定使用暗色亮度配置
-        ),
-        // 暗色模式下額外指定頁面背景色，避免預設背景不符合整體視覺風格。
-        scaffoldBackgroundColor: const Color(0xFF121212), // 經典深色背景
-      ),
-
-      // 設定主題模式跟隨系統。
-      themeMode: ThemeMode.system,
-
-      // 應用程式首頁入口。
-      home: const HomeView(),
     );
   }
 }

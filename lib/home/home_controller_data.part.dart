@@ -5,6 +5,9 @@ part of 'home_controller.dart';
 /// 負責處理應用的持久化資料、組態設定、項目列表管理以及檔案的匯入匯出邏輯。
 /// 此混入必須應用於繼承自 [ChangeNotifier] 且能轉型為 [HomeController] 的類別。
 mixin HomeControllerData on ChangeNotifier {
+  Locale? _appLocale;
+  Locale? get appLocale => _appLocale;
+
   /// 標記資料是否已完成初始化載入。
   bool _isInitialized = false;
 
@@ -33,6 +36,14 @@ mixin HomeControllerData on ChangeNotifier {
   /// 僅限 Android 與 iOS 平台，且不支援 Web 環境。
   bool get _isVolumeSupported =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
+  /// 切換語系並儲存
+  void changeLocale(Locale? locale) {
+    _appLocale = locale;
+    debugPrint('[HomeControllerData] 變更語系為: ${locale?.languageCode ?? "自動"}');
+    notifyListeners();
+    _syncConfig(); // 儲存到本地
+  }
 
   /// 顯示統一風格的 SnackBar 提示訊息。
   ///
@@ -103,6 +114,14 @@ mixin HomeControllerData on ChangeNotifier {
       final String? configJson = prefs.getString(_configKey);
       if (configJson != null) {
         final Map<String, dynamic> config = jsonDecode(configJson);
+        final String? langCode = config['languageCode'];
+        final String? scriptCode = config['scriptCode'];
+        if (langCode != null) {
+          _appLocale = Locale.fromSubtags(
+            languageCode: langCode,
+            scriptCode: scriptCode,
+          );
+        }
         useVolumeKeys = _isVolumeSupported
             ? (config['useVolumeKeys'] ?? false)
             : false;
@@ -113,7 +132,7 @@ mixin HomeControllerData on ChangeNotifier {
         portraitNavPosition =
             PortraitNavPosition.values[config['portraitNavPosition'] ??
                 PortraitNavPosition.auto.index];
-        debugPrint('[HomeControllerData] 組態設定載入完成。');
+        debugPrint('[HomeControllerData] 組態設定載入完成，目前語言: ${_appLocale ?? "自動"}');
       }
     } catch (e) {
       debugPrint('[HomeControllerData] 初始化過程發生例外錯誤: $e');
@@ -136,6 +155,8 @@ mixin HomeControllerData on ChangeNotifier {
         'useSideTap': useSideTap,
         'landscapeNavPosition': landscapeNavPosition.index,
         'portraitNavPosition': portraitNavPosition.index,
+        'languageCode': _appLocale?.languageCode,
+        'scriptCode': _appLocale?.scriptCode,
       }),
     );
   }
