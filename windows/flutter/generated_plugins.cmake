@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   flutter_volume_controller
+  share_plus
   url_launcher_windows
 )
 

@@ -48,6 +48,7 @@ dependencies:
   file_picker: ^10.3.10 # 檔案選取器
   url_launcher: ^6.3.2 # 開啟瀏覽器或外部連結
   package_info_plus: ^9.0.0 # 讀取應用程式套件資訊
+  share_plus: ^12.0.1
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +58,7 @@ dev_dependencies:
   # 該 Lint 規則集在專案根目錄下的 `analysis_options.yaml` 檔案中啟用。
   # 請參閱該檔案以了解如何停用特定規則或新增額外規則。
   flutter_lints: ^6.0.0
+  rename: ^3.1.0
 
 # 關於本檔案中通用 Dart 部分的資訊，請參閱以下頁面：
 # https://dart.dev/tools/pub/pubspec

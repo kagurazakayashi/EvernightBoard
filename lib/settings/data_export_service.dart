@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:evernight_board/global.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// 資料匯入／匯出服務。
 ///
@@ -26,27 +28,53 @@ class DataExportService {
   /// - `false`：使用者取消或匯出失敗
   static Future<bool> exportJson(String jsonContent) async {
     try {
-      debugPrint('[DataExportService] 開始匯出 JSON 檔案');
+      debugPrint('[DataExportService] 開始導出 JSON');
+      final String fileName =
+          'evernight_backup_${DateTime.now().millisecondsSinceEpoch}.json';
 
-      String? outputFile = await FilePicker.platform.saveFile(
-        dialogTitle: t.savelocation,
-        fileName:
-            'evernight_backup_${DateTime.now().millisecondsSinceEpoch}.json',
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
-
-      if (outputFile != null) {
-        final file = File(outputFile);
+      // 判斷是否為行動端 (Android 或 iOS)
+      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+        // 1. 將數據寫入暫存目錄的臨時檔案中
+        final directory = await getTemporaryDirectory();
+        final file = File('${directory.path}/$fileName');
         await file.writeAsString(jsonContent);
-        debugPrint('[DataExportService] 匯出成功：$outputFile');
-        return true;
-      }
 
-      debugPrint('[DataExportService] 使用者取消匯出');
-      return false;
+        // 2. 使用最新的 SharePlus 實例方法呼叫系統分享/儲存面板
+        final result = await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path)],
+            subject: 'EvernightBoardConfig',
+          ),
+        );
+
+        if (result.status == ShareResultStatus.success) {
+          debugPrint('[DataExportService] 行動端導出成功');
+          return true;
+        }
+        debugPrint('[DataExportService] 使用者取消操作');
+        return false;
+      }
+      // 桌面端 (Windows, macOS, Linux) 邏輯保持不變
+      else {
+        String? outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: t.savelocation,
+          fileName: fileName,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+        );
+
+        if (outputFile != null) {
+          final file = File(outputFile);
+          await file.writeAsString(jsonContent);
+          debugPrint('[DataExportService] 桌面端導出成功: $outputFile');
+          return true;
+        }
+
+        debugPrint('[DataExportService] 使用者取消導出');
+        return false;
+      }
     } catch (e) {
-      debugPrint('[DataExportService] 导出失败: $e');
+      debugPrint('[DataExportService] 導出失敗: $e');
       return false;
     }
   }
