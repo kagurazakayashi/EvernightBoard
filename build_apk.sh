@@ -1,6 +1,7 @@
 flutter clean
 flutter pub get
 bash generate_icons
+dart run flutter_native_splash:create
 dart run flutter_iconpicker:generate_packs --packs material
 flutter gen-l10n
 flutter build "apk" -v --no-tree-shake-icons

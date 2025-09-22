@@ -44,11 +44,11 @@ dependencies:
   shared_preferences: ^2.5.4 # 本地輕量級資料儲存 (偏好設定)
   path_provider: ^2.1.5 # 存取常用的檔案系統路徑
   path: ^1.9.1 # 路徑字串處理
-  flutter_launcher_icons: ^0.14.4 # 快速生成 APP 圖示
   file_picker: ^10.3.10 # 檔案選取器
   url_launcher: ^6.3.2 # 開啟瀏覽器或外部連結
   package_info_plus: ^9.0.0 # 讀取應用程式套件資訊
   share_plus: ^12.0.1
+  flutter_markdown: ^0.7.7+1
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +59,8 @@ dev_dependencies:
   # 請參閱該檔案以了解如何停用特定規則或新增額外規則。
   flutter_lints: ^6.0.0
   rename: ^3.1.0
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4 # 快速生成 APP 圖示
 
 # 關於本檔案中通用 Dart 部分的資訊，請參閱以下頁面：
 # https://dart.dev/tools/pub/pubspec
@@ -111,7 +113,7 @@ flutter: # 3.41
   # 關於從套件相依性中添加字型的細節，請參閱：
   # https://flutter.dev/to/font-from-package
 
-# 執行指令：flutter pub run flutter_launcher_icons
+# 執行指令：dart run flutter_launcher_icons
 # APP 圖示設定
 flutter_launcher_icons:
   image_path: "assets/appicon/launcher_icons.png"
@@ -139,3 +141,15 @@ flutter_launcher_icons:
   macos:
     generate: true
     image_path: "assets/appicon/launcher_round_icons.png"
+
+flutter_native_splash:
+  # 背景顏色
+  color: "#7a212e"
+  # 背景圖片（填入檔案路徑）
+  background_image: "assets/appicon/adaptive_icon_background.png"
+  # 前景圖示（中心的 Logo）
+  image: "assets/appicon/adaptive_icon_foreground.png"
+  # Android 12 及以上版本的特殊處理，只支援純色背景 + 中心圖示
+  android_12:
+    image: "assets/appicon/adaptive_icon_foreground.png" # 通常需要無邊距的圖示
+    color: "#7a212e"

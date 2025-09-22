@@ -1,4 +1,4 @@
-![icon](assets/appicon/icon.ico)
+![EvernightBoard](assets/appicon/icon.ico)
 
 # EvernightBoard 長夜看板
 
@@ -67,11 +67,12 @@ Android | iOS | Windows | macOS | Linux
          1. **匯出配置**：將**螢幕配置**匯出為 JSON 檔案。若含有圖片將會嵌入，導致匯出檔案顯著變大。
          2. **匯入配置**：從 JSON 檔案匯入**螢幕配置**，建議僅匯入相同版本 APP 的配置。
          3. **恢復出廠設定**：清空所有**螢幕設定**與**軟體設定**。
-      4. 關於
-         1. **說明與資訊**：打開「關於」視窗。
+      4. 說明與資訊
+         1. **使用說明**：閱讀使用說明 `README.md`
+         2. **關於**：開啟關於視窗，查看作者與版本資訊。
             1. **使用說明**、**問題回饋**、**原始碼**：開啟瀏覽器造訪相關網頁。
-            2. **查看協議**：列出本軟體及本軟體使用的所有第三方函式庫的授權協議。
-         2. **結束程式**：完全結束程式並釋放執行記憶體，不會在背景殘留。
+            2. **查看授權協議**：列出本軟體及本軟體使用的所有第三方函式庫的許可協議。
+         3. **結束程式**：完全結束程式，釋放執行記憶體，不會在背景留存。
 
 #### 其他建議
 
@@ -117,12 +118,13 @@ Android | iOS | Windows | macOS | Linux
 
 1. 執行 `flutter clean` 清除快取。
 2. 執行 `flutter pub get` 下載所需的第三方函式庫。
-3. 執行 `generate_icons.bat` 或 `./generate_icons` 產生各種規格與樣式的應用程式圖示。
-4. 執行 `flutter gen-l10n` 建置多語系文本。
-5. 執行 `dart.bat run flutter_iconpicker:generate_packs --packs material` 準備圖示資源。
-6. 執行 `flutter run` 開始偵錯。
+3. 執行 `generate_icons.bat` 或 `./generate_icons` 以產生各種規格與樣式的應用程式圖示。
+4. 執行 `dart run flutter_native_splash:create` 以建置啟動畫面。
+5. 執行 `flutter gen-l10n` 以建置多國語言文本。
+6. 執行 `dart run flutter_iconpicker:generate_packs --packs material` 以準備圖示資源。
+7. 執行 `flutter run` 開始偵錯。
 
-如果需要編輯原始碼，必須在啟動 IDE 前完成第 1 步到第 5 步。
+若需要編輯原始碼，必須在啟動 IDE 前完成第 1 步至第 5 步。
 
 ### 在 Windows 中編譯
 

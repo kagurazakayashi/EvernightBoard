@@ -170,11 +170,11 @@ if [ -n "${DART_CMD:-}" ]; then
   "$DART_CMD" run flutter_launcher_icons
   rc=$?
   if [ $rc -ne 0 ]; then
-    warn "$DART_CMD failed, trying flutter pub run..."
-    flutter pub run flutter_launcher_icons || fail "flutter_launcher_icons execution failed."
+    warn "$DART_CMD failed, trying dart run..."
+    dart run flutter_launcher_icons || fail "flutter_launcher_icons execution failed."
   fi
 else
-  flutter pub run flutter_launcher_icons || fail "flutter_launcher_icons execution failed."
+  dart run flutter_launcher_icons || fail "flutter_launcher_icons execution failed."
 fi
 
 ok "flutter_launcher_icons completed."

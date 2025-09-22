@@ -6,6 +6,7 @@ import '../home/home_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:evernight_board/global.dart';
+import 'readme_view.dart';
 
 /// 設定頁面視圖元件。
 ///
@@ -113,7 +114,7 @@ class _SettingsViewState extends State<SettingsView>
     // 檢查目前運行平台是否具備物理音量鍵支援（排除 Web 並限制在 iOS/Android）
     final bool isVolumeSupported =
         !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-
+    bool isEnglish = t.language != "Language";
     return Stack(
       children: [
         Scaffold(
@@ -124,6 +125,7 @@ class _SettingsViewState extends State<SettingsView>
               ListTile(
                 leading: const Icon(Icons.language),
                 title: Text(t.language),
+                subtitle: isEnglish ? const Text("Language") : null,
                 trailing: DropdownButton<String>(
                   value: _getLocaleKey(widget.controller.appLocale),
                   onChanged: (val) {
@@ -283,10 +285,22 @@ class _SettingsViewState extends State<SettingsView>
                 onTap: () => _confirmReset(context),
               ),
               const Divider(),
-              _SettingsSectionTitle(title: t.about),
+              _SettingsSectionTitle(title: t.helpinfo),
+              ListTile(
+                leading: const Icon(Icons.help_outline),
+                title: Text(t.help),
+                subtitle: Text(t.help),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ReadmeView()),
+                  );
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.info_outline),
-                title: Text(t.helpinfo),
+                title: Text(t.about),
                 subtitle: Text('${t.version}: $_version ($_buildNumber)'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _about(context),

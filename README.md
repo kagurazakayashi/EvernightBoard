@@ -1,4 +1,4 @@
-![icon](assets/appicon/icon.ico)
+![EvernightBoard](assets/appicon/icon.ico)
 
 # EvernightBoard
 
@@ -67,11 +67,12 @@ Android | iOS | Windows | macOS | Linux
          1. **Export Config**: Export **Screen Configuration** to a JSON file. Embedded images will significantly increase the file size.
          2. **Import Config**: Import **Screen Configuration** from a JSON file. It is recommended to only import configs from the same APP version.
          3. **Restore Factory Settings**: Clear all **Screen Settings** and **Software Settings**.
-      4. About
-         1. **Help and Info**: Open the "About" window.
-            1. **User Guide**, **Feedback**, **Source Code**: Opens the browser to visit related webpages.
-            2. **View Licenses**: Lists the license agreements for this software and all third-party libraries used.
-         2. **Exit Program**: Completely close the program and release RAM; no background processes will remain.
+      4. Help and Information
+         1. **Instructions**: Read the instructions in `README.md`.
+         2. **About**: Open the About window to view author and version information.
+            1. **Instructions**, **Feedback**, **Source Code**: Open the browser to visit relevant webpages.
+            2. **View Licenses**: List the license agreements for this software and all third-party libraries used by this software.
+         3. **Exit Program**: Completely exit the program and release system memory; it will not remain in the background.
 
 #### Other Suggestions
 
@@ -117,12 +118,13 @@ After preparing multiple preset images or texts according to the preparation ste
 
 1. Run `flutter clean` to clear the cache.
 2. Run `flutter pub get` to download the required third-party libraries.
-3. Run `generate_icons.bat` or `./generate_icons` to generate application icons of various specifications and styles.
-4. Run `flutter gen-l10n` to build localization strings.
-5. Run `dart.bat run flutter_iconpicker:generate_packs --packs material` to prepare icon resources.
-6. Run `flutter run` to start debugging.
+3. Run `generate_icons.bat` or `./generate_icons` to generate app icons of various specifications and styles.
+4. Run `dart run flutter_native_splash:create` to build the splash screen.
+5. Run `flutter gen-l10n` to build localization (l10n) texts.
+6. Run `dart run flutter_iconpicker:generate_packs --packs material` to prepare icon resources.
+7. Run `flutter run` to start debugging.
 
-If you need to edit the source code, steps 1 through 5 must be completed before launching the IDE.
+If you need to edit the source code, you must complete steps 1 through 5 before starting the IDE.
 
 ### Compiling on Windows
 

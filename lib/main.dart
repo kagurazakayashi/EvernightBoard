@@ -21,15 +21,7 @@ void main() {
   // 註冊你的自定義許可
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('LICENSE');
-    yield LicenseEntryWithLineBreaks(['\u0002 ${t.appTitle} LICENSE'], license);
-    final readmeen = await rootBundle.loadString("README.md");
-    yield LicenseEntryWithLineBreaks(['\u0003 Help and Information'], readmeen);
-    final readmechs = await rootBundle.loadString("README.zh-Hans.md");
-    yield LicenseEntryWithLineBreaks(['\u0003 帮助和信息'], readmechs);
-    final readmecht = await rootBundle.loadString("README.zh-Hant.md");
-    yield LicenseEntryWithLineBreaks(['\u0003 說明和資訊'], readmecht);
-    final readmeja = await rootBundle.loadString("README.ja.md");
-    yield LicenseEntryWithLineBreaks(['\u0003 使い方'], readmeja);
+    yield LicenseEntryWithLineBreaks(['\u0001 ${t.appTitle}'], license);
   });
 
   // 若未來需要支援整體 Widget 樹重建，可改用 RestartWidget 包裝根元件。

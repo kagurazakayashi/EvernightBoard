@@ -23,6 +23,7 @@ echo "Detected OS: $OS"
 flutter clean
 flutter pub get
 bash generate_icons.sh
+dart run flutter_native_splash:create
 dart run flutter_iconpicker:generate_packs --packs material
 flutter gen-l10n
 echo "Running: flutter build $TARGET"
