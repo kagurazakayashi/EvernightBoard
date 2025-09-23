@@ -1,10 +1,10 @@
-![EvernightBoard](assets/appicon/icon.ico)
+# EvernightBoard 长夜锦书
 
-# EvernightBoard 长夜看板
+![EvernightBoard](assets/appicon/icon.ico)
 
 [English](README.md) | **简体中文** | [繁體中文](README.zh-Hant.md) | [日本語](README.ja.md)
 
-**寄长夜之灵犀，化万语为此间。**
+**揽长夜之锦字，化万语为此间。**
 
 EvernightBoard 是一款通过预设图文，在触屏和语言交流都受限时为您延续沟通的展示辅助工具。
 
@@ -106,6 +106,21 @@ Android | iOS | Windows | macOS | Linux
 
 `^ ✪ ω ✪ ^` _所以你猜这个应用程序最初设计是为了什么情景的？_
 
+## 隐私权
+
+本程序完全开源、免费，并且尊重您的隐私。
+
+本程序只会在以下场景使用权限，并且您可以在系统中禁用其所有权限。
+
+- **只读**访问您的相册或文件系统：
+  - 导入图片时。
+  - 导入配置文件时。
+- **写入**您的文件系统：
+  - 导出配置文件时。
+- 网络连接：
+  - **本程序不会产生任何网络连接。**为了防止供应链攻击或者程序包被修改，建议您直接在操作系统中完全禁用本应用的网络连接权限。
+  - “关于”中的 URL 链接会在浏览器中打开网页。
+
 ## 编译
 
 ### 环境要求
@@ -124,6 +139,11 @@ Android | iOS | Windows | macOS | Linux
 6. 运行 `dart run flutter_iconpicker:generate_packs --packs material` 准备图标资源。
 7. 运行 `flutter run` 开始调试。
 
+#### 手动编译示例
+
+- 运行 `flutter build apk -v --no-tree-shake-icons` 为 Android 编译
+- 运行 `flutter build aab -v --no-tree-shake-icons` 为 Android 编译发布版
+
 如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
 
 ### 在 Windows 中编译
@@ -139,26 +159,11 @@ Android | iOS | Windows | macOS | Linux
 ### 编译为 macOS 或 iOS
 
 1. 运行上面的“调试”中的第 1 步到第 5 步。
-2. 运行 `flutter build macos` 或 `flutter build ios` ，这可能会失败，不用管它。
+2. 运行 `flutter build macos --no-tree-shake-icons` 或 `flutter build ios --no-tree-shake-icons` ，这可能会失败，不用管它。
 3. 运行 `cd macos` 或 `cd ios` 进入相应平台文件夹。
 4. 运行 `pod install` 下载所需第三方库。
 5. 运行 Xcode ，打开 `macos` 或 `ios` 文件夹中的 `Runner.xcworkspace` 进行配置（例如证书和描述文件）。
 6. 进行正式编译。
-
-## 隐私权
-
-本程序完全开源、免费，并且尊重您的隐私。
-
-本程序只会在以下场景使用权限，并且您可以在系统中禁用其所有权限。
-
-- **只读**访问您的相册或文件系统：
-  - 导入图片时。
-  - 导入配置文件时。
-- **写入**您的文件系统：
-  - 导出配置文件时。
-- 网络连接：
-  - **本程序不会产生任何网络连接。**
-  - “关于”中的 URL 链接会在浏览器中打开网页。
 
 ## 许可协议
 

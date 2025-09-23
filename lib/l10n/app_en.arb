@@ -1,85 +1,331 @@
 {
   "@@locale": "en",
-  "locale": "English",
-  "readme": "README.md",
-  "appTitle": "EvernightBoard",
-  "loading": "Loading...",
-  "language": "Language",
-  "languageupdated": "Language updated to ",
-  "auto": "automatic",
-  "ok": "OK",
-  "cancel": "Cancel",
-  "newscreen": "New Screen",
-  "screenadded": "A screen has been added",
-  "screencopied": "A screen has been copied",
-  "screendeleted": "A screen has been deleted",
-  "unnamed": "Unnamed",
-  "previous": "Previous",
-  "next": "Next",
-  "colortone": "Select Tone",
-  "entercontent": "Please enter content...",
-  "searchicon": "Search icons...",
-  "sidebaricons": "Sidebar Icons",
-  "selectsidebarico": "Select Sidebar Icon",
-  "sidebaricoupdated": "Sidebar icon updated",
-  "icounchanged": "Icon unchanged",
-  "sidebartitle": "Sidebar Title",
-  "sidebartitlechanged": "Sidebar title changed to ",
-  "moveforward": "Move Forward",
-  "movebackward": "Move Backward",
-  "setastext": "Set as Text",
-  "textupdated": "Set to Text mode",
-  "setasimage": "Set as Image",
-  "imageupdated": "Set to Image mode",
-  "imagefailed": "No image selected or setup failed",
-  "textcolor": "Text Color",
-  "textcolordefault": "Restored default text color",
-  "textcolorupdated": "Text color changed",
-  "backgroundcolor": "Background Color",
-  "backgroundcolordefault": "Restored default background color",
-  "backgroundcolorupdated": "Background color changed",
-  "addscreen": "Add Screen",
-  "copyscreen": "Copy Screen",
-  "deletescreen": "Delete Screen",
-  "appsettings": "App Settings",
-  "pageturning": "Page Turning Interaction",
-  "halfscreenturnpages1": "Tap half-screen to turn pages",
-  "halfscreenturnpages2": "Tap left/right half in landscape, top/bottom half in portrait.",
-  "volumeturnpages1": "Volume keys to turn pages",
-  "volumeturnpages2": "Use physical volume buttons to switch items",
-  "volumeturnpages3": "Current platform does not support volume key page turning",
-  "navbarlocation": "Navigation Bar Location",
-  "currlandscape": "In landscape mode",
-  "currportrait": "In portrait mode",
-  "navbarlocationauto": "Auto move to tilted side",
-  "alwaystop": "Always Top",
-  "alwaysbottom": "Always Bottom",
-  "alwaysleft": "Always Left",
-  "alwaysright": "Always Right",
-  "allcleared": "All data and settings successfully cleared",
-  "exportok": "Configuration file exported successfully",
-  "exportcancel": "Export cancelled",
-  "nofileselected": "No file selected, import cancelled",
-  "importok1": "Successfully imported screen settings ( ",
-  "importok2": " )",
-  "invalidconffile": "Invalid configuration file or contains no items",
-  "conffileparsingfailed": "Configuration file parsing failed, please check file format",
-  "savelocation": "Please select a save location",
-  "datamanagement": "Data Management",
-  "exportscreenconf1": "Export Screen Configuration",
-  "exportscreenconf2": "Save all current screen configurations as a JSON file",
-  "importscreenconf1": "Import Screen Configuration",
-  "importscreenconf2": "Restore configurations from a backup file (will overwrite current data)",
-  "importscreenconf3": "Importing a new configuration will overwrite all currently saved content. This action cannot be undone. Are you sure you want to continue?",
-  "allclear1": "Delete All Data and Settings",
-  "allclear2": "Clear all saved items, colors, and image configurations",
-  "allclear3": "This will clear all saved content and software settings and cannot be recovered. Are you sure you want to reset?",
   "about": "About",
-  "helpinfo": "Help and Information",
-  "version": "Version",
+  "@about": {
+    "description": "关于"
+  },
+  "addscreen": "Add Screen",
+  "@addscreen": {
+    "description": "新增屏幕"
+  },
+  "allclear1": "Delete All Data and Settings",
+  "@allclear1": {
+    "description": "删除所有数据与设置"
+  },
+  "allclear2": "Clear all saved items, colors, and image configurations",
+  "@allclear2": {
+    "description": "清除所有保存的项目、颜色和图片配置"
+  },
+  "allclear3": "This will clear all saved content and software settings and cannot be recovered. Are you sure you want to reset?",
+  "@allclear3": {
+    "description": "这将清除所有保存的内容和软件设置且无法恢复。确定要重置吗？"
+  },
+  "allcleared": "All data and settings successfully cleared",
+  "@allcleared": {
+    "description": "所有数据与设置已成功清空"
+  },
+  "alwaysbottom": "Always Bottom",
+  "@alwaysbottom": {
+    "description": "始终在底端"
+  },
+  "alwaysleft": "Always Left",
+  "@alwaysleft": {
+    "description": "始终在左侧"
+  },
+  "alwaysright": "Always Right",
+  "@alwaysright": {
+    "description": "始终在右侧"
+  },
+  "alwaystop": "Always Top",
+  "@alwaystop": {
+    "description": "始终在顶部"
+  },
+  "appTitle": "EvernightBoard",
+  "@appTitle": {
+    "description": "长夜锦书"
+  },
+  "appsettings": "App Settings",
+  "@appsettings": {
+    "description": "应用设置"
+  },
+  "auto": "automatic",
+  "@auto": {
+    "description": "自动"
+  },
+  "backgroundcolor": "Background Color",
+  "@backgroundcolor": {
+    "description": "背景颜色"
+  },
+  "backgroundcolordefault": "Restored default background color",
+  "@backgroundcolordefault": {
+    "description": "已恢复默认背景颜色"
+  },
+  "backgroundcolorupdated": "Background color changed",
+  "@backgroundcolorupdated": {
+    "description": "颜色颜色已更换"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "取消"
+  },
+  "colortone": "Select Tone",
+  "@colortone": {
+    "description": "选择色调"
+  },
+  "conffileparsingfailed": "Configuration file parsing failed, please check file format",
+  "@conffileparsingfailed": {
+    "description": "配置文件解析失败，请检查文件格式"
+  },
+  "copyscreen": "Copy Screen",
+  "@copyscreen": {
+    "description": "复制屏幕"
+  },
+  "currlandscape": "In landscape mode",
+  "@currlandscape": {
+    "description": "横屏状态下"
+  },
+  "currportrait": "In portrait mode",
+  "@currportrait": {
+    "description": "竖屏状态下"
+  },
+  "datamanagement": "Data Management",
+  "@datamanagement": {
+    "description": "数据管理"
+  },
+  "deletescreen": "Delete Screen",
+  "@deletescreen": {
+    "description": "删除屏幕"
+  },
+  "entercontent": "Please enter content...",
+  "@entercontent": {
+    "description": "请输入内容..."
+  },
   "exit": "Exit Application",
+  "@exit": {
+    "description": "退出程序"
+  },
   "exit2": "Completely release RAM and exit",
+  "@exit2": {
+    "description": "完全释放运行内存并退出"
+  },
+  "exportcancel": "Export cancelled",
+  "@exportcancel": {
+    "description": "配置文件已成功导出"
+  },
+  "exportok": "Configuration file exported successfully",
+  "@exportok": {
+    "description": "配置文件已成功导出"
+  },
+  "exportscreenconf1": "Export Screen Configuration",
+  "@exportscreenconf1": {
+    "description": "导出屏幕配置"
+  },
+  "exportscreenconf2": "Save all current screen configurations as a JSON file",
+  "@exportscreenconf2": {
+    "description": "将当前所有屏幕配置保存为 JSON 文件"
+  },
+  "halfscreenturnpages1": "Tap half-screen to turn pages",
+  "@halfscreenturnpages1": {
+    "description": "点按半边屏幕翻页"
+  },
+  "halfscreenturnpages2": "Tap left/right half in landscape, top/bottom half in portrait.",
+  "@halfscreenturnpages2": {
+    "description": "横屏时按左右半屏、竖屏时按上下半屏。"
+  },
   "help": "User Guide",
+  "@help": {
+    "description": "使用说明"
+  },
+  "helpinfo": "Help and Information",
+  "@helpinfo": {
+    "description": "帮助和信息"
+  },
+  "icounchanged": "Icon unchanged",
+  "@icounchanged": {
+    "description": "未更改图标"
+  },
+  "imagefailed": "No image selected or setup failed",
+  "@imagefailed": {
+    "description": "未选择图片或设置失败"
+  },
+  "imageupdated": "Set to Image mode",
+  "@imageupdated": {
+    "description": "已设置为图片模式"
+  },
+  "importok1": "Successfully imported screen settings ( ",
+  "@importok1": {
+    "description": "成功导入屏幕设置 ( "
+  },
+  "importok2": " )",
+  "@importok2": {
+    "description": " 个)"
+  },
+  "importscreenconf1": "Import Screen Configuration",
+  "@importscreenconf1": {
+    "description": "导入屏幕配置"
+  },
+  "importscreenconf2": "Restore configurations from a backup file (will overwrite current data)",
+  "@importscreenconf2": {
+    "description": "从备份文件恢复配置 (会覆盖当前数据)"
+  },
+  "importscreenconf3": "Importing a new configuration will overwrite all currently saved content. This action cannot be undone. Are you sure you want to continue?",
+  "@importscreenconf3": {
+    "description": "导入新配置将覆盖当前所有已保存的内容，此操作不可撤销。确定要继续吗？"
+  },
+  "invalidconffile": "Invalid configuration file or contains no items",
+  "@invalidconffile": {
+    "description": "配置文件无效或不包含任何项目"
+  },
   "issues": "Feedback",
-  "srccode": "Source Code"
+  "@issues": {
+    "description": "问题反馈"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "语言"
+  },
+  "languageupdated": "Language updated to ",
+  "@languageupdated": {
+    "description": "语言已更改为"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "正在加载..."
+  },
+  "locale": "English",
+  "@locale": {
+    "description": "简体中文"
+  },
+  "movebackward": "Move Backward",
+  "@movebackward": {
+    "description": "向后移动"
+  },
+  "moveforward": "Move Forward",
+  "@moveforward": {
+    "description": "向前移动"
+  },
+  "navbarlocation": "Navigation Bar Location",
+  "@navbarlocation": {
+    "description": "导航栏的位置"
+  },
+  "navbarlocationauto": "Auto move to tilted side",
+  "@navbarlocationauto": {
+    "description": "自动移到微倾斜侧"
+  },
+  "newscreen": "New Screen",
+  "@newscreen": {
+    "description": "新屏幕"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "下一个"
+  },
+  "nofileselected": "No file selected, import cancelled",
+  "@nofileselected": {
+    "description": "未选择文件，导入已取消"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "确定"
+  },
+  "pageturning": "Page Turning Interaction",
+  "@pageturning": {
+    "description": "翻页交互方式"
+  },
+  "previous": "Previous",
+  "@previous": {
+    "description": "上一个"
+  },
+  "readme": "README.md",
+  "@readme": {
+    "description": "README.zh-Hans.md"
+  },
+  "savelocation": "Please select a save location",
+  "@savelocation": {
+    "description": "请选择保存位置"
+  },
+  "screenadded": "A screen has been added",
+  "@screenadded": {
+    "description": "已新增一个屏幕"
+  },
+  "screencopied": "A screen has been copied",
+  "@screencopied": {
+    "description": "已复制一个屏幕"
+  },
+  "screendeleted": "A screen has been deleted",
+  "@screendeleted": {
+    "description": "已删除一个屏幕"
+  },
+  "searchicon": "Search icons...",
+  "@searchicon": {
+    "description": "搜索图标..."
+  },
+  "selectsidebarico": "Select Sidebar Icon",
+  "@selectsidebarico": {
+    "description": "选择边栏图标"
+  },
+  "setasimage": "Set as Image",
+  "@setasimage": {
+    "description": "设为图片"
+  },
+  "setastext": "Set as Text",
+  "@setastext": {
+    "description": "设为文字"
+  },
+  "sidebaricons": "Sidebar Icons",
+  "@sidebaricons": {
+    "description": "边栏图标"
+  },
+  "sidebaricoupdated": "Sidebar icon updated",
+  "@sidebaricoupdated": {
+    "description": "边栏图标已更新"
+  },
+  "sidebartitle": "Sidebar Title",
+  "@sidebartitle": {
+    "description": "边栏标题"
+  },
+  "sidebartitlechanged": "Sidebar title changed to ",
+  "@sidebartitlechanged": {
+    "description": "边栏标题已修改为"
+  },
+  "srccode": "Source Code",
+  "@srccode": {
+    "description": "源代码"
+  },
+  "textcolor": "Text Color",
+  "@textcolor": {
+    "description": "文字颜色"
+  },
+  "textcolordefault": "Restored default text color",
+  "@textcolordefault": {
+    "description": "已恢复默认文字颜色"
+  },
+  "textcolorupdated": "Text color changed",
+  "@textcolorupdated": {
+    "description": "文字颜色已更换"
+  },
+  "textupdated": "Set to Text mode",
+  "@textupdated": {
+    "description": "已设置为文字模式"
+  },
+  "unnamed": "Unnamed",
+  "@unnamed": {
+    "description": "未命名"
+  },
+  "version": "Version",
+  "@version": {
+    "description": "版本"
+  },
+  "volumeturnpages1": "Volume keys to turn pages",
+  "@volumeturnpages1": {
+    "description": "按音量键翻页"
+  },
+  "volumeturnpages2": "Use physical volume buttons to switch items",
+  "@volumeturnpages2": {
+    "description": "使用物理音量按键切换项目"
+  },
+  "volumeturnpages3": "Current platform does not support volume key page turning",
+  "@volumeturnpages3": {
+    "description": "当前平台不支持物理音量键翻页"
+  }
 }

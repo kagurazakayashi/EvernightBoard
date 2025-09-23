@@ -80,7 +80,7 @@ class _HomeViewState extends State<HomeView> {
           ],
         ),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.grey[900]?.withOpacity(0.9),
+        backgroundColor: Colors.grey[900]?.withValues(alpha: 0.9),
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

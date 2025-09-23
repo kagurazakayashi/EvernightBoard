@@ -76,7 +76,7 @@ mixin HomeControllerData on ChangeNotifier {
           ],
         ),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.grey[900]?.withOpacity(0.9),
+        backgroundColor: Colors.grey[900]?.withValues(alpha: 0.9),
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -496,8 +496,9 @@ mixin HomeControllerData on ChangeNotifier {
 
     if (jsonStr == null) {
       debugPrint('[HomeControllerData] 匯入取消：未選擇檔案。');
-      if (context.mounted)
+      if (context.mounted) {
         _showSnackBar(context, t.nofileselected, isError: true);
+      }
       return;
     }
 

@@ -1,10 +1,10 @@
-![EvernightBoard](assets/appicon/icon.ico)
-
 # EvernightBoard
+
+![EvernightBoard](assets/appicon/icon.ico)
 
 **English** | [简体中文](README.zh-Hans.md) | [繁體中文](README.zh-Hant.md) | [日本語](README.ja.md)
 
-**Entrusting the soul's connection to the deep night, transforming ten thousand voices into this space.**
+**Gathering the brocaded words of the long night, transforming ten thousand thoughts into this space.**
 
 EvernightBoard is a display-assistive tool that prolongs your communication through preset images and text when both touchscreen access and verbal communication are limited.
 
@@ -106,6 +106,21 @@ After preparing multiple preset images or texts according to the preparation ste
 
 `^ ✪ ω ✪ ^` _So, can you guess what scenario this application was originally designed for?_
 
+## Privacy
+
+This program is fully open-source, free, and respects your privacy.
+
+This program only uses permissions in the following scenarios, and you can disable all its permissions within the system settings.
+
+- **Read-only** access to your photo library or file system:
+  - When importing images.
+  - When importing configuration files.
+- **Write** access to your file system:
+  - When exporting configuration files.
+- Network Connection:
+  - **This program does not generate any network connections.** To prevent supply chain attacks or unauthorized modification of the package, it is recommended that you completely disable network access permissions for this application in your operating system.
+  - URL links in the "About" section will open web pages in your browser.
+
 ## Compilation
 
 ### Prerequisites
@@ -144,21 +159,6 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 4. Run `pod install` to download the required third-party libraries.
 5. Launch Xcode and open `Runner.xcworkspace` in the `macos` or `ios` folder to configure settings (e.g., certificates and provisioning profiles).
 6. Proceed with the formal compilation.
-
-## Privacy
-
-This program is completely open-source, free of charge, and respects your privacy.
-
-This program only uses permissions in the following scenarios, and you can disable all of its permissions in the system settings.
-
-- **Read-only** access to your photo album or file system:
-  - When importing images.
-  - When importing configuration files.
-- **Write** access to your file system:
-  - When exporting configuration files.
-- Network Connectivity:
-  - **This program does not initiate any network connections.**
-  - URL links in the "About" section will open in your web browser.
 
 ## License
 

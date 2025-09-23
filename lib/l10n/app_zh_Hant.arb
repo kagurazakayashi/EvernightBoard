@@ -1,85 +1,331 @@
 {
   "@@locale": "zh_Hant",
-  "locale": "繁體中文",
-  "readme": "README.zh-Hant.md",
-  "appTitle": "長夜看板",
-  "loading": "正在載入...",
-  "language": "語言",
-  "languageupdated": "語言已變更為",
-  "auto": "自動",
-  "ok": "確定",
-  "cancel": "取消",
-  "newscreen": "新螢幕",
-  "screenadded": "已新增一個螢幕",
-  "screencopied": "已複製一個螢幕",
-  "screendeleted": "已刪除一個螢幕",
-  "unnamed": "未命名",
-  "previous": "上一個",
-  "next": "下一個",
-  "colortone": "選擇色調",
-  "entercontent": "請輸入內容...",
-  "searchicon": "搜尋圖示...",
-  "sidebaricons": "側邊欄圖示",
-  "selectsidebarico": "選擇側邊欄圖示",
-  "sidebaricoupdated": "側邊欄圖示已更新",
-  "icounchanged": "未變更圖示",
-  "sidebartitle": "側邊欄標題",
-  "sidebartitlechanged": "側邊欄標題已修改為",
-  "moveforward": "向前移動",
-  "movebackward": "向後移動",
-  "setastext": "設為文字",
-  "textupdated": "已設定為文字模式",
-  "setasimage": "設為圖片",
-  "imageupdated": "已設定為圖片模式",
-  "imagefailed": "未選擇圖片或設定失敗",
-  "textcolor": "文字顏色",
-  "textcolordefault": "已恢復預設文字顏色",
-  "textcolorupdated": "文字顏色已更換",
-  "backgroundcolor": "背景顏色",
-  "backgroundcolordefault": "已恢復預設背景顏色",
-  "backgroundcolorupdated": "背景顏色已更換",
-  "addscreen": "新增螢幕",
-  "copyscreen": "複製螢幕",
-  "deletescreen": "刪除螢幕",
-  "appsettings": "應用程式設定",
-  "pageturning": "翻頁互動方式",
-  "halfscreenturnpages1": "點按半邊螢幕翻頁",
-  "halfscreenturnpages2": "橫向時按左右半邊螢幕，直向時按上下半邊螢幕。",
-  "volumeturnpages1": "按音量鍵翻頁",
-  "volumeturnpages2": "使用實體音量鍵切換項目",
-  "volumeturnpages3": "目前平台不支援實體音量鍵翻頁",
-  "navbarlocation": "導覽列位置",
-  "currlandscape": "橫向狀態下",
-  "currportrait": "直向狀態下",
-  "navbarlocationauto": "自動移至微傾斜側",
-  "alwaystop": "永遠在頂部",
-  "alwaysbottom": "永遠在底部",
-  "alwaysleft": "永遠在左側",
-  "alwaysright": "永遠在右側",
-  "allcleared": "所有資料與設定已成功清空",
-  "exportok": "設定檔已成功匯出",
-  "exportcancel": "匯出已取消",
-  "nofileselected": "未選擇檔案，匯入已取消",
-  "importok1": "成功匯入螢幕設定 ( ",
-  "importok2": " 個)",
-  "invalidconffile": "設定檔無效或不包含任何項目",
-  "conffileparsingfailed": "設定檔解析失敗，請檢查檔案格式",
-  "savelocation": "請選擇儲存位置",
-  "datamanagement": "資料管理",
-  "exportscreenconf1": "匯出螢幕設定",
-  "exportscreenconf2": "將目前所有螢幕設定儲存為 JSON 檔案",
-  "importscreenconf1": "匯入螢幕設定",
-  "importscreenconf2": "從備份檔案還原設定 (會覆蓋目前資料)",
-  "importscreenconf3": "匯入新設定將覆蓋目前所有已儲存的內容，此操作無法復原。確定要繼續嗎？",
-  "allclear1": "刪除所有資料與設定",
-  "allclear2": "清除所有已儲存的項目、顏色和圖片設定",
-  "allclear3": "這將清除所有已儲存的內容和軟體設定且無法復原。確定要重設嗎？",
   "about": "關於",
-  "helpinfo": "說明和資訊",
-  "version": "版本",
+  "@about": {
+    "description": "关于"
+  },
+  "addscreen": "新增螢幕",
+  "@addscreen": {
+    "description": "新增屏幕"
+  },
+  "allclear1": "刪除所有資料與設定",
+  "@allclear1": {
+    "description": "删除所有数据与设置"
+  },
+  "allclear2": "清除所有已儲存的項目、顏色和圖片設定",
+  "@allclear2": {
+    "description": "清除所有保存的项目、颜色和图片配置"
+  },
+  "allclear3": "這將清除所有已儲存的內容和軟體設定且無法復原。確定要重設嗎？",
+  "@allclear3": {
+    "description": "这将清除所有保存的内容和软件设置且无法恢复。确定要重置吗？"
+  },
+  "allcleared": "所有資料與設定已成功清空",
+  "@allcleared": {
+    "description": "所有数据与设置已成功清空"
+  },
+  "alwaysbottom": "永遠在底部",
+  "@alwaysbottom": {
+    "description": "始终在底端"
+  },
+  "alwaysleft": "永遠在左側",
+  "@alwaysleft": {
+    "description": "始终在左侧"
+  },
+  "alwaysright": "永遠在右側",
+  "@alwaysright": {
+    "description": "始终在右侧"
+  },
+  "alwaystop": "永遠在頂部",
+  "@alwaystop": {
+    "description": "始终在顶部"
+  },
+  "appTitle": "長夜錦書",
+  "@appTitle": {
+    "description": "长夜锦书"
+  },
+  "appsettings": "應用程式設定",
+  "@appsettings": {
+    "description": "应用设置"
+  },
+  "auto": "自動",
+  "@auto": {
+    "description": "自动"
+  },
+  "backgroundcolor": "背景顏色",
+  "@backgroundcolor": {
+    "description": "背景颜色"
+  },
+  "backgroundcolordefault": "已恢復預設背景顏色",
+  "@backgroundcolordefault": {
+    "description": "已恢复默认背景颜色"
+  },
+  "backgroundcolorupdated": "背景顏色已更換",
+  "@backgroundcolorupdated": {
+    "description": "颜色颜色已更换"
+  },
+  "cancel": "取消",
+  "@cancel": {
+    "description": "取消"
+  },
+  "colortone": "選擇色調",
+  "@colortone": {
+    "description": "选择色调"
+  },
+  "conffileparsingfailed": "設定檔解析失敗，請檢查檔案格式",
+  "@conffileparsingfailed": {
+    "description": "配置文件解析失败，请检查文件格式"
+  },
+  "copyscreen": "複製螢幕",
+  "@copyscreen": {
+    "description": "复制屏幕"
+  },
+  "currlandscape": "橫向狀態下",
+  "@currlandscape": {
+    "description": "横屏状态下"
+  },
+  "currportrait": "直向狀態下",
+  "@currportrait": {
+    "description": "竖屏状态下"
+  },
+  "datamanagement": "資料管理",
+  "@datamanagement": {
+    "description": "数据管理"
+  },
+  "deletescreen": "刪除螢幕",
+  "@deletescreen": {
+    "description": "删除屏幕"
+  },
+  "entercontent": "請輸入內容...",
+  "@entercontent": {
+    "description": "请输入内容..."
+  },
   "exit": "結束程式",
+  "@exit": {
+    "description": "退出程序"
+  },
   "exit2": "完全釋放記憶體並結束",
+  "@exit2": {
+    "description": "完全释放运行内存并退出"
+  },
+  "exportcancel": "匯出已取消",
+  "@exportcancel": {
+    "description": "配置文件已成功导出"
+  },
+  "exportok": "設定檔已成功匯出",
+  "@exportok": {
+    "description": "配置文件已成功导出"
+  },
+  "exportscreenconf1": "匯出螢幕設定",
+  "@exportscreenconf1": {
+    "description": "导出屏幕配置"
+  },
+  "exportscreenconf2": "將目前所有螢幕設定儲存為 JSON 檔案",
+  "@exportscreenconf2": {
+    "description": "将当前所有屏幕配置保存为 JSON 文件"
+  },
+  "halfscreenturnpages1": "點按半邊螢幕翻頁",
+  "@halfscreenturnpages1": {
+    "description": "点按半边屏幕翻页"
+  },
+  "halfscreenturnpages2": "橫向時按左右半邊螢幕，直向時按上下半邊螢幕。",
+  "@halfscreenturnpages2": {
+    "description": "横屏时按左右半屏、竖屏时按上下半屏。"
+  },
   "help": "使用說明",
+  "@help": {
+    "description": "使用说明"
+  },
+  "helpinfo": "說明和資訊",
+  "@helpinfo": {
+    "description": "帮助和信息"
+  },
+  "icounchanged": "未變更圖示",
+  "@icounchanged": {
+    "description": "未更改图标"
+  },
+  "imagefailed": "未選擇圖片或設定失敗",
+  "@imagefailed": {
+    "description": "未选择图片或设置失败"
+  },
+  "imageupdated": "已設定為圖片模式",
+  "@imageupdated": {
+    "description": "已设置为图片模式"
+  },
+  "importok1": "成功匯入螢幕設定 ( ",
+  "@importok1": {
+    "description": "成功导入屏幕设置 ( "
+  },
+  "importok2": " 個)",
+  "@importok2": {
+    "description": " 个)"
+  },
+  "importscreenconf1": "匯入螢幕設定",
+  "@importscreenconf1": {
+    "description": "导入屏幕配置"
+  },
+  "importscreenconf2": "從備份檔案還原設定 (會覆蓋目前資料)",
+  "@importscreenconf2": {
+    "description": "从备份文件恢复配置 (会覆盖当前数据)"
+  },
+  "importscreenconf3": "匯入新設定將覆蓋目前所有已儲存的內容，此操作無法復原。確定要繼續嗎？",
+  "@importscreenconf3": {
+    "description": "导入新配置将覆盖当前所有已保存的内容，此操作不可撤销。确定要继续吗？"
+  },
+  "invalidconffile": "設定檔無效或不包含任何項目",
+  "@invalidconffile": {
+    "description": "配置文件无效或不包含任何项目"
+  },
   "issues": "問題回報",
-  "srccode": "原始碼"
+  "@issues": {
+    "description": "问题反馈"
+  },
+  "language": "語言",
+  "@language": {
+    "description": "语言"
+  },
+  "languageupdated": "語言已變更為",
+  "@languageupdated": {
+    "description": "语言已更改为"
+  },
+  "loading": "正在載入...",
+  "@loading": {
+    "description": "正在加载..."
+  },
+  "locale": "繁體中文",
+  "@locale": {
+    "description": "简体中文"
+  },
+  "movebackward": "向後移動",
+  "@movebackward": {
+    "description": "向后移动"
+  },
+  "moveforward": "向前移動",
+  "@moveforward": {
+    "description": "向前移动"
+  },
+  "navbarlocation": "導覽列位置",
+  "@navbarlocation": {
+    "description": "导航栏的位置"
+  },
+  "navbarlocationauto": "自動移至微傾斜側",
+  "@navbarlocationauto": {
+    "description": "自动移到微倾斜侧"
+  },
+  "newscreen": "新螢幕",
+  "@newscreen": {
+    "description": "新屏幕"
+  },
+  "next": "下一個",
+  "@next": {
+    "description": "下一个"
+  },
+  "nofileselected": "未選擇檔案，匯入已取消",
+  "@nofileselected": {
+    "description": "未选择文件，导入已取消"
+  },
+  "ok": "確定",
+  "@ok": {
+    "description": "确定"
+  },
+  "pageturning": "翻頁互動方式",
+  "@pageturning": {
+    "description": "翻页交互方式"
+  },
+  "previous": "上一個",
+  "@previous": {
+    "description": "上一个"
+  },
+  "readme": "README.zh-Hant.md",
+  "@readme": {
+    "description": "README.zh-Hans.md"
+  },
+  "savelocation": "請選擇儲存位置",
+  "@savelocation": {
+    "description": "请选择保存位置"
+  },
+  "screenadded": "已新增一個螢幕",
+  "@screenadded": {
+    "description": "已新增一个屏幕"
+  },
+  "screencopied": "已複製一個螢幕",
+  "@screencopied": {
+    "description": "已复制一个屏幕"
+  },
+  "screendeleted": "已刪除一個螢幕",
+  "@screendeleted": {
+    "description": "已删除一个屏幕"
+  },
+  "searchicon": "搜尋圖示...",
+  "@searchicon": {
+    "description": "搜索图标..."
+  },
+  "selectsidebarico": "選擇側邊欄圖示",
+  "@selectsidebarico": {
+    "description": "选择边栏图标"
+  },
+  "setasimage": "設為圖片",
+  "@setasimage": {
+    "description": "设为图片"
+  },
+  "setastext": "設為文字",
+  "@setastext": {
+    "description": "设为文字"
+  },
+  "sidebaricons": "側邊欄圖示",
+  "@sidebaricons": {
+    "description": "边栏图标"
+  },
+  "sidebaricoupdated": "側邊欄圖示已更新",
+  "@sidebaricoupdated": {
+    "description": "边栏图标已更新"
+  },
+  "sidebartitle": "側邊欄標題",
+  "@sidebartitle": {
+    "description": "边栏标题"
+  },
+  "sidebartitlechanged": "側邊欄標題已修改為",
+  "@sidebartitlechanged": {
+    "description": "边栏标题已修改为"
+  },
+  "srccode": "原始碼",
+  "@srccode": {
+    "description": "源代码"
+  },
+  "textcolor": "文字顏色",
+  "@textcolor": {
+    "description": "文字颜色"
+  },
+  "textcolordefault": "已恢復預設文字顏色",
+  "@textcolordefault": {
+    "description": "已恢复默认文字颜色"
+  },
+  "textcolorupdated": "文字顏色已更換",
+  "@textcolorupdated": {
+    "description": "文字颜色已更换"
+  },
+  "textupdated": "已設定為文字模式",
+  "@textupdated": {
+    "description": "已设置为文字模式"
+  },
+  "unnamed": "未命名",
+  "@unnamed": {
+    "description": "未命名"
+  },
+  "version": "版本",
+  "@version": {
+    "description": "版本"
+  },
+  "volumeturnpages1": "按音量鍵翻頁",
+  "@volumeturnpages1": {
+    "description": "按音量键翻页"
+  },
+  "volumeturnpages2": "使用實體音量鍵切換項目",
+  "@volumeturnpages2": {
+    "description": "使用物理音量按键切换项目"
+  },
+  "volumeturnpages3": "目前平台不支援實體音量鍵翻頁",
+  "@volumeturnpages3": {
+    "description": "当前平台不支持物理音量键翻页"
+  }
 }

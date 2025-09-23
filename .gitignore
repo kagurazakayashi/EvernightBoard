@@ -1,16 +1,5 @@
 /evernight_board
-lib/l10n/app_localizations*.dart
-assets/appicon/*_*.png
-web/icons/*.png
-macos/Runner/Assets.xcassets/AppIcon.appiconset/*.png
-ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png
-android/app/src/main/res/mipmap-*/*.png
-android/app/src/main/res/midrawablepmap-*/*.png
-android/app/src/main/res/drawable-*/*.png
-android/app/src/main/res/*/ic_launcher.xml
-web/favicon.png
-web/icons/*.png
-windows/runner/resources/app_icon.ico
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/c,c++,dart,java,linux,macos,swift,xcode,gradle,kotlin,android,flutter,windows,cocoapods,objective-c,androidstudio,visualstudiocode,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,dart,java,linux,macos,swift,xcode,gradle,kotlin,android,flutter,windows,cocoapods,objective-c,androidstudio,visualstudiocode,intellij

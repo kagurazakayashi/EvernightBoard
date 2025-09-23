@@ -1,85 +1,331 @@
 {
   "@@locale": "ja",
-  "locale": "日本語",
-  "readme": "README.ja.md",
-  "appTitle": "EvernightBoard",
-  "loading": "読み込み中...",
-  "language": "言語",
-  "languageupdated": "言語を変更しました:",
-  "auto": "自動",
-  "ok": "OK",
-  "cancel": "キャンセル",
-  "newscreen": "新規画面",
-  "screenadded": "画面を追加しました",
-  "screencopied": "画面をコピーしました",
-  "screendeleted": "画面を削除しました",
-  "unnamed": "未命名",
-  "previous": "前へ",
-  "next": "次へ",
-  "colortone": "色調を選択",
-  "entercontent": "内容を入力してください...",
-  "searchicon": "アイコンを検索...",
-  "sidebaricons": "サイドバーアイコン",
-  "selectsidebarico": "サイドバーアイコンを選択",
-  "sidebaricoupdated": "サイドバーアイコンを更新しました",
-  "icounchanged": "アイコンは変更されていません",
-  "sidebartitle": "サイドバーのタイトル",
-  "sidebartitlechanged": "サイドバーのタイトルを変更しました: ",
-  "moveforward": "前面へ移動",
-  "movebackward": "背面へ移動",
-  "setastext": "テキストとして設定",
-  "textupdated": "テキストモードに設定しました",
-  "setasimage": "画像として設定",
-  "imageupdated": "画像モードに設定しました",
-  "imagefailed": "画像が選択されていないか、設定に失敗しました",
-  "textcolor": "テキストの色",
-  "textcolordefault": "デフォルトのテキスト色を復元しました",
-  "textcolorupdated": "テキストの色を変更しました",
-  "backgroundcolor": "背景色",
-  "backgroundcolordefault": "デフォルトの背景色を復元しました",
-  "backgroundcolorupdated": "背景色を変更しました",
-  "addscreen": "画面を追加",
-  "copyscreen": "画面をコピー",
-  "deletescreen": "画面を削除",
-  "appsettings": "アプリ設定",
-  "pageturning": "ページめくりの操作",
-  "halfscreenturnpages1": "画面の半分をタップしてページめくり",
-  "halfscreenturnpages2": "横画面では左右の半画面、縦画面では上下の半画面を押します。",
-  "volumeturnpages1": "音量ボタンでページめくり",
-  "volumeturnpages2": "物理的な音量ボタンを使用してアイテムを切り替えます",
-  "volumeturnpages3": "現在のプラットフォームは音量ボタンでのページめくりに対応していません",
-  "navbarlocation": "ナビゲーションバーの位置",
-  "currlandscape": "横画面時",
-  "currportrait": "縦画面時",
-  "navbarlocationauto": "傾いた側に自動的に移動",
-  "alwaystop": "常に上",
-  "alwaysbottom": "常に下",
-  "alwaysleft": "常に左",
-  "alwaysright": "常に右",
-  "allcleared": "すべてのデータと設定が正常に消去されました",
-  "exportok": "設定ファイルが正常にエクスポートされました",
-  "exportcancel": "エクスポートがキャンセルされました",
-  "nofileselected": "ファイルが選択されていないため、インポートをキャンセルしました",
-  "importok1": "画面設定のインポートに成功しました ( ",
-  "importok2": " 個)",
-  "invalidconffile": "設定ファイルが無効であるか、アイテムが含まれていません",
-  "conffileparsingfailed": "設定ファイルの解析に失敗しました。ファイル形式を確認してください",
-  "savelocation": "保存先を選択してください",
-  "datamanagement": "データ管理",
-  "exportscreenconf1": "画面設定のエクスポート",
-  "exportscreenconf2": "現在のすべての画面設定をJSONファイルとして保存します",
-  "importscreenconf1": "画面設定のインポート",
-  "importscreenconf2": "バックアップファイルから設定を復元します (現在のデータは上書きされます)",
-  "importscreenconf3": "新しい設定をインポートすると、現在保存されているすべての内容が上書きされ、元に戻すことはできません。続行してもよろしいですか？",
-  "allclear1": "すべてのデータと設定を削除",
-  "allclear2": "保存されているすべての項目、色、画像の設定を消去します",
-  "allclear3": "これにより、保存されているすべての内容とソフトウェア設定が消去され、復元することはできません。リセットしてもよろしいですか？",
   "about": "概要",
-  "helpinfo": "ヘルプと情報",
-  "version": "バージョン",
+  "@about": {
+    "description": "关于"
+  },
+  "addscreen": "画面を追加",
+  "@addscreen": {
+    "description": "新增屏幕"
+  },
+  "allclear1": "すべてのデータと設定を削除",
+  "@allclear1": {
+    "description": "删除所有数据与设置"
+  },
+  "allclear2": "保存されているすべての項目、色、画像の設定を消去します",
+  "@allclear2": {
+    "description": "清除所有保存的项目、颜色和图片配置"
+  },
+  "allclear3": "これにより、保存されているすべての内容とソフトウェア設定が消去され、復元することはできません。リセットしてもよろしいですか？",
+  "@allclear3": {
+    "description": "这将清除所有保存的内容和软件设置且无法恢复。确定要重置吗？"
+  },
+  "allcleared": "すべてのデータと設定が正常に消去されました",
+  "@allcleared": {
+    "description": "所有数据与设置已成功清空"
+  },
+  "alwaysbottom": "常に下",
+  "@alwaysbottom": {
+    "description": "始终在底端"
+  },
+  "alwaysleft": "常に左",
+  "@alwaysleft": {
+    "description": "始终在左侧"
+  },
+  "alwaysright": "常に右",
+  "@alwaysright": {
+    "description": "始终在右侧"
+  },
+  "alwaystop": "常に上",
+  "@alwaystop": {
+    "description": "始终在顶部"
+  },
+  "appTitle": "EvernightBoard",
+  "@appTitle": {
+    "description": "长夜锦书"
+  },
+  "appsettings": "アプリ設定",
+  "@appsettings": {
+    "description": "应用设置"
+  },
+  "auto": "自動",
+  "@auto": {
+    "description": "自动"
+  },
+  "backgroundcolor": "背景色",
+  "@backgroundcolor": {
+    "description": "背景颜色"
+  },
+  "backgroundcolordefault": "デフォルトの背景色を復元しました",
+  "@backgroundcolordefault": {
+    "description": "已恢复默认背景颜色"
+  },
+  "backgroundcolorupdated": "背景色を変更しました",
+  "@backgroundcolorupdated": {
+    "description": "颜色颜色已更换"
+  },
+  "cancel": "キャンセル",
+  "@cancel": {
+    "description": "取消"
+  },
+  "colortone": "色調を選択",
+  "@colortone": {
+    "description": "选择色调"
+  },
+  "conffileparsingfailed": "設定ファイルの解析に失敗しました。ファイル形式を確認してください",
+  "@conffileparsingfailed": {
+    "description": "配置文件解析失败，请检查文件格式"
+  },
+  "copyscreen": "画面をコピー",
+  "@copyscreen": {
+    "description": "复制屏幕"
+  },
+  "currlandscape": "横画面時",
+  "@currlandscape": {
+    "description": "横屏状态下"
+  },
+  "currportrait": "縦画面時",
+  "@currportrait": {
+    "description": "竖屏状态下"
+  },
+  "datamanagement": "データ管理",
+  "@datamanagement": {
+    "description": "数据管理"
+  },
+  "deletescreen": "画面を削除",
+  "@deletescreen": {
+    "description": "删除屏幕"
+  },
+  "entercontent": "内容を入力してください...",
+  "@entercontent": {
+    "description": "请输入内容..."
+  },
   "exit": "アプリを終了",
+  "@exit": {
+    "description": "退出程序"
+  },
   "exit2": "メモリを完全に解放して終了します",
+  "@exit2": {
+    "description": "完全释放运行内存并退出"
+  },
+  "exportcancel": "エクスポートがキャンセルされました",
+  "@exportcancel": {
+    "description": "配置文件已成功导出"
+  },
+  "exportok": "設定ファイルが正常にエクスポートされました",
+  "@exportok": {
+    "description": "配置文件已成功导出"
+  },
+  "exportscreenconf1": "画面設定のエクスポート",
+  "@exportscreenconf1": {
+    "description": "导出屏幕配置"
+  },
+  "exportscreenconf2": "現在のすべての画面設定をJSONファイルとして保存します",
+  "@exportscreenconf2": {
+    "description": "将当前所有屏幕配置保存为 JSON 文件"
+  },
+  "halfscreenturnpages1": "画面の半分をタップしてページめくり",
+  "@halfscreenturnpages1": {
+    "description": "点按半边屏幕翻页"
+  },
+  "halfscreenturnpages2": "横画面では左右の半画面、縦画面では上下の半画面を押します。",
+  "@halfscreenturnpages2": {
+    "description": "横屏时按左右半屏、竖屏时按上下半屏。"
+  },
   "help": "使い方",
+  "@help": {
+    "description": "使用说明"
+  },
+  "helpinfo": "ヘルプと情報",
+  "@helpinfo": {
+    "description": "帮助和信息"
+  },
+  "icounchanged": "アイコンは変更されていません",
+  "@icounchanged": {
+    "description": "未更改图标"
+  },
+  "imagefailed": "画像が選択されていないか、設定に失敗しました",
+  "@imagefailed": {
+    "description": "未选择图片或设置失败"
+  },
+  "imageupdated": "画像モードに設定しました",
+  "@imageupdated": {
+    "description": "已设置为图片模式"
+  },
+  "importok1": "画面設定のインポートに成功しました ( ",
+  "@importok1": {
+    "description": "成功导入屏幕设置 ( "
+  },
+  "importok2": " 個)",
+  "@importok2": {
+    "description": " 个)"
+  },
+  "importscreenconf1": "画面設定のインポート",
+  "@importscreenconf1": {
+    "description": "导入屏幕配置"
+  },
+  "importscreenconf2": "バックアップファイルから設定を復元します (現在のデータは上書きされます)",
+  "@importscreenconf2": {
+    "description": "从备份文件恢复配置 (会覆盖当前数据)"
+  },
+  "importscreenconf3": "新しい設定をインポートすると、現在保存されているすべての内容が上書きされ、元に戻すことはできません。続行してもよろしいですか？",
+  "@importscreenconf3": {
+    "description": "导入新配置将覆盖当前所有已保存的内容，此操作不可撤销。确定要继续吗？"
+  },
+  "invalidconffile": "設定ファイルが無効であるか、アイテムが含まれていません",
+  "@invalidconffile": {
+    "description": "配置文件无效或不包含任何项目"
+  },
   "issues": "フィードバック",
-  "srccode": "ソースコード"
+  "@issues": {
+    "description": "问题反馈"
+  },
+  "language": "言語",
+  "@language": {
+    "description": "语言"
+  },
+  "languageupdated": "言語を変更しました:",
+  "@languageupdated": {
+    "description": "语言已更改为"
+  },
+  "loading": "読み込み中...",
+  "@loading": {
+    "description": "正在加载..."
+  },
+  "locale": "日本語",
+  "@locale": {
+    "description": "简体中文"
+  },
+  "movebackward": "背面へ移動",
+  "@movebackward": {
+    "description": "向后移动"
+  },
+  "moveforward": "前面へ移動",
+  "@moveforward": {
+    "description": "向前移动"
+  },
+  "navbarlocation": "ナビゲーションバーの位置",
+  "@navbarlocation": {
+    "description": "导航栏的位置"
+  },
+  "navbarlocationauto": "傾いた側に自動的に移動",
+  "@navbarlocationauto": {
+    "description": "自动移到微倾斜侧"
+  },
+  "newscreen": "新規画面",
+  "@newscreen": {
+    "description": "新屏幕"
+  },
+  "next": "次へ",
+  "@next": {
+    "description": "下一个"
+  },
+  "nofileselected": "ファイルが選択されていないため、インポートをキャンセルしました",
+  "@nofileselected": {
+    "description": "未选择文件，导入已取消"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "确定"
+  },
+  "pageturning": "ページめくりの操作",
+  "@pageturning": {
+    "description": "翻页交互方式"
+  },
+  "previous": "前へ",
+  "@previous": {
+    "description": "上一个"
+  },
+  "readme": "README.ja.md",
+  "@readme": {
+    "description": "README.zh-Hans.md"
+  },
+  "savelocation": "保存先を選択してください",
+  "@savelocation": {
+    "description": "请选择保存位置"
+  },
+  "screenadded": "画面を追加しました",
+  "@screenadded": {
+    "description": "已新增一个屏幕"
+  },
+  "screencopied": "画面をコピーしました",
+  "@screencopied": {
+    "description": "已复制一个屏幕"
+  },
+  "screendeleted": "画面を削除しました",
+  "@screendeleted": {
+    "description": "已删除一个屏幕"
+  },
+  "searchicon": "アイコンを検索...",
+  "@searchicon": {
+    "description": "搜索图标..."
+  },
+  "selectsidebarico": "サイドバーアイコンを選択",
+  "@selectsidebarico": {
+    "description": "选择边栏图标"
+  },
+  "setasimage": "画像として設定",
+  "@setasimage": {
+    "description": "设为图片"
+  },
+  "setastext": "テキストとして設定",
+  "@setastext": {
+    "description": "设为文字"
+  },
+  "sidebaricons": "サイドバーアイコン",
+  "@sidebaricons": {
+    "description": "边栏图标"
+  },
+  "sidebaricoupdated": "サイドバーアイコンを更新しました",
+  "@sidebaricoupdated": {
+    "description": "边栏图标已更新"
+  },
+  "sidebartitle": "サイドバーのタイトル",
+  "@sidebartitle": {
+    "description": "边栏标题"
+  },
+  "sidebartitlechanged": "サイドバーのタイトルを変更しました: ",
+  "@sidebartitlechanged": {
+    "description": "边栏标题已修改为"
+  },
+  "srccode": "ソースコード",
+  "@srccode": {
+    "description": "源代码"
+  },
+  "textcolor": "テキストの色",
+  "@textcolor": {
+    "description": "文字颜色"
+  },
+  "textcolordefault": "デフォルトのテキスト色を復元しました",
+  "@textcolordefault": {
+    "description": "已恢复默认文字颜色"
+  },
+  "textcolorupdated": "テキストの色を変更しました",
+  "@textcolorupdated": {
+    "description": "文字颜色已更换"
+  },
+  "textupdated": "テキストモードに設定しました",
+  "@textupdated": {
+    "description": "已设置为文字模式"
+  },
+  "unnamed": "未命名",
+  "@unnamed": {
+    "description": "未命名"
+  },
+  "version": "バージョン",
+  "@version": {
+    "description": "版本"
+  },
+  "volumeturnpages1": "音量ボタンでページめくり",
+  "@volumeturnpages1": {
+    "description": "按音量键翻页"
+  },
+  "volumeturnpages2": "物理的な音量ボタンを使用してアイテムを切り替えます",
+  "@volumeturnpages2": {
+    "description": "使用物理音量按键切换项目"
+  },
+  "volumeturnpages3": "現在のプラットフォームは音量ボタンでのページめくりに対応していません",
+  "@volumeturnpages3": {
+    "description": "当前平台不支持物理音量键翻页"
+  }
 }
