@@ -5,7 +5,5 @@ CALL dart.bat run flutter_native_splash:create
 CALL dart.bat run flutter_iconpicker:generate_packs --packs material
 CALL flutter.bat gen-l10n
 RD /S /Q build
-CALL flutter.bat build "apk" --no-tree-shake-icons
-ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"
-adb devices
-adb install "build\app\outputs\flutter-apk\app-release.apk"
+CALL flutter.bat build "aab" --no-tree-shake-icons
+ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"

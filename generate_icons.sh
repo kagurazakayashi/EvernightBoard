@@ -46,9 +46,9 @@ run_cmd() {
 # =========================================================
 
 info "Checking ImageMagick..."
-if command -v magick >/dev/null 2>&1; then
+if command magick >/dev/null 2>&1; then
   MAGICK_CMD="magick"
-elif command -v magick.exe >/dev/null 2>&1; then
+elif command magick.exe >/dev/null 2>&1; then
   MAGICK_CMD="magick.exe"
 else
   fail "ImageMagick not found. Please install and add it to PATH."
@@ -56,11 +56,11 @@ fi
 ok "ImageMagick detected."
 
 info "Checking Dart / Flutter..."
-if command -v dart >/dev/null 2>&1; then
+if command dart >/dev/null 2>&1; then
   DART_CMD="dart"
-elif command -v dart.exe >/dev/null 2>&1; then
+elif command dart.exe >/dev/null 2>&1; then
   DART_CMD="dart.exe"
-elif command -v flutter >/dev/null 2>&1; then
+elif command flutter >/dev/null 2>&1; then
   DART_CMD=""
 else
   fail "Dart/Flutter not found. Please install Flutter SDK."

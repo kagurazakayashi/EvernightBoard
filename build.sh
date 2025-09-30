@@ -27,7 +27,8 @@ dart run flutter_native_splash:create
 dart run flutter_iconpicker:generate_packs --packs material
 flutter gen-l10n
 echo "Running: flutter build $TARGET"
-flutter build "$TARGET" -v --no-tree-shake-icons
+rm -rf "`pwd`\build"
+flutter build "$TARGET" --no-tree-shake-icons
 
 echo "Resolving executable path..."
 

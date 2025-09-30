@@ -141,6 +141,11 @@ This program only uses permissions in the following scenarios, and you can disab
 
 If you need to edit the source code, you must complete steps 1 through 5 before starting the IDE.
 
+#### Manual Compilation Example
+
+- Run `flutter build apk --no-tree-shake-icons` to compile the installation package for Android.
+- Run `flutter build appbundle --no-tree-shake-icons` to compile the release version for Android.
+
 ### Compiling on Windows
 
 - Compile as a Windows application and run: `build.bat`.

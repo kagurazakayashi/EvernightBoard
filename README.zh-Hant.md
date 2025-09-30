@@ -6,7 +6,7 @@
 
 **攬長夜之錦字，化萬語為此間。**
 
-EvernightBoard 是一款透過預設圖文，在觸控螢幕和語言交流都受限時為您延續溝通的展示輔助工具。
+長夜錦書(EvernightBoard) 是一款透過預設圖文，在觸控螢幕和語言交流都受限時為您延續溝通的展示輔助工具。
 
 Android | iOS | Windows | macOS | Linux
 
@@ -140,6 +140,11 @@ Android | iOS | Windows | macOS | Linux
 7. 執行 `flutter run` 開始偵錯。
 
 若需要編輯原始碼，必須在啟動 IDE 前完成第 1 步至第 5 步。
+
+#### 手動編譯範例
+
+- 執行 `flutter build apk --no-tree-shake-icons` 以為 Android 編譯安裝包。
+- 執行 `flutter build appbundle --no-tree-shake-icons` 以為 Android 編譯發行版。
 
 ### 在 Windows 中編譯
 

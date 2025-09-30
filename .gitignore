@@ -1,5 +1,15 @@
 /evernight_board
-
+lib/l10n/app_localizations*.dart
+assets/appicon/*_*.png
+macos/Runner/Assets.xcassets/**/*.png
+ios/Runner/Assets.xcassets/**/*.png
+android/app/src/main/res/mi*/*.png
+android/app/src/main/res/drawable*/*.png
+android/.kotlin/sessions/kotlin-compiler-*.salive
+web/favicon.png
+web/icons/*.png
+web/splash/img/*.png
+windows/runner/resources/app_icon.ico
 
 # Created by https://www.toptal.com/developers/gitignore/api/c,c++,dart,java,linux,macos,swift,xcode,gradle,kotlin,android,flutter,windows,cocoapods,objective-c,androidstudio,visualstudiocode,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,dart,java,linux,macos,swift,xcode,gradle,kotlin,android,flutter,windows,cocoapods,objective-c,androidstudio,visualstudiocode,intellij

@@ -1,4 +1,4 @@
-package com.example.evernight_board
+package moe.yashi.evernightboard
 
 import io.flutter.embedding.android.FlutterActivity
 

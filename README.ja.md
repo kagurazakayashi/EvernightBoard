@@ -6,7 +6,7 @@
 
 **常夜（とこよ）の錦言（きんげん）を綴（つづ）り、万言（ばんげん）をこの空間に。**
 
-EvernightBoardは、事前に設定した画像やテキストを通じて、タッチパネルの操作や言葉でのコミュニケーションが制限されている状況において、コミュニケーションを継続するための表示補助ツールです。
+長夜錦書(EvernightBoard) は、事前に設定した画像やテキストを通じて、タッチパネルの操作や言葉でのコミュニケーションが制限されている状況において、コミュニケーションを継続するための表示補助ツールです。
 
 Android | iOS | Windows | macOS | Linux
 
@@ -140,6 +140,11 @@ Android | iOS | Windows | macOS | Linux
 7. `flutter run` を実行してデバッグを開始します。
 
 ソースコードを編集する必要がある場合は、IDE を起動する前にステップ 1 から 5 までを完了させる必要があります。
+
+#### 手動コンパイルの例
+
+- Android 用のインストールパッケージをコンパイルするには、`flutter build apk --no-tree-shake-icons` を実行します。
+- Android 用のリリース版（App Bundle）をコンパイルするには、`flutter build appbundle --no-tree-shake-icons` を実行します。
 
 ### Windows でのコンパイル
 

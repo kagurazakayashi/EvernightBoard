@@ -6,7 +6,7 @@
 
 **揽长夜之锦字，化万语为此间。**
 
-EvernightBoard 是一款通过预设图文，在触屏和语言交流都受限时为您延续沟通的展示辅助工具。
+长夜锦书(EvernightBoard) 是一款通过预设图文，在触屏和语言交流都受限时为您延续沟通的展示辅助工具。
 
 Android | iOS | Windows | macOS | Linux
 
@@ -139,12 +139,12 @@ Android | iOS | Windows | macOS | Linux
 6. 运行 `dart run flutter_iconpicker:generate_packs --packs material` 准备图标资源。
 7. 运行 `flutter run` 开始调试。
 
+如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
+
 #### 手动编译示例
 
-- 运行 `flutter build apk -v --no-tree-shake-icons` 为 Android 编译
-- 运行 `flutter build aab -v --no-tree-shake-icons` 为 Android 编译发布版
-
-如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
+- 运行 `flutter build apk --no-tree-shake-icons` 为 Android 编译安装包。
+- 运行 `flutter build appbundle --no-tree-shake-icons` 为 Android 编译发布版。
 
 ### 在 Windows 中编译
 
