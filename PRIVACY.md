@@ -1,4 +1,6 @@
-# Privacy
+# EvernightBoard
+
+## Privacy
 
 This program is fully open-source, free, and respects your privacy.
 

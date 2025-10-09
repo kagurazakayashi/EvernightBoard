@@ -15,6 +15,9 @@ final HomeController _appController = HomeController();
 /// 會先確保 Flutter 繫結初始化完成，
 /// 再啟動整個應用程式。
 void main() {
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
   // 確保外掛與原生層初始化（在非同步呼叫前必須執行）
   WidgetsFlutterBinding.ensureInitialized();
 

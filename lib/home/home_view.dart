@@ -12,56 +12,78 @@ import 'widgets/edit_text_dialog.dart';
 import 'widgets/color_picker_handler.dart';
 import '../settings/settings_view.dart';
 
-/// 應用程式首頁的主視圖元件。
+/// 應用程式首頁主畫面。
 ///
-/// 負責統合 [HomeController] 的狀態，並根據螢幕導向（橫向/縱向）與
-/// 使用者設定來動態佈局導覽列與內容顯示區。
+/// 此元件負責：
+///
+/// 1. 與 [HomeController] 綁定並監聽狀態變更。
+/// 2. 依照螢幕方向（直向／橫向）與導覽列設定動態切換版面配置。
+/// 3. 組合主要顯示區、觸控層與導覽元件。
+/// 4. 提供項目管理入口，例如編輯圖示、標題、文字、顏色、圖片與排序等功能。
 class HomeView extends StatefulWidget {
+  /// 首頁所依賴的控制器，負責提供目前項目資料與操作行為。
   final HomeController controller;
+
   const HomeView({super.key, required this.controller});
 
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
+/// [HomeView] 的狀態物件。
+///
+/// 主要負責監聽控制器、重建畫面，以及處理各類互動事件與底部管理選單。
 class _HomeViewState extends State<HomeView> {
+  /// 便捷存取目前綁定的 [HomeController]。
   HomeController get _controller => widget.controller;
 
   @override
   void initState() {
     super.initState();
-    debugPrint('[HomeView] 初始化狀態 (initState)');
-    // 註冊監聽器以響應控制器狀態變更
+    debugPrint('[HomeView] 初始化完成，開始註冊控制器監聽器');
+    // 註冊監聽器，當控制器狀態變更時同步觸發畫面更新。
     _controller.addListener(_updateUI);
   }
 
-  /// 觸發 UI 重繪的內部回呼函式。
+  /// 接收控制器狀態變更後，安全地觸發畫面重建。
+  ///
+  /// 僅在元件仍掛載於 Widget Tree 時才執行 [setState]，
+  /// 以避免在元件銷毀後更新 UI 而產生例外。
   void _updateUI() {
     if (mounted) {
+      debugPrint('[HomeView] 偵測到控制器狀態變更，準備重建畫面');
       setState(() {
-        // 狀態更新，觸發 Build 流程
+        // 透過空的 setState 觸發 build，讓最新狀態反映到畫面上。
       });
+    } else {
+      debugPrint('[HomeView] 控制器狀態變更已收到，但元件未掛載，略過重建');
     }
   }
 
   @override
   void dispose() {
-    debugPrint('[HomeView] 正在銷毀元件並釋放資源 (dispose)');
-    // 移除監聽器防止記憶體洩漏
+    debugPrint('[HomeView] 即將銷毀元件，移除控制器監聽器並釋放資源');
+    // 移除監聽器，避免元件釋放後仍持有回呼造成記憶體洩漏。
     _controller.removeListener(_updateUI);
     super.dispose();
   }
 
-  /// 顯示全域統一風格的提示訊息 (SnackBar)。
+  /// 顯示統一樣式的提示訊息。
   ///
-  /// [message] 欲呈現給使用者的文字內容。
-  /// [isError] 是否為錯誤或警告狀態，將影響圖示顏色。
+  /// 會先清除目前佇列中的 SnackBar，再顯示新的提示，
+  /// 以確保使用者能立即看到最新操作結果。
+  ///
+  /// [message] 要顯示給使用者的訊息內容。
+  /// [isError] 是否為錯誤／警示狀態；若為 `true`，將使用提示性圖示樣式。
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!mounted) {
+      debugPrint('[HomeView] 嘗試顯示提示訊息失敗，原因：元件未掛載');
+      return;
+    }
 
-    debugPrint('[HomeView] 顯示提示訊息: "$message" (錯誤: $isError)');
+    debugPrint('[HomeView] 顯示提示訊息，內容: "$message"，錯誤狀態: $isError');
 
-    // 立即清除當前佇列中的提示，確保操作回饋的即時性
+    // 立即清除目前已顯示或排隊中的提示訊息，避免回饋延遲或堆疊。
     ScaffoldMessenger.of(context).clearSnackBars();
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -89,14 +111,21 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// 處理導覽列項目的點擊事件。
+  /// 處理導覽項目點擊事件。
   ///
-  /// 若點擊的是當前選中項，則開啟管理功能選單；否則進行頁面切換。
+  /// 當使用者點擊目前已選取的項目時，開啟管理功能選單；
+  /// 否則切換至指定索引對應的項目。
+  ///
+  /// [index] 使用者點擊的導覽項目索引。
   void _onNavTap(int index) {
-    debugPrint('[HomeView] 導覽列點擊事件，目標索引: $index');
+    debugPrint(
+      '[HomeView] 使用者點擊導覽項目，索引: $index，目前索引: ${_controller.currentIndex}',
+    );
     if (index == _controller.currentIndex) {
+      debugPrint('[HomeView] 點擊的是目前項目，改為開啟管理選單');
       _showManagementMenu();
     } else {
+      debugPrint('[HomeView] 切換目前項目至索引: $index');
       _controller.changeIndex(index);
     }
   }
@@ -108,7 +137,7 @@ class _HomeViewState extends State<HomeView> {
     final item = _controller.currentItem;
     final theme = Theme.of(context);
 
-    // 確定當前背景色與主題色
+    // 依目前項目設定決定背景色與主題色；若未指定則回退到主題預設值。
     final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
     final Color themeColor = item.textColor ?? theme.colorScheme.primary;
 
@@ -117,7 +146,7 @@ class _HomeViewState extends State<HomeView> {
       builder: (context, _) {
         final currentItem = _controller.currentItem;
 
-        // 核心內容顯示區，包含顯示層與觸控互動層
+        // 主要內容區：底層為實際顯示內容，上層為手勢互動區。
         Widget mainContent = Stack(
           children: [
             DisplayArea(item: currentItem),
@@ -135,25 +164,30 @@ class _HomeViewState extends State<HomeView> {
         Widget body;
         Widget? bottomNavigationBarWidget;
 
-        // 定義水平導覽列構建邏輯
+        /// 建立水平導覽列。
+        ///
+        /// 通常用於畫面上方或下方的導覽配置。
         Widget buildHorizontalNav() => ScrollableNavBar(
           items: _controller.items,
           currentIndex: _controller.currentIndex,
           onTap: _onNavTap,
         );
 
-        // 定義垂直側邊欄構建邏輯
+        /// 建立垂直側邊導覽列。
+        ///
+        /// 通常用於畫面左側或右側的導覽配置。
         Widget buildVerticalNav() => ScrollableSideRail(
           items: _controller.items,
           currentIndex: _controller.currentIndex,
           onTap: _onNavTap,
         );
 
-        // 根據螢幕方向與控制器組態進行佈局適配
+        // 根據目前裝置方向與導覽列設定，動態組裝版面配置。
         if (isPortrait) {
-          debugPrint('[HomeView] 當前為縱向模式 (Portrait)，套用對應佈局');
+          debugPrint('[HomeView] 目前為直向模式，套用直向版面配置');
           switch (_controller.portraitNavPosition) {
             case PortraitNavPosition.auto:
+              debugPrint('[HomeView] 直向導覽位置設定為 auto，依目前側邊方向決定佈局');
               body = Row(
                 children: _controller.currentSide == NavSide.left
                     ? [buildVerticalNav(), Expanded(child: mainContent)]
@@ -161,6 +195,7 @@ class _HomeViewState extends State<HomeView> {
               );
               break;
             case PortraitNavPosition.left:
+              debugPrint('[HomeView] 直向導覽位置設定為 left');
               body = Row(
                 children: [
                   buildVerticalNav(),
@@ -169,6 +204,7 @@ class _HomeViewState extends State<HomeView> {
               );
               break;
             case PortraitNavPosition.right:
+              debugPrint('[HomeView] 直向導覽位置設定為 right');
               body = Row(
                 children: [
                   Expanded(child: mainContent),
@@ -177,10 +213,12 @@ class _HomeViewState extends State<HomeView> {
               );
               break;
             case PortraitNavPosition.bottom:
+              debugPrint('[HomeView] 直向導覽位置設定為 bottom');
               body = mainContent;
               bottomNavigationBarWidget = buildHorizontalNav();
               break;
             case PortraitNavPosition.top:
+              debugPrint('[HomeView] 直向導覽位置設定為 top');
               body = Column(
                 children: [
                   buildHorizontalNav(),
@@ -190,13 +228,15 @@ class _HomeViewState extends State<HomeView> {
               break;
           }
         } else {
-          debugPrint('[HomeView] 當前為橫向模式 (Landscape)，套用對應佈局');
+          debugPrint('[HomeView] 目前為橫向模式，套用橫向版面配置');
           switch (_controller.landscapeNavPosition) {
             case LandscapeNavPosition.bottom:
+              debugPrint('[HomeView] 橫向導覽位置設定為 bottom');
               body = mainContent;
               bottomNavigationBarWidget = buildHorizontalNav();
               break;
             case LandscapeNavPosition.top:
+              debugPrint('[HomeView] 橫向導覽位置設定為 top');
               body = Column(
                 children: [
                   buildHorizontalNav(),
@@ -205,6 +245,7 @@ class _HomeViewState extends State<HomeView> {
               );
               break;
             case LandscapeNavPosition.left:
+              debugPrint('[HomeView] 橫向導覽位置設定為 left');
               body = Row(
                 children: [
                   buildVerticalNav(),
@@ -213,6 +254,7 @@ class _HomeViewState extends State<HomeView> {
               );
               break;
             case LandscapeNavPosition.right:
+              debugPrint('[HomeView] 橫向導覽位置設定為 right');
               body = Row(
                 children: [
                   Expanded(child: mainContent),
@@ -232,16 +274,19 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// 開啟底部管理功能選單。
+  /// 顯示項目管理底部選單。
+  ///
+  /// 使用者可從此選單執行目前項目的常見管理操作，
+  /// 包括編輯圖示、標題、內容、顏色、背景圖片，以及新增、複製、刪除與進入設定頁等。
   void _showManagementMenu() {
-    debugPrint('[HomeView] 顯示項目管理選單');
+    debugPrint('[HomeView] 開啟項目管理底部選單');
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
       builder: (context) => ManagementGridMenu(
         onEditIcon: () async {
           Navigator.pop(context);
-          debugPrint('[HomeView] 觸發圖示選取器');
+          debugPrint('[HomeView] 使用者選擇編輯圖示，準備開啟圖示選取器');
           final IconPickerIcon? selectedIcon = await showIconPicker(
             context,
             configuration: SinglePickerConfiguration(
@@ -252,22 +297,24 @@ class _HomeViewState extends State<HomeView> {
           );
 
           if (selectedIcon != null) {
+            debugPrint('[HomeView] 圖示選取完成，準備更新目前項目圖示');
             _controller.updateIcon(selectedIcon.data);
             if (mounted) _showSnackBar(t.sidebaricoupdated);
           } else {
-            debugPrint('[HomeView] 圖示選取已取消');
+            debugPrint('[HomeView] 圖示選取器已關閉，未選取任何圖示');
             if (mounted) _showSnackBar(t.icounchanged, isError: true);
           }
         },
         onEditTitle: () {
           Navigator.pop(context);
-          debugPrint('[HomeView] 觸發標題編輯對話框');
+          debugPrint('[HomeView] 使用者選擇編輯標題，準備開啟文字輸入對話框');
           showDialog(
             context: context,
             builder: (context) => EditTextDialog(
               title: t.sidebartitle,
               initialValue: _controller.currentItem.title,
               onConfirm: (val) {
+                debugPrint('[HomeView] 標題編輯已確認，準備更新目前項目標題');
                 _controller.updateTitle(val);
                 _showSnackBar('${t.sidebartitlechanged}: $val');
               },
@@ -276,7 +323,7 @@ class _HomeViewState extends State<HomeView> {
         },
         onSetText: () {
           Navigator.pop(context);
-          debugPrint('[HomeView] 觸發內容文字編輯');
+          debugPrint('[HomeView] 使用者選擇編輯內容文字，準備開啟多行輸入對話框');
           showDialog(
             context: context,
             builder: (context) => EditTextDialog(
@@ -284,6 +331,7 @@ class _HomeViewState extends State<HomeView> {
               initialValue: _controller.currentItem.content,
               isMultiline: true,
               onConfirm: (val) {
+                debugPrint('[HomeView] 內容文字編輯已確認，準備更新目前項目內容');
                 _controller.setAsText(val);
                 _showSnackBar(t.textupdated);
               },
@@ -292,7 +340,7 @@ class _HomeViewState extends State<HomeView> {
         },
         onSetImage: () async {
           Navigator.pop(context);
-          debugPrint('[HomeView] 啟動背景圖片選取程序');
+          debugPrint('[HomeView] 使用者選擇設定背景圖片，開始啟動圖片選取流程');
           final Size size = MediaQuery.sizeOf(context);
           await _controller.pickImage(
             size.width > size.height ? size.width : size.height,
@@ -301,15 +349,17 @@ class _HomeViewState extends State<HomeView> {
           if (mounted) {
             if (_controller.currentItem.backgroundImagePath?.isNotEmpty ==
                 true) {
+              debugPrint('[HomeView] 背景圖片設定成功');
               _showSnackBar(t.imageupdated);
             } else {
+              debugPrint('[HomeView] 背景圖片設定失敗或使用者未完成選取');
               _showSnackBar(t.imagefailed, isError: true);
             }
           }
         },
         onSetTextColor: () async {
           Navigator.pop(context);
-          debugPrint('[HomeView] 觸發文字顏色選取器');
+          debugPrint('[HomeView] 使用者選擇設定文字顏色，準備開啟顏色選取器');
           await ColorPickerHandler.show(
             context: context,
             title: t.textcolor,
@@ -318,6 +368,7 @@ class _HomeViewState extends State<HomeView> {
             otherColor: _controller.currentItem.backgroundColor,
             checkSimilarity: _controller.isTooSimilar,
             onColorChanged: (color) {
+              debugPrint('[HomeView] 文字顏色已變更，準備套用新設定');
               _controller.setTextColor(color);
               _showSnackBar(
                 color == null ? t.textcolordefault : t.textcolorupdated,
@@ -327,7 +378,7 @@ class _HomeViewState extends State<HomeView> {
         },
         onSetBgColor: () async {
           Navigator.pop(context);
-          debugPrint('[HomeView] 觸發背景顏色選取器');
+          debugPrint('[HomeView] 使用者選擇設定背景顏色，準備開啟顏色選取器');
           await ColorPickerHandler.show(
             context: context,
             title: t.backgroundcolor,
@@ -336,6 +387,7 @@ class _HomeViewState extends State<HomeView> {
             otherColor: _controller.currentItem.textColor,
             checkSimilarity: _controller.isTooSimilar,
             onColorChanged: (color) {
+              debugPrint('[HomeView] 背景顏色已變更，準備套用新設定');
               _controller.setBgColor(color);
               _showSnackBar(
                 color == null
@@ -346,34 +398,34 @@ class _HomeViewState extends State<HomeView> {
           );
         },
         onMoveUp: () {
-          debugPrint('[HomeView] 項目上移');
+          debugPrint('[HomeView] 使用者選擇將目前項目上移');
           _controller.moveUp();
         },
         onMoveDown: () {
-          debugPrint('[HomeView] 項目下移');
+          debugPrint('[HomeView] 使用者選擇將目前項目下移');
           _controller.moveDown();
         },
         onAdd: () {
           Navigator.pop(context);
-          debugPrint('[HomeView] 新增項目');
+          debugPrint('[HomeView] 使用者選擇新增項目');
           _controller.addItem();
           _showSnackBar(t.screenadded);
         },
         onCopy: () {
           Navigator.pop(context);
-          debugPrint('[HomeView] 複製當前項目');
+          debugPrint('[HomeView] 使用者選擇複製目前項目');
           _controller.copyCurrentItem();
           _showSnackBar(t.screencopied);
         },
         onDelete: () {
           Navigator.pop(context);
-          debugPrint('[HomeView] 刪除當前項目');
+          debugPrint('[HomeView] 使用者選擇刪除目前項目');
           _controller.deleteCurrentItem();
           _showSnackBar(t.screendeleted);
         },
         onOpenSettings: () {
           Navigator.pop(context);
-          debugPrint('[HomeView] 導覽至設定頁面');
+          debugPrint('[HomeView] 使用者選擇開啟設定頁面');
           Navigator.push(
             context,
             MaterialPageRoute(
