@@ -146,6 +146,16 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 - Run `flutter build apk --no-tree-shake-icons` to compile the installation package for Android.
 - Run `flutter build appbundle --no-tree-shake-icons` to compile the release version for Android.
 
+### Edit Display Language
+
+1. Modify or create a new `lib/l10n/app_*.arb` file according to the format (`*` is the language code).
+2. The file is in JSON format. To add language text, simply set it as `"variableName": "new language text"`. Note:
+   1. Each language entry only requires this single line, e.g., `"textcolor": "Text Color",`. The following `"@textcolor": ...` section is not necessary.
+   2. Variable names must be as complete and consistent as in other language files.
+3. Run `dart l10n_metadata.dart` to automatically fill in the `"@..."` section for all language files.
+4. Run `flutter gen-l10n` to build the localized text.
+5. Continue with the "Debugging" steps mentioned above.
+
 ### Compiling on Windows
 
 - Compile as a Windows application and run: `build.bat`.

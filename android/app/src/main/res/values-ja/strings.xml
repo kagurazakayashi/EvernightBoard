@@ -1,1 +1,2 @@
 <resources><string name="app_name">長夜錦書</string></resources>
+<string name="photo_permission_description">画像をインポートして表示するには、フォトライブラリへのアクセスを許可する必要があります。</string>

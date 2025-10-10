@@ -146,6 +146,16 @@ Android | iOS | Windows | macOS | Linux
 - Android 用のインストールパッケージをコンパイルするには、`flutter build apk --no-tree-shake-icons` を実行します。
 - Android 用のリリース版（App Bundle）をコンパイルするには、`flutter build appbundle --no-tree-shake-icons` を実行します。
 
+### 表示言語の編集
+
+1. `lib/l10n/app_*.arb` を修正するか、形式に従って新規作成します（`*` は言語コードです）。
+2. このファイルは JSON 形式です。言語テキストを追加するには、`"変数名": "新しい言語テキスト"` のように設定するだけです。注意点：
+   1. 各言語テキストはこの 1 行のみで問題ありません（例：`"textcolor": "文字色",`）。後続の `"@textcolor": ...` 部分は不要です。
+   2. 変数名は他の言語ファイルと同様に、すべて揃っている必要があります。
+3. `dart l10n_metadata.dart` を実行して、すべての言語ファイルの `"@..."` 部分を自動補完します。
+4. `flutter gen-l10n` を実行して、多言語テキストをビルド（生成）します。
+5. 上記の「デバッグ」手順を続行します。
+
 ### Windows でのコンパイル
 
 - Windows アプリケーションとしてコンパイルして実行: `build.bat`

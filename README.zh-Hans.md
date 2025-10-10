@@ -139,12 +139,22 @@ Android | iOS | Windows | macOS | Linux
 6. 运行 `dart run flutter_iconpicker:generate_packs --packs material` 准备图标资源。
 7. 运行 `flutter run` 开始调试。
 
-如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
+- 如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
 
 #### 手动编译示例
 
 - 运行 `flutter build apk --no-tree-shake-icons` 为 Android 编译安装包。
 - 运行 `flutter build appbundle --no-tree-shake-icons` 为 Android 编译发布版。
+
+### 编辑显示语言
+
+1. 修改或者按格式新建 `lib/l10n/app_*.arb` （ `*` 是语言代码）。
+2. 该文件是 JSON 格式，要添加语言文本，只需要按照 `"变量名":"新语言文本"` 来设定即可。注意：
+   1. 每个语言文本只需要这一行，例如 `"textcolor": "文字顏色",` ，不需要后面的 `"@textcolor": ...` 部分。
+   2. 变量名必须和其他语言文件一样齐全。
+3. 运行 `dart l10n_metadata.dart` 自动补齐所有语言文件的 `"@..."` 部分。
+4. 运行 `flutter gen-l10n` 构建多语言文本。
+5. 继续上述的“调试”步骤。
 
 ### 在 Windows 中编译
 

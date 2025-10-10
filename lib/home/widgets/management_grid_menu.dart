@@ -160,66 +160,75 @@ class ManagementGridMenu extends StatelessWidget {
 
     return SafeArea(
       child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: AlignedGridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              // 固定為四欄配置，讓操作入口在有限寬度下維持一致且易於辨識的排列方式。
-              crossAxisCount: 4,
-              // 設定列與列之間的垂直間距，避免項目上下過於擁擠。
-              mainAxisSpacing: 10,
-              // 設定欄與欄之間的水平間距；目前維持為 0，以保留較緊湊的橫向排列。
-              crossAxisSpacing: 0,
-              itemCount: menuItems.length,
-              itemBuilder: (context, index) {
-                final item = menuItems[index];
-                final theme = Theme.of(context);
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/default.png'),
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+            ),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: AlignedGridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                // 固定為四欄配置，讓操作入口在有限寬度下維持一致且易於辨識的排列方式。
+                crossAxisCount: 4,
+                // 設定列與列之間的垂直間距，避免項目上下過於擁擠。
+                mainAxisSpacing: 10,
+                // 設定欄與欄之間的水平間距；目前維持為 0，以保留較緊湊的橫向排列。
+                crossAxisSpacing: 0,
+                itemCount: menuItems.length,
+                itemBuilder: (context, index) {
+                  final item = menuItems[index];
+                  final theme = Theme.of(context);
 
-                /// 目前項目的實際顯示色彩。
-                ///
-                /// 若項目有指定顏色則優先使用，否則回退至目前主題的 onSurface 色彩，
-                /// 以確保在不同主題模式下仍具備足夠可讀性。
-                final Color activeColor =
-                    item.color ?? theme.colorScheme.onSurface;
+                  /// 目前項目的實際顯示色彩。
+                  ///
+                  /// 若項目有指定顏色則優先使用，否則回退至目前主題的 onSurface 色彩，
+                  /// 以確保在不同主題模式下仍具備足夠可讀性。
+                  final Color activeColor =
+                      item.color ?? theme.colorScheme.onSurface;
 
-                return InkWell(
-                  onTap: item.onTap,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    // 增加上下留白，提升點擊區域手感，且不限制內容高度。
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: activeColor.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
+                  return InkWell(
+                    onTap: item.onTap,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      // 增加上下留白，提升點擊區域手感，且不限制內容高度。
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: activeColor.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(item.icon, color: item.color, size: 25),
                           ),
-                          child: Icon(item.icon, color: item.color, size: 25),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          item.label,
-                          textAlign: TextAlign.center,
-                          // 不限制最大行數，讓標籤文字可依實際內容自然換行顯示。
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: item.color != null
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: activeColor,
+                          const SizedBox(height: 8),
+                          Text(
+                            item.label,
+                            textAlign: TextAlign.center,
+                            // 不限制最大行數，讓標籤文字可依實際內容自然換行顯示。
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: item.color != null
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              color: activeColor,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ),

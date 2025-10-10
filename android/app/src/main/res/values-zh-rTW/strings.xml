@@ -1,1 +1,2 @@
 <resources><string name="app_name">長夜錦書</string></resources>
+<string name="photo_permission_description">要匯入圖片以供顯示，需要允許讀取相簿內容。</string>

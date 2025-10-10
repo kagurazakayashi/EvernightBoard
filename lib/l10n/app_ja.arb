@@ -212,6 +212,10 @@
   "@navbarlocationauto": {
     "description": "自动移到微倾斜侧"
   },
+  "newitemtext": "ナビゲーションバーで現在選択\nされているアイコンをタップして、\nコンテンツの編集を開始します。",
+  "@newitemtext": {
+    "description": "点按导航栏中\n当前选中的图标\n开始编辑内容。"
+  },
   "newscreen": "新規画面",
   "@newscreen": {
     "description": "新屏幕"

@@ -212,6 +212,10 @@
   "@navbarlocationauto": {
     "description": "自动移到微倾斜侧"
   },
+  "newitemtext": "點擊導覽列中\n目前選取的圖示\n開始編輯內容。",
+  "@newitemtext": {
+    "description": "点按导航栏中\n当前选中的图标\n开始编辑内容。"
+  },
   "newscreen": "新螢幕",
   "@newscreen": {
     "description": "新屏幕"

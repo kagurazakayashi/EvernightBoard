@@ -212,6 +212,10 @@
   "@navbarlocationauto": {
     "description": "自动移到微倾斜侧"
   },
+  "newitemtext": "Tap the currently selected\nicon in the navigation bar\nto start editing content.",
+  "@newitemtext": {
+    "description": "点按导航栏中\n当前选中的图标\n开始编辑内容。"
+  },
   "newscreen": "New Screen",
   "@newscreen": {
     "description": "新屏幕"

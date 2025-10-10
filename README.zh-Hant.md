@@ -146,6 +146,16 @@ Android | iOS | Windows | macOS | Linux
 - 執行 `flutter build apk --no-tree-shake-icons` 以為 Android 編譯安裝包。
 - 執行 `flutter build appbundle --no-tree-shake-icons` 以為 Android 編譯發行版。
 
+### 編輯顯示語言
+
+1. 修改或依照格式新建 `lib/l10n/app_*.arb`（`*` 為語言代碼）。
+2. 該檔案為 JSON 格式，若要新增語言文字，只需依照 `"變數名稱": "新語言文字"` 進行設定即可。注意：
+   1. 每一項語言文字僅需此行，例如 `"textcolor": "文字顏色",`，不需要後方的 `"@textcolor": ...` 部分。
+   2. 變數名稱必須與其他語言檔案保持一致且齊全。
+3. 執行 `dart l10n_metadata.dart` 以自動補全所有語言檔案的 `"@..."` 部分。
+4. 執行 `flutter gen-l10n` 以建置多國語言文字。
+5. 繼續上述的「偵錯」步驟。
+
 ### 在 Windows 中編譯
 
 - 編譯為 Windows 應用程式並執行：`build.bat`。
