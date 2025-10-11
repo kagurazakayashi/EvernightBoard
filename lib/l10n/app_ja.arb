@@ -144,6 +144,10 @@
   "@icounchanged": {
     "description": "未更改图标"
   },
+  "icp": "",
+  "@icp": {
+    "description": "ICP\n"
+  },
   "imagefailed": "画像が選択されていないか、設定に失敗しました",
   "@imagefailed": {
     "description": "未选择图片或设置失败"
@@ -187,6 +191,10 @@
   "languageupdated": "言語を変更しました:",
   "@languageupdated": {
     "description": "语言已更改为"
+  },
+  "license": "ライセンス",
+  "@license": {
+    "description": "许可协议"
   },
   "loading": "読み込み中...",
   "@loading": {
@@ -239,6 +247,18 @@
   "previous": "前へ",
   "@previous": {
     "description": "上一个"
+  },
+  "privacy": "プライバシー",
+  "@privacy": {
+    "description": "隐私权"
+  },
+  "privacyfile": "PRIVACY.ja.md",
+  "@privacyfile": {
+    "description": "PRIVACY.zh-Hans.md"
+  },
+  "privacylicense": "ライセンス契約およびプライバシーに関する声明の全文を表示する：",
+  "@privacylicense": {
+    "description": "查看完整的许可协议和隐私权声明："
   },
   "readme": "README.ja.md",
   "@readme": {

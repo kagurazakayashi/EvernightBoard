@@ -144,6 +144,10 @@
   "@icounchanged": {
     "description": "Icon unchanged"
   },
+  "icp": "",
+  "@icp": {
+    "description": "No description provided"
+  },
   "imagefailed": "未选择图片或设置失败",
   "@imagefailed": {
     "description": "No image selected or setup failed"
@@ -187,6 +191,10 @@
   "languageupdated": "语言已更改为",
   "@languageupdated": {
     "description": "Language updated to "
+  },
+  "license": "许可协议",
+  "@license": {
+    "description": "License"
   },
   "loading": "正在加载...",
   "@loading": {
@@ -239,6 +247,18 @@
   "previous": "上一个",
   "@previous": {
     "description": "Previous"
+  },
+  "privacy": "隐私权",
+  "@privacy": {
+    "description": "Privacy"
+  },
+  "privacyfile": "PRIVACY.zh-Hans.md",
+  "@privacyfile": {
+    "description": "PRIVACY.md"
+  },
+  "privacylicense": "查看完整的许可协议和隐私权声明：",
+  "@privacylicense": {
+    "description": "View the full license agreement and privacy statement:"
   },
   "readme": "README.zh-Hans.md",
   "@readme": {

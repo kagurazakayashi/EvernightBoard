@@ -150,12 +150,18 @@ class _SettingsViewState extends State<SettingsView>
                     }
                     if (mounted) setState(() {});
                   },
-                  items: const [
-                    DropdownMenuItem(value: 'auto', child: Text('自动 (Auto)')),
-                    DropdownMenuItem(value: 'zh', child: Text('简体中文')),
-                    DropdownMenuItem(value: 'zh_Hant', child: Text('繁體中文')),
-                    DropdownMenuItem(value: 'en', child: Text('English')),
-                    DropdownMenuItem(value: 'ja', child: Text('日本語')),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'auto',
+                      child: Text('${t.auto} (Auto)'),
+                    ),
+                    const DropdownMenuItem(value: 'zh', child: Text('简体中文')),
+                    const DropdownMenuItem(
+                      value: 'zh_Hant',
+                      child: Text('繁體中文'),
+                    ),
+                    const DropdownMenuItem(value: 'en', child: Text('English')),
+                    const DropdownMenuItem(value: 'ja', child: Text('日本語')),
                   ],
                 ),
               ),
@@ -371,6 +377,32 @@ class _SettingsViewState extends State<SettingsView>
     return locale.languageCode;
   }
 
+  String _icp(Locale? locale) {
+    if (kIsWeb || !Platform.isIOS) {
+      return "";
+    }
+    bool sysischs = false;
+    Locale systemLocale = PlatformDispatcher.instance.locale;
+    if (systemLocale.languageCode == 'zh') {
+      if (systemLocale.scriptCode == 'Hans' ||
+          systemLocale.countryCode == 'CN') {
+        sysischs = true;
+      }
+    }
+    bool localechs = false;
+    if (locale != null) {
+      if (locale.languageCode == 'zh') {
+        if (locale.scriptCode == 'Hans' || locale.countryCode == 'CN') {
+          localechs = true;
+        }
+      }
+    }
+    if (sysischs == localechs) {
+      return "\n${t.icp}";
+    }
+    return "";
+  }
+
   /// 顯示還原出廠設定確認對話框。
   ///
   /// 執行後將清除所有本地儲存的持久化資料。
@@ -407,6 +439,7 @@ class _SettingsViewState extends State<SettingsView>
   ///
   /// 展示應用程式名稱、圖示、版本資訊、法律聲明以及開發者連結。
   void _about(BuildContext context) {
+    String icp = _icp(widget.controller.appLocale);
     debugPrint('[_SettingsViewState] 開啟「關於」資訊視窗');
     showDialog(
       context: context,
@@ -424,7 +457,8 @@ class _SettingsViewState extends State<SettingsView>
                 ),
               ),
               applicationVersion: "$_version+$_buildNumber",
-              applicationLegalese: "© 2026 KagurazakaYashi(KagurazakaMiyabi)",
+              applicationLegalese:
+                  "is licensed under Mulan PSL v2.\n© 2026 KagurazakaYashi(KagurazakaMiyabi)$icp\n",
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -450,33 +484,28 @@ class _SettingsViewState extends State<SettingsView>
                       onTap: () => jumpUrL(
                         path: "/kagurazakayashi/EvernightBoard/issues",
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          t.issues,
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue,
-                          ),
+                      child: Text(
+                        t.issues,
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue,
                         ),
                       ),
                     ),
                     GestureDetector(
                       onTap: () =>
                           jumpUrL(path: "/kagurazakayashi/EvernightBoard"),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          t.srccode,
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue,
-                          ),
+                      child: Text(
+                        t.srccode,
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue,
                         ),
                       ),
                     ),
                   ],
                 ),
+                Text(" \n${t.privacylicense}"),
               ],
             );
           },

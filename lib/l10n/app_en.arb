@@ -144,6 +144,10 @@
   "@icounchanged": {
     "description": "未更改图标"
   },
+  "icp": "",
+  "@icp": {
+    "description": "ICP\n"
+  },
   "imagefailed": "No image selected or setup failed",
   "@imagefailed": {
     "description": "未选择图片或设置失败"
@@ -187,6 +191,10 @@
   "languageupdated": "Language updated to ",
   "@languageupdated": {
     "description": "语言已更改为"
+  },
+  "license": "License",
+  "@license": {
+    "description": "许可协议"
   },
   "loading": "Loading...",
   "@loading": {
@@ -239,6 +247,18 @@
   "previous": "Previous",
   "@previous": {
     "description": "上一个"
+  },
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "隐私权"
+  },
+  "privacyfile": "PRIVACY.md",
+  "@privacyfile": {
+    "description": "PRIVACY.zh-Hans.md"
+  },
+  "privacylicense": "View the full license agreement and privacy statement:",
+  "@privacylicense": {
+    "description": "查看完整的许可协议和隐私权声明："
   },
   "readme": "README.md",
   "@readme": {

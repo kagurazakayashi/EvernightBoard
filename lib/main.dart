@@ -24,7 +24,13 @@ void main() {
   // 註冊你的自定義許可
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('LICENSE');
-    yield LicenseEntryWithLineBreaks(['\u0001 ${t.appTitle}'], license);
+    final privacy = await rootBundle.loadString(t.privacyfile);
+    yield LicenseEntryWithLineBreaks([
+      '\u0001 ${t.appTitle} ${t.license}',
+    ], license);
+    yield LicenseEntryWithLineBreaks([
+      '\u0001 ${t.appTitle} ${t.privacy}',
+    ], privacy);
   });
 
   // 若未來需要支援整體 Widget 樹重建，可改用 RestartWidget 包裝根元件。
