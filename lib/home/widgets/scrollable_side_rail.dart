@@ -1,3 +1,4 @@
+import 'package:evernight_board/global.dart';
 import 'package:flutter/material.dart';
 import '../home_model.dart';
 
@@ -119,17 +120,17 @@ class ScrollableSideRail extends StatelessWidget {
                         indicatorColor: activeColor.withValues(alpha: 0.15),
 
                         // 將導覽項目清單轉換為 NavigationRail 所需的目的地列表。
-                        destinations: items
-                            .map(
-                              (e) => NavigationRailDestination(
-                                // 導覽項目的圖示。
-                                icon: Icon(e.icon),
+                        destinations: items.map((e) {
+                          // 新增判斷邏輯
+                          final String displayTitle = e.title.isEmpty
+                              ? t.newscreen
+                              : e.title;
 
-                                // 導覽項目的顯示文字。
-                                label: Text(e.title),
-                              ),
-                            )
-                            .toList(),
+                          return NavigationRailDestination(
+                            icon: Icon(e.icon),
+                            label: Text(displayTitle), // 使用處理後的標題
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),

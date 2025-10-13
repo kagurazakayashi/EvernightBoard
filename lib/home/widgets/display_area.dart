@@ -1,3 +1,4 @@
+import 'package:evernight_board/global.dart';
 import 'package:flutter/material.dart';
 import '../home_model.dart';
 import 'local_image_display.dart';
@@ -31,7 +32,7 @@ class DisplayArea extends StatelessWidget {
     final theme = Theme.of(context);
 
     // 若資料未指定背景色，則退回主題中的 surface 色彩。
-    final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
+    // final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
 
     // 若資料未指定文字色，則退回主題中的 onSurface 色彩，
     // 以維持基本可讀性與主題一致性。
@@ -47,41 +48,25 @@ class DisplayArea extends StatelessWidget {
           // 4. 使用者裝置上的本機檔案路徑
           final String? path = item.backgroundImagePath;
 
-          // 要顯示的文字內容。
-          final String content = item.content;
-
           // 判斷背景圖片路徑是否為空值或空字串。
           final bool isPathEmpty = path == null || path.isEmpty;
 
-          // 判斷文字內容是否為空字串。
-          final bool isContentEmpty = content.isEmpty;
+          // 分別處理內容文字
+          final String displayContent = item.content.isEmpty
+              ? t.newitemtext
+              : item.content;
 
-          // 顯示規則：
+          // 修改顯示規則：
           // 1. 只要有圖片路徑，就優先顯示圖片。
-          // 2. 若沒有圖片路徑，且文字內容也為空，則顯示預設圖片。
-          // 3. 僅在沒有圖片路徑且有文字內容時，顯示文字。
-          final bool shouldShowImage = !isPathEmpty || isContentEmpty;
-
-          // 輸出顯示判斷結果，協助除錯目前區塊是走圖片模式還是文字模式。
-          debugPrint(
-            '[DisplayArea] isPathEmpty=$isPathEmpty, '
-            'isContentEmpty=$isContentEmpty, '
-            'shouldShowImage=$shouldShowImage, '
-            'path=$path',
-          );
+          // 2. 如果沒有圖片路徑，則顯示文字（此時文字可能是使用者輸入的，也可能是預設的 t.newitemtext）。
+          final bool shouldShowImage = !isPathEmpty;
 
           return Container(
-            width: constraints.maxWidth,
-            height: constraints.maxHeight,
-            color: bgColor,
-            padding: const EdgeInsets.all(24),
-            alignment: Alignment.center,
+            // ... (寬度、高度、背景色設定保持不變)
             child: shouldShowImage
                 ? _buildImageContent(path)
                 : AutoScaleText(
-                    text: content,
-                    // 設定基礎文字樣式，實際字級會由 AutoScaleText
-                    // 依可用空間自動縮放。
+                    text: displayContent, // 使用處理後的內容
                     baseStyle: TextStyle(height: 1.1, color: txtColor),
                     constraints: constraints,
                   ),

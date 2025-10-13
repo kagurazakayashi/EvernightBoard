@@ -269,8 +269,8 @@ mixin HomeControllerData on ChangeNotifier {
     final self = this as HomeController;
     self.items.add(
       HomeItem(
-        title: t.newscreen,
-        content: t.newitemtext,
+        title: '',
+        content: '',
         icon: Icons.add_box_outlined,
         backgroundImagePath: '',
       ),

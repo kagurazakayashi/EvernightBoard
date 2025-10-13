@@ -6,6 +6,7 @@
 /// 搭配 [HomeItem] 清單使用，並透過 [onTap] 將點擊的索引回傳給外部。
 library;
 
+import 'package:evernight_board/global.dart';
 import 'package:flutter/material.dart';
 import '../home_model.dart';
 
@@ -83,6 +84,10 @@ class ScrollableNavBar extends StatelessWidget {
           children: List.generate(items.length, (index) {
             // 取得目前迭代的項目資料。
             final item = items[index];
+            // 判斷是否顯示預設標題：當標題與內容皆為空時（即初始狀態）
+            final String displayTitle = item.title.isEmpty
+                ? t.newscreen
+                : item.title;
 
             // 判斷目前項目是否為選取狀態。
             final bool isSelected = currentIndex == index;
@@ -148,7 +153,7 @@ class ScrollableNavBar extends StatelessWidget {
 
                     // 顯示導覽項目的標題文字。
                     Text(
-                      item.title,
+                      displayTitle,
                       style: TextStyle(
                         // 選取時使用完整強調色，未選取時降低透明度。
                         color: isSelected

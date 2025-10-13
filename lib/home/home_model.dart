@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:evernight_board/global.dart';
 
 /// 首頁項目資料模型。
 ///
@@ -84,7 +83,7 @@ class HomeItem {
   /// - `imagePath` 對應到 [backgroundImagePath]
   factory HomeItem.fromJson(Map<String, dynamic> json) {
     return HomeItem(
-      title: json['title'] ?? t.unnamed,
+      title: json['title'] ?? '',
       content: json['content'] ?? '',
       // 如果 icon 轉換失敗，給一個預設圖示
       icon: IconData(
