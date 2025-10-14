@@ -6,20 +6,19 @@ import 'auto_scale_text.dart';
 
 /// 顯示首頁項目內容的區域元件。
 ///
-/// 此元件會依據 [item] 內的資料，自動決定目前區塊應顯示：
+/// 此元件會依據 [item] 內的資料，自動決定目前區塊應顯示的內容型態，包含：
 ///
-/// 1. 使用者或系統指定的背景圖片。
-/// 2. 預設圖片。
-/// 3. 純文字內容。
+/// 1. 使用者指定的背景圖片或內建資源圖片
+/// 2. 純文字內容
 ///
-/// 顯示優先順序如下：
+/// 顯示規則如下：
 ///
-/// - 只要有可用的圖片路徑，就優先顯示圖片。
-/// - 若沒有圖片路徑，且文字內容為空，則顯示預設圖片。
-/// - 僅在「沒有圖片路徑」且「有文字內容」時，才顯示文字。
+/// - 只要存在可用的圖片路徑，即優先顯示圖片
+/// - 若沒有圖片路徑，則顯示文字內容
+/// - 當文字內容為空時，會改顯示預設文字
 ///
-/// 此元件包在 [IgnorePointer] 中，表示其內容僅供顯示，
-/// 不接收任何點擊、拖曳等互動事件。
+/// 此元件包在 [IgnorePointer] 中，表示內容僅供顯示，
+/// 不接收任何點擊、拖曳或手勢互動事件。
 class DisplayArea extends StatelessWidget {
   /// 要顯示的首頁項目資料。
   final HomeItem item;
@@ -41,32 +40,31 @@ class DisplayArea extends StatelessWidget {
     return IgnorePointer(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // 背景圖片路徑，可能為：
-          // 1. null
-          // 2. 空字串
-          // 3. assets/... 的內建資源路徑
-          // 4. 使用者裝置上的本機檔案路徑
+          // 取得背景圖片路徑。
           final String? path = item.backgroundImagePath;
 
-          // 判斷背景圖片路徑是否為空值或空字串。
+          // 判斷背景圖片路徑是否為 null 或空字串。
           final bool isPathEmpty = path == null || path.isEmpty;
 
-          // 分別處理內容文字
+          // 決定實際要顯示的文字內容。
+          // 若資料內容為空，則改用預設提示文字。
           final String displayContent = item.content.isEmpty
               ? t.newitemtext
               : item.content;
 
-          // 修改顯示規則：
+          // 顯示規則：
           // 1. 只要有圖片路徑，就優先顯示圖片。
-          // 2. 如果沒有圖片路徑，則顯示文字（此時文字可能是使用者輸入的，也可能是預設的 t.newitemtext）。
+          // 2. 若沒有圖片路徑，則顯示文字內容；
+          //    此時文字可能是使用者輸入內容，也可能是預設提示文字。
           final bool shouldShowImage = !isPathEmpty;
 
           return Container(
-            // ... (寬度、高度、背景色設定保持不變)
+            // 確保無論內部顯示圖片或文字，內容都維持水平與垂直置中。
+            alignment: Alignment.center,
             child: shouldShowImage
                 ? _buildImageContent(path)
                 : AutoScaleText(
-                    text: displayContent, // 使用處理後的內容
+                    text: displayContent,
                     baseStyle: TextStyle(height: 1.1, color: txtColor),
                     constraints: constraints,
                   ),
@@ -79,23 +77,23 @@ class DisplayArea extends StatelessWidget {
   /// 建立圖片顯示內容。
   ///
   /// 當 [path] 為 `null`、空字串，或為 `assets/` 開頭的資源路徑時，
-  /// 直接使用 [Image.asset] 載入。
+  /// 會直接使用 [Image.asset] 載入對應圖片。
   ///
   /// 若 [path] 為使用者選擇的本機檔案路徑，則交由 [LocalImageDisplay]
-  /// 處理，並在檔案不存在時自動回退至預設圖片。
+  /// 處理，並在檔案不存在時自動回退為預設圖片。
   ///
   /// 預設圖片固定使用 `assets/default.png`。
   Widget _buildImageContent(String? path) {
     const String defaultAsset = 'assets/default.png';
 
-    // 若路徑明確指向 app 內建資源，或路徑為空，
+    // 若路徑明確指向應用程式內建資源，或路徑為空，
     // 則直接載入資源圖片；空路徑時改用預設圖片。
     if (path == null || path.isEmpty || path.startsWith('assets/')) {
       final String assetPath = (path == null || path.isEmpty)
           ? defaultAsset
           : path;
 
-      // 記錄目前實際要載入的資源圖片路徑，方便確認是否正確回退到預設圖。
+      // 記錄目前實際要載入的資源圖片路徑，方便確認是否正確回退至預設圖片。
       debugPrint('[DisplayArea] 載入資源圖片：$assetPath');
 
       return Image.asset(

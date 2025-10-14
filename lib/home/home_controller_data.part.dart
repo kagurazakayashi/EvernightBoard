@@ -2,68 +2,70 @@ part of 'home_controller.dart';
 
 /// 首頁控制器的資料管理混入（Mixin）。
 ///
-/// 負責管理下列核心資料流程：
+/// 負責處理首頁資料與使用者偏好設定的載入、保存與同步，包含：
 ///
-/// - 應用程式語系切換與保存
-/// - 首頁項目清單的初始化、增刪與排序
-/// - 使用者偏好設定的持久化
-/// - 匯入／匯出前的資料準備
+/// - 應用程式語系切換與持久化
+/// - 首頁項目清單的初始化、新增、刪除、複製與排序
+/// - 操作偏好設定的保存，例如音量鍵翻頁與導覽列位置
+/// - 匯入／匯出前後的資料整理與還原
 ///
-/// 此混入必須套用於可轉型為 [HomeController]，且繼承自 [ChangeNotifier]
-/// 的類別，才能正確存取控制器狀態與觸發通知機制。
+/// 此混入必須套用於同時繼承自 [ChangeNotifier]，且可安全轉型為
+/// [HomeController] 的類別，否則將無法正確存取控制器狀態與通知機制。
 mixin HomeControllerData on ChangeNotifier {
   Locale? _appLocale;
 
   /// 目前應用程式使用中的語系設定。
   ///
-  /// 若為 `null`，代表使用系統預設語系。
+  /// 當值為 `null` 時，代表採用系統預設語系。
   Locale? get appLocale => _appLocale;
 
   /// 標記資料是否已完成初始化載入。
   bool _isInitialized = false;
 
-  /// 目前資料初始化是否已完成。
+  /// 目前資料初始化流程是否已完成。
   bool get isInitialized => _isInitialized;
 
-  /// 是否啟用音量鍵切換頁面的功能。
+  /// 是否啟用透過音量鍵切換頁面的功能。
   bool useVolumeKeys = false;
 
-  /// 是否啟用點擊螢幕左右半側切換頁面的功能。
+  /// 是否啟用點擊螢幕左右半側進行翻頁的功能。
   bool useSideTap = true;
 
-  /// 橫向模式下導覽列的位置設定。
+  /// 橫向模式下的導覽列顯示位置設定。
   LandscapeNavPosition landscapeNavPosition = LandscapeNavPosition.bottom;
 
-  /// 直向模式下導覽列的位置設定。
+  /// 直向模式下的導覽列顯示位置設定。
   PortraitNavPosition portraitNavPosition = PortraitNavPosition.auto;
 
-  /// 首頁項目清單寫入本機持久化儲存時使用的鍵值。
+  /// 首頁項目清單寫入本機持久化儲存時所使用的鍵值。
   static const String _storageKey = 'evernight_board_storage';
 
-  /// 應用程式偏好設定寫入本機持久化儲存時使用的鍵值。
+  /// 應用程式偏好設定寫入本機持久化儲存時所使用的鍵值。
   static const String _configKey = 'evernight_board_config';
 
-  /// 判斷目前執行平台是否支援音量鍵監聽。
+  /// 判斷目前執行平台是否支援音量鍵事件監聽。
   ///
-  /// 僅限 Android 與 iOS，且不支援 Web。
+  /// 僅支援 Android 與 iOS，且 Web 平台不適用。
   bool get _isVolumeSupported =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
-  /// 切換應用程式語系並同步儲存設定。
+  /// 切換應用程式語系並同步保存設定。
   ///
-  /// [locale] 欲切換的語系；若為 `null`，則恢復為系統預設語系。
+  /// [locale] 為欲切換的語系；若為 `null`，則恢復為系統預設語系。
   void changeLocale(Locale? locale) {
     _appLocale = locale;
-    debugPrint('[HomeControllerData] 已更新語系設定：${locale?.languageCode ?? "自動"}');
+    debugPrint(
+      '[HomeControllerData] 已更新應用程式語系：${locale?.languageCode ?? "自動"}',
+    );
     notifyListeners();
-    _syncConfig(); // 儲存至本機
+    _syncConfig(); // 同步保存至本機
   }
 
   /// 顯示統一樣式的 SnackBar 提示訊息。
   ///
   /// [context] 用於取得 [ScaffoldMessenger] 的建構上下文。
-  /// [message] 要顯示的提示訊息內容。
-  /// [isError] 是否為錯誤類型提示，會影響圖示與視覺樣式。
+  /// [message] 要顯示的提示內容。
+  /// [isError] 是否為錯誤提示；會影響圖示與視覺樣式。
   void _showSnackBar(
     BuildContext context,
     String message, {
@@ -71,7 +73,7 @@ mixin HomeControllerData on ChangeNotifier {
   }) {
     if (!context.mounted) return;
 
-    debugPrint('[HomeControllerData] 顯示 SnackBar 訊息：$message');
+    debugPrint('[HomeControllerData] 顯示提示訊息：$message');
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -103,11 +105,11 @@ mixin HomeControllerData on ChangeNotifier {
   // 初始化與資料持久化
   // ===============================
 
-  /// 執行資料初始化流程，從本機儲存載入項目清單與使用者偏好設定。
+  /// 執行資料初始化流程，從本機儲存載入首頁項目清單與使用者偏好設定。
   ///
-  /// 若本機尚無資料，則自動建立預設項目內容。
+  /// 若本機尚未保存任何首頁資料，則會自動建立預設內容。
   Future<void> initData() async {
-    debugPrint('[HomeControllerData] 開始初始化資料...');
+    debugPrint('[HomeControllerData] 開始初始化資料。');
     final self = this as HomeController;
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -122,7 +124,7 @@ mixin HomeControllerData on ChangeNotifier {
         );
         debugPrint('[HomeControllerData] 已載入 ${self.items.length} 筆首頁項目資料。');
       } else {
-        debugPrint('[HomeControllerData] 本機查無首頁項目資料，改載入預設資料。');
+        debugPrint('[HomeControllerData] 本機查無首頁項目資料，改為建立預設資料。');
         _setDefaultData();
       }
 
@@ -152,7 +154,7 @@ mixin HomeControllerData on ChangeNotifier {
           '[HomeControllerData] 使用者偏好設定載入完成，目前語系：${_appLocale ?? "自動"}',
         );
       } else {
-        debugPrint('[HomeControllerData] 本機查無偏好設定，使用預設設定值。');
+        debugPrint('[HomeControllerData] 本機查無偏好設定，將使用預設值。');
       }
     } catch (e) {
       debugPrint('[HomeControllerData] 初始化資料時發生例外：$e');
@@ -167,7 +169,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 將目前的應用程式偏好設定同步寫入本機儲存。
   Future<void> _syncConfig() async {
-    debugPrint('[HomeControllerData] 正在同步偏好設定至本機儲存...');
+    debugPrint('[HomeControllerData] 正在同步偏好設定至本機儲存。');
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       _configKey,
@@ -185,7 +187,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 切換音量鍵翻頁功能。
   ///
-  /// 若目前平台不支援音量鍵監聽，則不進行任何設定變更。
+  /// 若目前平台不支援音量鍵事件監聽，則不會進行任何設定變更。
   void toggleVolumeKeys(bool value) {
     if (!_isVolumeSupported) {
       debugPrint('[HomeControllerData] 目前平台不支援音量鍵翻頁功能。');
@@ -207,9 +209,9 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 清除所有應用程式資料與設定，並移除相關聯的實體檔案。
   ///
-  /// [context] 用於顯示操作結果提示與關閉目前頁面。
+  /// [context] 用於顯示操作結果提示並關閉目前頁面。
   Future<void> clearAllData(BuildContext context) async {
-    debugPrint('[HomeControllerData] 開始執行全部資料清除流程...');
+    debugPrint('[HomeControllerData] 開始執行全部資料清除流程。');
     final self = this as HomeController;
 
     // 逐一刪除各項目所關聯的背景圖片檔案。
@@ -239,15 +241,15 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 建立預設資料。
   ///
-  /// 目前預設行為為新增一筆空白項目。
+  /// 目前預設行為為新增一筆空白首頁項目。
   void _setDefaultData() {
-    debugPrint('[HomeControllerData] 正在建立預設資料...');
+    debugPrint('[HomeControllerData] 正在建立預設首頁資料。');
     addItem();
   }
 
   /// 將目前項目清單狀態同步寫入本機磁碟。
   Future<void> _syncToDisk() async {
-    debugPrint('[HomeControllerData] 正在同步項目清單至本機磁碟...');
+    debugPrint('[HomeControllerData] 正在同步項目清單至本機磁碟。');
     final self = this as HomeController;
     final prefs = await SharedPreferences.getInstance();
     final String encoded = jsonEncode(
@@ -299,7 +301,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 刪除目前選取的項目。
   ///
-  /// 若該項目關聯的背景圖片未被其他項目共用，則一併刪除實體檔案。
+  /// 若該項目關聯的背景圖片未被其他項目共用，則會一併刪除對應的實體檔案。
   /// 當刪除後清單為空時，會自動補上一筆預設項目。
   void deleteCurrentItem() async {
     final self = this as HomeController;
@@ -337,7 +339,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 將目前選取的項目向上移動一格。
   ///
-  /// 採循環移動邏輯：若目前位於首位，則移動後會成為最後一筆。
+  /// 採循環移動邏輯：若目前位於首位，移動後將成為最後一筆。
   void moveUp() {
     final self = this as HomeController;
     if (self.items.length <= 1) {
@@ -356,7 +358,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 將目前選取的項目向下移動一格。
   ///
-  /// 採循環移動邏輯：若目前位於末位，則移動後會成為第一筆。
+  /// 採循環移動邏輯：若目前位於末位，移動後將成為第一筆。
   void moveDown() {
     final self = this as HomeController;
     if (self.items.length <= 1) {
@@ -379,7 +381,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 更新目前選取項目的標題文字。
   ///
-  /// [newTitle] 欲更新的新標題內容。
+  /// [newTitle] 為欲更新的新標題內容。
   void updateTitle(String newTitle) {
     final self = this as HomeController;
     if (self.items.isEmpty) {
@@ -394,7 +396,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 更新目前選取項目的圖示。
   ///
-  /// [newIcon] 欲套用的新圖示資料。
+  /// [newIcon] 為欲套用的新圖示資料。
   void updateIcon(IconData newIcon) {
     final self = this as HomeController;
     if (self.items.isEmpty) {
@@ -409,7 +411,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 設定橫向模式下的導覽列位置，並同步保存設定。
   ///
-  /// [pos] 欲設定的橫向導覽列位置。
+  /// [pos] 為欲設定的橫向導覽列位置。
   void setLandscapeNavPosition(LandscapeNavPosition pos) {
     landscapeNavPosition = pos;
     debugPrint('[HomeControllerData] 已更新橫向導覽列位置：$pos');
@@ -419,7 +421,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 設定直向模式下的導覽列位置，並同步保存設定。
   ///
-  /// [pos] 欲設定的直向導覽列位置。
+  /// [pos] 為欲設定的直向導覽列位置。
   void setPortraitNavPosition(PortraitNavPosition pos) {
     portraitNavPosition = pos;
     debugPrint('[HomeControllerData] 已更新直向導覽列位置：$pos');
@@ -431,14 +433,14 @@ mixin HomeControllerData on ChangeNotifier {
   ///
   /// 設定後會清除原有背景圖片路徑，僅保留文字內容。
   ///
-  /// [text] 要設定的文字內容。
+  /// [text] 為要設定的文字內容。
   void setAsText(String text) {
     final self = this as HomeController;
     if (self.items.isEmpty) {
       debugPrint('[HomeControllerData] 設定純文字模式失敗：目前項目清單為空。');
       return;
     }
-    debugPrint('[HomeControllerData] 正在將索引 ${self._currentIndex} 設為純文字模式。');
+    debugPrint('[HomeControllerData] 正在將索引 ${self._currentIndex} 的項目設為純文字模式。');
     self.items[self._currentIndex] = self.currentItem.copyWith(
       content: text,
       backgroundImagePath: '',
@@ -451,7 +453,7 @@ mixin HomeControllerData on ChangeNotifier {
   ///
   /// 成功選取後，會以新圖片覆蓋目前項目的背景內容，並清空文字欄位。
   ///
-  /// [maxDimension] 圖片允許的最大寬或高，用於降低記憶體負擔並避免載入過大圖片。
+  /// [maxDimension] 為圖片允許的最大寬或高，用於降低記憶體負擔並避免載入過大的圖片。
   Future<void> pickImage(double maxDimension) async {
     final self = this as HomeController;
     final ImagePicker picker = ImagePicker();
@@ -460,7 +462,7 @@ mixin HomeControllerData on ChangeNotifier {
       return;
     }
 
-    debugPrint('[HomeControllerData] 正在開啟圖庫選擇器...');
+    debugPrint('[HomeControllerData] 正在開啟圖庫選擇器。');
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: maxDimension,
@@ -497,7 +499,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 設定目前選取項目的文字顏色。
   ///
-  /// 當 [color] 為 `null` 時，會同時標記清除自訂文字顏色。
+  /// 當 [color] 為 `null` 時，會同時標記為清除自訂文字顏色。
   void setTextColor(Color? color) {
     final self = this as HomeController;
     if (self.items.isEmpty) {
@@ -515,7 +517,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 設定目前選取項目的背景顏色。
   ///
-  /// 當 [color] 為 `null` 時，會同時標記清除自訂背景顏色。
+  /// 當 [color] 為 `null` 時，會同時標記為清除自訂背景顏色。
   void setBgColor(Color? color) {
     final self = this as HomeController;
     if (self.items.isEmpty) {
@@ -533,7 +535,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 判斷兩個顏色是否過於接近。
   ///
-  /// 此方法主要用於對比度檢查，避免前景與背景顏色過於相似而影響可讀性。
+  /// 此方法主要用於檢查對比度，避免前景與背景顏色過於相似而影響可讀性。
   ///
   /// 當任一顏色為 `null` 時，回傳 `false`。
   /// 若兩色 ARGB 完全一致，則直接視為相同。
@@ -546,7 +548,7 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 計算並回傳指定顏色的反相色。
   ///
-  /// 會保留原本的透明度（Alpha），僅反轉 RGB 三個色彩通道。
+  /// 會保留原本透明度（Alpha），僅反轉 RGB 三個色彩通道。
   Color invertColor(Color color) {
     return Color.from(
       alpha: color.a,
@@ -567,11 +569,12 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 匯出目前所有項目資料。
   ///
-  /// 匯出時會將背景圖片轉為 Base64 字串並內嵌於 JSON 中，以便在其他裝置匯入時可完整還原。
+  /// 匯出時會將背景圖片轉為 Base64 字串並內嵌於 JSON 中，
+  /// 以便在其他裝置匯入時可完整還原。
   ///
   /// [context] 用於顯示匯出結果提示訊息。
   Future<void> exportData(BuildContext context) async {
-    debugPrint('[HomeControllerData] 正在準備匯出資料...');
+    debugPrint('[HomeControllerData] 正在準備匯出資料。');
     final self = this as HomeController;
     List<Map<String, dynamic>> exportList = [];
 
@@ -611,9 +614,9 @@ mixin HomeControllerData on ChangeNotifier {
   ///
   /// 若 JSON 內含 Base64 圖片內容，會先轉存為本機檔案，再建立對應的 [HomeItem]。
   ///
-  /// [context] 用於顯示匯入結果提示訊息與關閉目前頁面。
+  /// [context] 用於顯示匯入結果提示訊息並關閉目前頁面。
   Future<void> importData(BuildContext context) async {
-    debugPrint('[HomeControllerData] 啟動資料匯入流程...');
+    debugPrint('[HomeControllerData] 啟動資料匯入流程。');
     final self = this as HomeController;
     final String? jsonStr = await DataExportService.importJson();
 

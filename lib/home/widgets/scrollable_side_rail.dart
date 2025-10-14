@@ -4,28 +4,28 @@ import '../home_model.dart';
 
 /// 可捲動的側邊導覽列元件。
 ///
-/// 適用於導覽項目數量可能超出可視高度的情境，透過 `SingleChildScrollView`
-/// 讓整個 `NavigationRail` 能夠垂直捲動，避免項目超出畫面後被截斷。
+/// 適用於導覽項目數量可能超出可視高度的情境，透過 [SingleChildScrollView]
+/// 讓整個 [NavigationRail] 能夠垂直捲動，避免項目超出畫面後遭到截斷。
 ///
 /// 此元件會依據目前選取的 [HomeItem]，動態套用對應頁面的文字色彩與背景色彩；
-/// 若項目未提供自訂色彩，則會自動回退為目前主題中的預設色彩。
+/// 若項目未提供自訂色彩，則會自動回退至目前主題的預設色彩。
 ///
-/// 版面配置上，外層使用 [Container] 負責繪製整體背景色，
-/// 內層再透過 [LayoutBuilder]、[ConstrainedBox] 與 [IntrinsicHeight]
-/// 確保在內容不足一頁高度時，側邊欄仍能完整撐滿可用空間。
+/// 在版面配置上，外層使用 [Container] 負責繪製整體背景色，
+/// 內層則透過 [LayoutBuilder]、[ConstrainedBox] 與 [IntrinsicHeight]
+/// 確保當內容不足一頁高度時，側邊欄仍可完整撐滿可用空間。
 class ScrollableSideRail extends StatelessWidget {
-  /// 側邊導覽列要顯示的導覽項目清單。
+  /// 側邊導覽列要顯示的項目清單。
   final List<HomeItem> items;
 
   /// 目前已選取的導覽項目索引。
   ///
-  /// 此值會對應到 [NavigationRail.selectedIndex]，
+  /// 此值會對應至 [NavigationRail.selectedIndex]，
   /// 用來決定目前高亮顯示的目的地項目。
   final int currentIndex;
 
   /// 使用者點擊導覽項目時觸發的回呼函式。
   ///
-  /// 傳入的參數為被點擊項目的索引值。
+  /// 傳入參數為被點擊項目的索引值。
   final Function(int) onTap;
 
   /// 建立一個可捲動的側邊導覽列元件。
@@ -42,7 +42,7 @@ class ScrollableSideRail extends StatelessWidget {
     final theme = Theme.of(context);
 
     // 取得目前選取中的項目，用來決定導覽列的主色與背景色。
-    // 若清單為空，則建立一個暫時的占位項目，避免後續色彩計算無法進行。
+    // 若清單為空，則建立暫時性的占位項目，避免後續色彩計算失敗。
     // if (items.isEmpty) return Text("Loading...");
     if (items.isEmpty) {
       debugPrint('[ScrollableSideRail] items 為空，顯示預設的載入中圖示。');
@@ -52,13 +52,13 @@ class ScrollableSideRail extends StatelessWidget {
         ? HomeItem(title: "...", content: "", icon: Icons.hourglass_empty)
         : items[currentIndex];
 
-    // 計算選取狀態要使用的主色：
-    // 若目前項目有自訂文字顏色則優先採用，否則回退為主題的 primary 色。
+    // 計算已選取狀態要使用的主色：
+    // 若目前項目有自訂文字顏色則優先採用，否則回退至主題的 primary 色。
     final Color activeColor =
         currentItem.textColor ?? theme.colorScheme.primary;
 
     // 計算側邊導覽列的背景色：
-    // 若目前項目有自訂背景色則優先採用，否則回退為主題的 surface 色。
+    // 若目前項目有自訂背景色則優先採用，否則回退至主題的 surface 色。
     final Color navBgColor =
         currentItem.backgroundColor ?? theme.colorScheme.surface;
 
@@ -74,15 +74,15 @@ class ScrollableSideRail extends StatelessWidget {
                 return SingleChildScrollView(
                   child: ConstrainedBox(
                     // 當內容高度不足時，仍強制最小高度等於可用高度，
-                    // 確保背景色可以完整鋪滿整個側邊區域。
+                    // 確保背景色可完整鋪滿整個側邊區域。
                     constraints: BoxConstraints(
                       minHeight: constraints.maxHeight,
                     ),
                     child: IntrinsicHeight(
-                      // 讓子元件依內容高度自我測量，
+                      // 讓子元件依內容高度進行自我測量，
                       // 搭配最小高度限制，使側邊欄在不同內容量下都能維持合理外觀。
                       child: NavigationRail(
-                        // 背景由外層 Container 負責繪製，因此這裡設為透明。
+                        // 背景由外層 Container 負責繪製，因此此處設為透明。
                         backgroundColor: Colors.transparent,
 
                         // 指定目前選取中的導覽項目索引。
@@ -110,7 +110,7 @@ class ScrollableSideRail extends StatelessWidget {
                         ),
 
                         // 未選取項目的文字樣式。
-                        // 與未選取圖示維持一致的透明度，降低視覺權重。
+                        // 與未選取圖示維持一致透明度，以降低視覺權重。
                         unselectedLabelTextStyle: TextStyle(
                           color: activeColor.withValues(alpha: 0.5),
                         ),
@@ -121,7 +121,6 @@ class ScrollableSideRail extends StatelessWidget {
 
                         // 將導覽項目清單轉換為 NavigationRail 所需的目的地列表。
                         destinations: items.map((e) {
-                          // 新增判斷邏輯
                           final String displayTitle = e.title.isEmpty
                               ? t.newscreen
                               : e.title;
