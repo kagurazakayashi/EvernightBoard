@@ -11,6 +11,9 @@ import 'widgets/management_grid_menu.dart';
 import 'widgets/edit_text_dialog.dart';
 import 'widgets/color_picker_handler.dart';
 import '../settings/settings_view.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// 應用程式首頁主畫面。
 ///
@@ -36,6 +39,9 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   /// 便捷存取目前綁定的 [HomeController]。
   HomeController get _controller => widget.controller;
+
+  /// 控制網頁版頂欄是否顯示
+  bool _isWebAppBarVisible = true;
 
   @override
   void initState() {
@@ -128,6 +134,71 @@ class _HomeViewState extends State<HomeView> {
       debugPrint('[HomeView] 切換目前項目至索引: $index');
       _controller.changeIndex(index);
     }
+  }
+
+  /// 開啟外部網址
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      debugPrint('[HomeView] 無法開啟網址: $urlString');
+      if (mounted) _showSnackBar('無法開啟連結', isError: true);
+    }
+  }
+
+  /// 建立僅限網頁版顯示的頂部導覽列
+  PreferredSizeWidget? _buildWebAppBar() {
+    // 判斷條件：必須是網頁版 且 使用者沒有關閉它
+    if (!kIsWeb || !_isWebAppBarVisible) return null;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    // 定義一個寬度閾值，低於此數值則隱藏標題文字（例如 600）
+    final bool showTitle = screenWidth >= 600;
+
+    return AppBar(
+      // 根據寬度決定顯示標題還是 null
+      title: showTitle ? Text(t.appTitle) : null,
+      elevation: 1, // 給一點陰影增加立體感
+      backgroundColor: Colors.grey[900], // 配合你現有的深色底色，可依需求調整
+      actions: [
+        // GitHub 按鈕
+        InkWell(
+          onTap: () =>
+              _launchURL('https://github.com/kagurazakayashi/EvernightBoard'),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: SvgPicture.asset('assets/web/github.svg', height: 40),
+          ),
+        ),
+        // Google Play 按鈕
+        InkWell(
+          onTap: () => _launchURL(
+            'https://play.google.com/store/apps/details?id=moe.yashi.evernightboard',
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: SvgPicture.asset('assets/web/googleplay.svg', height: 40),
+          ),
+        ),
+        // 3App Store 按鈕
+        InkWell(
+          onTap: () =>
+              _launchURL('https://apps.apple.com/app/moe.yashi.evernightboard'),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: SvgPicture.asset('assets/web/appstore.svg', height: 40),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close, color: Colors.white70),
+          tooltip: 'Hide',
+          onPressed: () {
+            setState(() {
+              _isWebAppBarVisible = false;
+            });
+          },
+        ),
+        const SizedBox(width: 16), // 右側留白
+      ],
+    );
   }
 
   @override
@@ -267,6 +338,7 @@ class _HomeViewState extends State<HomeView> {
 
         return Scaffold(
           backgroundColor: bgColor,
+          appBar: _buildWebAppBar(),
           bottomNavigationBar: bottomNavigationBarWidget,
           body: body,
         );
