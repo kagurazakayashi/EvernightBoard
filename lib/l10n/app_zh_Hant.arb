@@ -144,10 +144,6 @@
   "@icounchanged": {
     "description": "未更改图标"
   },
-  "icp": "",
-  "@icp": {
-    "description": "ICP\n"
-  },
   "imagefailed": "未選擇圖片或設定失敗",
   "@imagefailed": {
     "description": "未选择图片或设置失败"
@@ -220,9 +216,9 @@
   "@navbarlocationauto": {
     "description": "自动移到微倾斜侧"
   },
-  "newitemtext": "點擊導覽列中\n目前選取的圖示\n開始編輯內容。",
+  "newitemtext": "歡迎使用 長夜錦書。\n本軟體支援在言語溝通不便、\n且難以操作觸控螢幕時，\n提供一個可方便切換並顯示\n預先定義文字與圖片的方案。\n\n點按側邊欄中目前選取的按鈕\n即可開啟選單。\n\n詳細說明可前往\n「選單 -> 設定 -> 使用說明」\n中了解。",
   "@newitemtext": {
-    "description": "点按导航栏中\n当前选中的图标\n开始编辑内容。"
+    "description": "欢迎使用 长夜锦书 。\n本软件支持在言语沟通不方便、\n并且难以操作触屏时，\n提供一个方便地切换展示\n预定义文字和图片的方案。\n\n点按边栏中当前选中的按钮\n可以打开菜单。\n\n详细说明可以前往\n「菜单 -> 设置 -> 使用说明」\n中了解。"
   },
   "newscreen": "新螢幕",
   "@newscreen": {

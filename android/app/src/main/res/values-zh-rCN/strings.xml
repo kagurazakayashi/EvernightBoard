@@ -1,2 +1,4 @@
-<resources><string name="app_name">长夜锦书</string></resources>
+<resources>
+<string name="app_name">长夜锦书</string>
 <string name="photo_permission_description">要导入图片以供显示，需要允许读取相册内容。</string>
+</resources>

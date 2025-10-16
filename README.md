@@ -144,7 +144,7 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 #### Manual Compilation Example
 
 - Run `flutter build apk --no-tree-shake-icons` to compile the installation package for Android.
-- Run `flutter build appbundle --no-tree-shake-icons` to compile the release version for Android.
+- Run `flutter build aab --no-tree-shake-icons` to compile the release version for Android.
 
 ### Edit Display Language
 
@@ -174,6 +174,14 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 4. Run `pod install` to download the required third-party libraries.
 5. Launch Xcode and open `Runner.xcworkspace` in the `macos` or `ios` folder to configure settings (e.g., certificates and provisioning profiles).
 6. Proceed with the formal compilation.
+
+### Build for Web
+
+1. Use `RD /S /Q build\web` or `rm -rf build/web` to delete the files from the previous build.
+2. Use `flutter build web --wasm --no-tree-shake-icons --base-href "/"` to build the project.
+
+- If compatibility with older browsers is required, remove `--wasm`.
+- If the app is not deployed at the website root, modify the `"/"` URL path in `--base-href "/"`.
 
 ## License
 

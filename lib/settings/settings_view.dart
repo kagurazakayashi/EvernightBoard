@@ -43,6 +43,9 @@ class _SettingsViewState extends State<SettingsView>
   /// 儲存應用程式建置序號。
   String _buildNumber = '0';
 
+  // ICP: {"localhost":"appicp","hostname1":"webicp","hostname2":"webicp"}
+  static const Map<String, String> _icpConfig = {'localhost': ''};
+
   @override
   void initState() {
     super.initState();
@@ -378,7 +381,7 @@ class _SettingsViewState extends State<SettingsView>
   }
 
   String _icp(Locale? locale) {
-    if (kIsWeb || !Platform.isIOS) {
+    if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
       return "";
     }
     bool sysischs = false;
@@ -398,7 +401,18 @@ class _SettingsViewState extends State<SettingsView>
       }
     }
     if (sysischs == localechs) {
-      return "\n${t.icp}";
+      if (kIsWeb) {
+        String currentHost = Uri.base.host;
+        for (var entry in _icpConfig.entries) {
+          String domain = entry.key.toLowerCase();
+          // 判斷邏輯：完全相等 或 以 ".domain" 結尾
+          if (currentHost == domain || currentHost.endsWith('.$domain')) {
+            return "\n${entry.value}";
+          }
+        }
+      } else {
+        return _icpConfig['localhost']!;
+      }
     }
     return "";
   }

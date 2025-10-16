@@ -144,7 +144,7 @@ Android | iOS | Windows | macOS | Linux
 #### 手動コンパイルの例
 
 - Android 用のインストールパッケージをコンパイルするには、`flutter build apk --no-tree-shake-icons` を実行します。
-- Android 用のリリース版（App Bundle）をコンパイルするには、`flutter build appbundle --no-tree-shake-icons` を実行します。
+- Android 用のリリース版（App Bundle）をコンパイルするには、`flutter build aab --no-tree-shake-icons` を実行します。
 
 ### 表示言語の編集
 
@@ -174,6 +174,14 @@ Android | iOS | Windows | macOS | Linux
 4. `pod install` を実行して必要なサードパーティライブラリをダウンロードします。
 5. Xcode を起動し、`macos` または `ios` フォルダ内の `Runner.xcworkspace` を開いて設定（証明書やプロファイルなど）を行います。
 6. 正式なコンパイルを実行します。
+
+### Web 向けにビルドする
+
+1. `RD /S /Q build\web` または `rm -rf build/web` を使用して、前回ビルドしたファイルを削除します。
+2. `flutter build web --wasm --no-tree-shake-icons --base-href "/"` を使用してビルドします。
+
+- 旧バージョンのブラウザーとの互換性が必要な場合は、`--wasm` を削除してください。
+- Web サイトのルートディレクトリに配置しない場合は、`--base-href "/"` の `"/"` URL パスを編集してください。
 
 ## ライセンス
 

@@ -144,7 +144,7 @@ Android | iOS | Windows | macOS | Linux
 #### 手動編譯範例
 
 - 執行 `flutter build apk --no-tree-shake-icons` 以為 Android 編譯安裝包。
-- 執行 `flutter build appbundle --no-tree-shake-icons` 以為 Android 編譯發行版。
+- 執行 `flutter build aab --no-tree-shake-icons` 以為 Android 編譯發行版。
 
 ### 編輯顯示語言
 
@@ -174,6 +174,14 @@ Android | iOS | Windows | macOS | Linux
 4. 執行 `pod install` 下載所需的第三方函式庫。
 5. 執行 Xcode，開啟 `macos` 或 `ios` 資料夾中的 `Runner.xcworkspace` 進行配置（例如憑證與描述檔）。
 6. 進行正式編譯。
+
+### 編譯為 Web
+
+1. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 刪除上次編譯的檔案。
+2. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/"` 進行編譯。
+
+- 若需要相容舊版瀏覽器，請移除 `--wasm`。
+- 若不是部署在網站根目錄，請編輯 `--base-href "/"` 中的 `"/"` URL 路徑。
 
 ## 授權條款
 

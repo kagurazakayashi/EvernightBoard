@@ -1,2 +1,4 @@
-<resources><string name="app_name">EvernightBoard</string></resources>
+<resources>
+<string name="app_name">EvernightBoard</string>
 <string name="photo_permission_description">To import images for display, access to your photo library is required.</string>
+</resources>

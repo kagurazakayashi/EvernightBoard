@@ -144,10 +144,6 @@
   "@icounchanged": {
     "description": "Icon unchanged"
   },
-  "icp": "",
-  "@icp": {
-    "description": "No description provided"
-  },
   "imagefailed": "未选择图片或设置失败",
   "@imagefailed": {
     "description": "No image selected or setup failed"
@@ -220,9 +216,9 @@
   "@navbarlocationauto": {
     "description": "Auto move to tilted side"
   },
-  "newitemtext": "点按导航栏中\n当前选中的图标\n开始编辑内容。",
+  "newitemtext": "欢迎使用 长夜锦书 。\n本软件支持在言语沟通不方便、\n并且难以操作触屏时，\n提供一个方便地切换展示\n预定义文字和图片的方案。\n\n点按边栏中当前选中的按钮\n可以打开菜单。\n\n详细说明可以前往\n「菜单 -> 设置 -> 使用说明」\n中了解。",
   "@newitemtext": {
-    "description": "Tap the currently selected\nicon in the navigation bar\nto start editing content."
+    "description": "Welcome to EvernightBoard.\nThis software provides a convenient\nway to switch between and display\npredefined text and images when\nverbal communication is inconvenient\nand operating a touchscreen is difficult.\n\nTap the currently selected button in\nthe sidebar to open the menu.\n\nFor detailed instructions,\ngo to Menu -> Settings -> User Guide."
   },
   "newscreen": "新屏幕",
   "@newscreen": {
