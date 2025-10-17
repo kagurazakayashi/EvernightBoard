@@ -156,15 +156,15 @@ Android | iOS | Windows | macOS | Linux
 4. `flutter gen-l10n` を実行して、多言語テキストをビルド（生成）します。
 5. 上記の「デバッグ」手順を続行します。
 
-### Windows でのコンパイル
+### Windows でビルド
 
-- Windows アプリケーションとしてコンパイルして実行: `build.bat`
-- Android アプリケーションとしてコンパイルしてインストール: `build_apk.bat`
+- Windows アプリケーションとしてビルドして実行：`build.bat`。
+- Android アプリケーションとしてビルドしてインストール：`build_apk.bat`。
 
-### macOS または Linux でのコンパイル
+### macOS または Linux でビルド
 
-- macOS または Linux アプリケーションとしてコンパイルして実行: `./build`
-- Android アプリケーションとしてコンパイルしてインストール: `./build_apk`
+- macOS または Linux アプリケーションとしてビルドして実行：`./build`。
+- Android アプリケーションとしてビルドしてインストール：`./build_apk`。
 
 ### macOS または iOS 用のコンパイル
 
@@ -178,10 +178,10 @@ Android | iOS | Windows | macOS | Linux
 ### Web 向けにビルドする
 
 1. `RD /S /Q build\web` または `rm -rf build/web` を使用して、前回ビルドしたファイルを削除します。
-2. `flutter build web --wasm --no-tree-shake-icons --base-href "/"` を使用してビルドします。
+2. `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` を使用してビルドします。
 
 - 旧バージョンのブラウザーとの互換性が必要な場合は、`--wasm` を削除してください。
-- Web サイトのルートディレクトリに配置しない場合は、`--base-href "/"` の `"/"` URL パスを編集してください。
+- Web サイトのルートディレクトリに配置しない場合は、`--base-href "/EvernightBoard/"` の `"/EvernightBoard/"` URL パスを編集してください。
 
 ## ライセンス
 

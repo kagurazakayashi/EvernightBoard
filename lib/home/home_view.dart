@@ -159,7 +159,7 @@ class _HomeViewState extends State<HomeView> {
       elevation: 1, // 給一點陰影增加立體感
       backgroundColor: Colors.grey[900], // 配合你現有的深色底色，可依需求調整
       actions: [
-        // GitHub 按鈕
+        // 渠道配置 GitHub 按鈕
         InkWell(
           onTap: () =>
               _launchURL('https://github.com/kagurazakayashi/EvernightBoard'),
@@ -168,7 +168,7 @@ class _HomeViewState extends State<HomeView> {
             child: SvgPicture.asset('assets/web/github.svg', height: 40),
           ),
         ),
-        // Google Play 按鈕
+        // 渠道配置 Google Play 按鈕
         InkWell(
           onTap: () => _launchURL(
             'https://play.google.com/store/apps/details?id=moe.yashi.evernightboard',
@@ -178,10 +178,11 @@ class _HomeViewState extends State<HomeView> {
             child: SvgPicture.asset('assets/web/googleplay.svg', height: 40),
           ),
         ),
-        // 3App Store 按鈕
+        // 渠道配置 App Store 按鈕
         InkWell(
-          onTap: () =>
-              _launchURL('https://apps.apple.com/app/moe.yashi.evernightboard'),
+          onTap: () => _launchURL(
+            'https://apps.apple.com/app/evernightboard/id6761154116',
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: SvgPicture.asset('assets/web/appstore.svg', height: 40),

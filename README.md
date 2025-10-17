@@ -156,15 +156,15 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 4. Run `flutter gen-l10n` to build the localized text.
 5. Continue with the "Debugging" steps mentioned above.
 
-### Compiling on Windows
+### Build on Windows
 
-- Compile as a Windows application and run: `build.bat`.
-- Compile as an Android application and install: `build_apk.bat`.
+- Build as a Windows application and run: `build.bat`.
+- Build as an Android application and install: `build_apk.bat`.
 
-### Compiling on macOS or Linux
+### Build on macOS or Linux
 
-- Compile as a macOS or Linux application and run: `./build`.
-- Compile as an Android application and install: `./build_apk`.
+- Build as a macOS or Linux application and run: `./build`.
+- Build as an Android application and install: `./build_apk`.
 
 ### Compiling for macOS or iOS
 
@@ -178,10 +178,10 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 ### Build for Web
 
 1. Use `RD /S /Q build\web` or `rm -rf build/web` to delete the files from the previous build.
-2. Use `flutter build web --wasm --no-tree-shake-icons --base-href "/"` to build the project.
+2. Use `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` to build the project.
 
 - If compatibility with older browsers is required, remove `--wasm`.
-- If the app is not deployed at the website root, modify the `"/"` URL path in `--base-href "/"`.
+- If the app is not deployed at the website root, modify the `"/EvernightBoard/"` URL path in `--base-href "/EvernightBoard/"`.
 
 ## License
 

@@ -158,13 +158,13 @@ Android | iOS | Windows | macOS | Linux
 
 ### 在 Windows 中编译
 
-- 编译为 Windows 应用程序并运行: `build.bat` 。
-- 编译为 Android 应用程序并安装: `build_apk.bat` 。
+- 编译为 Windows 应用程序然后运行: `build.bat` 。
+- 编译为 Android 应用程序然后安装: `build_apk.bat` 。
 
 ### 在 macOS 或 Linux 中编译
 
-- 编译为 macOS 或 Linux 应用程序并运行: `./build` 。
-- 编译为 Android 应用程序并安装: `./build_apk` 。
+- 编译为 macOS 或 Linux 应用程序然后运行: `./build` 。
+- 编译为 Android 应用程序然后安装: `./build_apk` 。
 
 ### 编译为 macOS 或 iOS
 
@@ -178,10 +178,10 @@ Android | iOS | Windows | macOS | Linux
 ### 编译为 Web
 
 1. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 删除上次编译的文件。
-2. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/"` 进行编译。
+2. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` 进行编译。
 
 - 如果需要兼容旧版本浏览器，移除 `--wasm` 。
-- 如果不是放在网站根目录，编辑 `--base-href "/"` 的 `"/"` URL 路径。
+- 如果不是放在网站根目录，编辑 `--base-href "/EvernightBoard/"` 的 `"/EvernightBoard/"` URL 路径。
 
 ## 许可协议
 

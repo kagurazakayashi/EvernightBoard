@@ -43,7 +43,7 @@ class _SettingsViewState extends State<SettingsView>
   /// 儲存應用程式建置序號。
   String _buildNumber = '0';
 
-  // ICP: {"localhost":"appicp","hostname1":"webicp","hostname2":"webicp"}
+  // 渠道配置: {"localhost":"appicp","hostname1":"webicp","hostname2":"webicp"}
   static const Map<String, String> _icpConfig = {'localhost': ''};
 
   @override

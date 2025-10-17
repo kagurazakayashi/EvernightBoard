@@ -216,9 +216,9 @@
   "@navbarlocationauto": {
     "description": "自动移到微倾斜侧"
   },
-  "newitemtext": "Welcome to EvernightBoard.\nThis software provides a convenient\nway to switch between and display\npredefined text and images when\nverbal communication is inconvenient\nand operating a touchscreen is difficult.\n\nTap the currently selected button in\nthe sidebar to open the menu.\n\nFor detailed instructions,\ngo to Menu -> Settings -> User Guide.",
+  "newitemtext": "Welcome to EvernightBoard.\nThis app provides an easy\nway to switch and display\npre-set text and images\nwhen speech or touch is\ndifficult to navigate.\n\nTap the currently selected\nbutton in the sidebar to\nopen the menu.\n\nFor details, please go to\n\"Menu -> Settings ->\nUser Guide\".",
   "@newitemtext": {
-    "description": "欢迎使用 长夜锦书 。\n本软件支持在言语沟通不方便、\n并且难以操作触屏时，\n提供一个方便地切换展示\n预定义文字和图片的方案。\n\n点按边栏中当前选中的按钮\n可以打开菜单。\n\n详细说明可以前往\n「菜单 -> 设置 -> 使用说明」\n中了解。"
+    "description": "欢迎使用 长夜锦书 。\n本软件支持在言语沟通不便、\n且难以操作触摸屏幕时，\n提供方便切换并展示\n预设文字与图片的方案。\n\n点按边栏中当前选中按钮\n即可打开功能菜单。\n\n详细说明请前往\n「菜单->设置->使用说明」\n进行了解。"
   },
   "newscreen": "New Screen",
   "@newscreen": {
