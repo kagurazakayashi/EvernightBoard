@@ -28,7 +28,7 @@ dart run flutter_iconpicker:generate_packs --packs material
 flutter gen-l10n
 echo "Running: flutter build $TARGET"
 rm -rf "`pwd`\build"
-flutter build "$TARGET" --no-tree-shake-icons
+flutter build "$TARGET" --no-tree-shake-icons --dart-define-from-file="flavor/$TARGET.json"
 
 echo "Resolving executable path..."
 

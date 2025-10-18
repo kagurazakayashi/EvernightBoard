@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:evernight_board/flavor.dart';
+import 'package:evernight_board/settings/icp.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../home/home_controller.dart';
@@ -10,10 +12,15 @@ import 'readme_view.dart';
 
 /// 設定頁面視圖元件。
 ///
-/// 負責呈現應用程式的全域配置選項，包括互動行為、資料備份、
-/// 介面佈局調整以及關於資訊。
+/// 負責顯示並管理應用程式的全域設定項目，包含語言切換、翻頁行為、
+/// 導覽列位置、資料匯入匯出、資料重設，以及關於頁相關資訊。
+///
+/// 此元件本身不直接持有設定資料，而是透過 [HomeController] 讀取與寫入
+/// 應用程式層級的狀態。
 class SettingsView extends StatefulWidget {
-  /// 關聯的首頁控制器，用於存取與修改全域狀態。
+  /// 設定頁面所依賴的首頁控制器。
+  ///
+  /// 用於存取目前設定值，並將使用者在介面上的操作同步回應用程式狀態。
   final HomeController controller;
 
   /// 建立設定頁面實例。
@@ -25,39 +32,60 @@ class SettingsView extends StatefulWidget {
 
 /// [SettingsView] 的狀態管理類別。
 ///
-/// 處理設定頁面的生命週期、退出動畫以及與 [HomeController] 的資料互動。
+/// 負責：
+/// - 初始化版本資訊。
+/// - 管理退出動畫。
+/// - 處理使用者在設定頁上的互動事件。
+/// - 顯示各類確認對話框與關於資訊。
 class _SettingsViewState extends State<SettingsView>
     with TickerProviderStateMixin {
-  /// 控制退出程式時的黑屏淡出動畫控制器。
+  /// 控制應用程式退出時的淡出動畫。
+  ///
+  /// 當使用者觸發退出動作時，會驅動黑色遮罩由透明漸變為全黑。
   late AnimationController _exitAnimationController;
 
-  /// 處理背景變黑效果的數值動畫。
+  /// 黑色遮罩的不透明度動畫。
+  ///
+  /// 數值範圍為 0.0 到 1.0，對應遮罩從完全透明到完全不透明。
   late Animation<double> _blackOutAnimation;
 
-  /// 標記當前是否處於執行退出程序的狀態。
+  /// 是否正在執行退出流程。
+  ///
+  /// 用於避免重複觸發退出邏輯，並在動畫進行期間停用相關操作。
   bool _isExiting = false;
 
-  /// 儲存應用程式版本號。
+  /// 應用程式版本號。
+  ///
+  /// 預設值為佔位內容，待平台資訊初始化完成後會更新為實際值。
   String _version = '0.0.0';
 
-  /// 儲存應用程式建置序號。
+  /// 應用程式建置編號。
+  ///
+  /// 預設值為佔位內容，待平台資訊初始化完成後會更新為實際值。
   String _buildNumber = '0';
 
-  // 渠道配置: {"localhost":"appicp","hostname1":"webicp","hostname2":"webicp"}
-  static const Map<String, String> _icpConfig = {'localhost': ''};
+  /// ICP 與相關備案資訊工具物件。
+  ///
+  /// 用於在關於對話框中依當前語系產生對應的顯示字串。
+  Icp icp = Icp();
 
   @override
   void initState() {
     super.initState();
-    debugPrint('[_SettingsViewState] 正在初始化設定頁面狀態...');
+    debugPrint('[_SettingsViewState] 開始初始化設定頁面狀態');
     _initPackageInfo();
 
-    // 初始化退出動畫設定：時長 600 毫秒
+    /// 初始化退出動畫控制器。
+    ///
+    /// 動畫總時長為 600 毫秒，配合黑色遮罩淡入效果，提供較平滑的退出視覺體驗。
     _exitAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
 
+    /// 建立黑色遮罩的不透明度動畫。
+    ///
+    /// 使用 easeInOut 曲線，讓淡入過程在視覺上更自然。
     _blackOutAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _exitAnimationController,
@@ -65,17 +93,25 @@ class _SettingsViewState extends State<SettingsView>
       ),
     );
 
-    // 監聽動畫狀態，當全黑動畫完成後，強制結束應用程式進程
+    /// 監聽退出動畫狀態。
+    ///
+    /// 當畫面已完全轉黑且動畫結束後，直接呼叫 [exit] 結束應用程式行程。
     _exitAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        debugPrint('[_SettingsViewState] 動畫執行完畢，正在結束應用程式。');
+        debugPrint('[_SettingsViewState] 退出動畫完成，準備結束應用程式');
         exit(0);
       }
     });
   }
 
-  /// 從平台層獲取套件版本資訊。
+  /// 從平台層讀取應用程式版本資訊。
+  ///
+  /// 透過 [PackageInfo.fromPlatform] 取得版本號與建置編號，
+  /// 並在元件仍掛載於 Widget Tree 時更新畫面狀態。
+  ///
+  /// 若讀取過程發生例外，僅輸出除錯訊息，不中斷畫面流程。
   Future<void> _initPackageInfo() async {
+    debugPrint('[_SettingsViewState] 開始讀取應用程式版本資訊');
     try {
       final info = await PackageInfo.fromPlatform();
       if (mounted) {
@@ -83,29 +119,37 @@ class _SettingsViewState extends State<SettingsView>
           _version = info.version;
           _buildNumber = info.buildNumber;
         });
-        debugPrint('[_SettingsViewState] 成功載入版本資訊: $_version+$_buildNumber');
+        debugPrint(
+          '[_SettingsViewState] 版本資訊載入成功：version=$_version, build=$_buildNumber',
+        );
+      } else {
+        debugPrint('[_SettingsViewState] 版本資訊已取得，但元件已卸載，略過狀態更新');
       }
     } catch (e) {
-      debugPrint('[_SettingsViewState] 獲取套件資訊失敗: $e');
+      debugPrint('[_SettingsViewState] 讀取版本資訊失敗：$e');
     }
   }
 
-  /// 切換側邊觸控翻頁功能的開關狀態。
+  /// 切換側邊點擊翻頁功能。
   ///
-  /// [val] 新的布林值狀態。
+  /// [val] 為使用者在介面上選取的新狀態。
+  ///
+  /// 此方法會將設定同步至 [HomeController]，並在元件仍存在時刷新畫面。
   void toggleSideTap(bool val) {
-    debugPrint('[_SettingsViewState] 變更點擊半屏翻頁狀態為: $val');
+    debugPrint('[_SettingsViewState] 更新半螢幕點擊翻頁設定：$val');
     widget.controller.toggleSideTap(val);
     if (mounted) {
       setState(() {});
     }
   }
 
-  /// 切換實體音量鍵翻頁功能的開關狀態。
+  /// 切換實體音量鍵翻頁功能。
   ///
-  /// [val] 新的布林值狀態。
+  /// [val] 為使用者在介面上選取的新狀態。
+  ///
+  /// 此功能僅在支援實體音量鍵的平台上可用，實際平台判斷邏輯位於 [build] 中。
   void toggleVolumeKeys(bool val) {
-    debugPrint('[_SettingsViewState] 變更音量鍵翻頁狀態為: $val');
+    debugPrint('[_SettingsViewState] 更新音量鍵翻頁設定：$val');
     widget.controller.toggleVolumeKeys(val);
     if (mounted) {
       setState(() {});
@@ -114,10 +158,17 @@ class _SettingsViewState extends State<SettingsView>
 
   @override
   Widget build(BuildContext context) {
-    // 檢查目前運行平台是否具備物理音量鍵支援（排除 Web 並限制在 iOS/Android）
+    /// 判斷目前平台是否支援實體音量鍵翻頁。
+    ///
+    /// Web 平台不支援，僅允許 Android 與 iOS 啟用此功能。
     final bool isVolumeSupported =
         !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
+    /// 判斷目前語言顯示是否需要額外補充英文說明。
+    ///
+    /// 既有邏輯沿用原始實作，不調整判斷方式。
     bool isEnglish = t.language != "Language";
+
     return Stack(
       children: [
         Scaffold(
@@ -132,6 +183,7 @@ class _SettingsViewState extends State<SettingsView>
                 trailing: DropdownButton<String>(
                   value: _getLocaleKey(widget.controller.appLocale),
                   onChanged: (val) {
+                    debugPrint('[_SettingsViewState] 使用者選擇語系值：$val');
                     if (val == 'auto') {
                       widget.controller.changeLocale(null);
                     } else if (val == 'zh_Hant') {
@@ -151,7 +203,10 @@ class _SettingsViewState extends State<SettingsView>
                     } else {
                       widget.controller.changeLocale(Locale(val!));
                     }
-                    if (mounted) setState(() {});
+                    if (mounted) {
+                      debugPrint('[_SettingsViewState] 語系設定已更新，重新整理畫面');
+                      setState(() {});
+                    }
                   },
                   items: [
                     DropdownMenuItem(
@@ -203,10 +258,12 @@ class _SettingsViewState extends State<SettingsView>
                   value: widget.controller.landscapeNavPosition,
                   onChanged: (val) {
                     if (val != null) {
-                      debugPrint('[_SettingsViewState] 變更橫屏導航位置為: $val');
+                      debugPrint('[_SettingsViewState] 更新橫向模式導覽列位置：$val');
                       widget.controller.setLandscapeNavPosition(val);
                     }
-                    if (mounted) setState(() {});
+                    if (mounted) {
+                      setState(() {});
+                    }
                   },
                   items: [
                     DropdownMenuItem(
@@ -235,10 +292,12 @@ class _SettingsViewState extends State<SettingsView>
                   value: widget.controller.portraitNavPosition,
                   onChanged: (val) {
                     if (val != null) {
-                      debugPrint('[_SettingsViewState] 變更豎屏導航位置為: $val');
+                      debugPrint('[_SettingsViewState] 更新直向模式導覽列位置：$val');
                       widget.controller.setPortraitNavPosition(val);
                     }
-                    if (mounted) setState(() {});
+                    if (mounted) {
+                      setState(() {});
+                    }
                   },
                   items: [
                     DropdownMenuItem(
@@ -301,6 +360,7 @@ class _SettingsViewState extends State<SettingsView>
                 subtitle: Text(t.help),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
+                  debugPrint('[_SettingsViewState] 開啟說明頁面');
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ReadmeView()),
@@ -324,7 +384,11 @@ class _SettingsViewState extends State<SettingsView>
             ],
           ),
         ),
-        // 遮罩層：用於顯示退出時的黑屏動畫
+
+        /// 退出流程專用遮罩層。
+        ///
+        /// 當 [_isExiting] 為 `true` 時，啟用黑色淡入遮罩並攔截操作，
+        /// 避免使用者在退出過程中再次觸發互動。
         IgnorePointer(
           ignoring: !_isExiting,
           child: FadeTransition(
@@ -340,11 +404,12 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  /// 顯示匯入組態確認對話框。
+  /// 顯示資料匯入確認對話框。
   ///
-  /// 此操作具有破壞性，會覆蓋現有資料，故需進行二次確認。
+  /// 匯入操作會覆蓋目前既有資料，屬於具破壞性的行為，
+  /// 因此在正式執行前需要再次向使用者確認。
   void _confirmImport(BuildContext context) {
-    debugPrint('[_SettingsViewState] 顯示匯入確認彈窗');
+    debugPrint('[_SettingsViewState] 顯示資料匯入確認對話框');
 
     showDialog(
       context: context,
@@ -354,14 +419,14 @@ class _SettingsViewState extends State<SettingsView>
         actions: [
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 使用者取消匯入');
+              debugPrint('[_SettingsViewState] 使用者取消資料匯入');
               Navigator.pop(context);
             },
             child: Text(t.cancel),
           ),
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 使用者確認匯入，呼叫控制器邏輯');
+              debugPrint('[_SettingsViewState] 使用者確認資料匯入，準備呼叫控制器');
               Navigator.pop(context);
               widget.controller.importData(context);
             },
@@ -372,6 +437,10 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
+  /// 將 [Locale] 轉換為下拉選單使用的語系鍵值。
+  ///
+  /// 當 [locale] 為 `null` 時，代表使用系統自動語言設定，回傳 `auto`。
+  /// 若為繁體中文，則依既有規則回傳 `zh_Hant`。
   String _getLocaleKey(Locale? locale) {
     if (locale == null) return 'auto';
     if (locale.languageCode == 'zh' && locale.scriptCode == 'Hant') {
@@ -380,48 +449,12 @@ class _SettingsViewState extends State<SettingsView>
     return locale.languageCode;
   }
 
-  String _icp(Locale? locale) {
-    if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
-      return "";
-    }
-    bool sysischs = false;
-    Locale systemLocale = PlatformDispatcher.instance.locale;
-    if (systemLocale.languageCode == 'zh') {
-      if (systemLocale.scriptCode == 'Hans' ||
-          systemLocale.countryCode == 'CN') {
-        sysischs = true;
-      }
-    }
-    bool localechs = false;
-    if (locale != null) {
-      if (locale.languageCode == 'zh') {
-        if (locale.scriptCode == 'Hans' || locale.countryCode == 'CN') {
-          localechs = true;
-        }
-      }
-    }
-    if (sysischs == localechs) {
-      if (kIsWeb) {
-        String currentHost = Uri.base.host;
-        for (var entry in _icpConfig.entries) {
-          String domain = entry.key.toLowerCase();
-          // 判斷邏輯：完全相等 或 以 ".domain" 結尾
-          if (currentHost == domain || currentHost.endsWith('.$domain')) {
-            return "\n${entry.value}";
-          }
-        }
-      } else {
-        return _icpConfig['localhost']!;
-      }
-    }
-    return "";
-  }
-
-  /// 顯示還原出廠設定確認對話框。
+  /// 顯示重設所有資料的確認對話框。
   ///
-  /// 執行後將清除所有本地儲存的持久化資料。
+  /// 執行後將清除本機儲存的所有資料，屬不可逆操作，
+  /// 因此需透過對話框進行二次確認。
   void _confirmReset(BuildContext context) {
-    debugPrint('[_SettingsViewState] 顯示還原重設確認彈窗');
+    debugPrint('[_SettingsViewState] 顯示資料重設確認對話框');
 
     showDialog(
       context: context,
@@ -431,14 +464,14 @@ class _SettingsViewState extends State<SettingsView>
         actions: [
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 取消重設');
+              debugPrint('[_SettingsViewState] 使用者取消資料重設');
               Navigator.pop(context);
             },
             child: Text(t.cancel),
           ),
           TextButton(
             onPressed: () {
-              debugPrint('[_SettingsViewState] 執行全域資料清空程序');
+              debugPrint('[_SettingsViewState] 使用者確認清除全部資料');
               widget.controller.clearAllData(context);
               Navigator.pop(context);
             },
@@ -449,12 +482,16 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  /// 顯示「關於」資訊對話框。
+  /// 顯示「關於」對話框。
   ///
-  /// 展示應用程式名稱、圖示、版本資訊、法律聲明以及開發者連結。
+  /// 對話框中包含：
+  /// - 應用程式名稱與圖示
+  /// - 版本資訊
+  /// - 授權與版權資訊
+  /// - 說明、問題回報與原始碼連結
   void _about(BuildContext context) {
-    String icp = _icp(widget.controller.appLocale);
-    debugPrint('[_SettingsViewState] 開啟「關於」資訊視窗');
+    String icpString = icp.icpString(widget.controller.appLocale);
+    debugPrint('[_SettingsViewState] 開啟關於資訊對話框');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -470,9 +507,10 @@ class _SettingsViewState extends State<SettingsView>
                   fit: BoxFit.contain,
                 ),
               ),
-              applicationVersion: "$_version+$_buildNumber",
+              applicationVersion:
+                  "v$_version.$_buildNumber (${Flavor.flavor.isEmpty ? "Debug" : Flavor.flavor})",
               applicationLegalese:
-                  "is licensed under Mulan PSL v2.\n© 2026 KagurazakaYashi(KagurazakaMiyabi)$icp\n",
+                  "is licensed under Mulan PSL v2.\n© 2026 KagurazakaYashi(KagurazakaMiyabi)$icpString\n",
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -480,8 +518,7 @@ class _SettingsViewState extends State<SettingsView>
                   children: [
                     GestureDetector(
                       onTap: () => jumpUrL(
-                        path:
-                            "/kagurazakayashi/EvernightBoard/blob/main/${t.readme}",
+                        path: "${Flavor.github}/blob/main/${t.readme}",
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -528,53 +565,67 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
-  /// 啟動退出動畫程序，並在完成後徹底關閉應用程式。
+  /// 執行退出動畫並在動畫結束後關閉應用程式。
+  ///
+  /// 若目前已處於退出流程中，則直接返回，避免重複執行動畫與結束邏輯。
   void _performExitWithAnimation() {
-    debugPrint('[_SettingsViewState] 執行退出動畫，準備釋放記憶體');
-    if (_isExiting) return;
+    if (_isExiting) {
+      debugPrint('[_SettingsViewState] 退出流程已在進行中，忽略重複請求');
+      return;
+    }
+    debugPrint('[_SettingsViewState] 開始執行退出動畫');
     setState(() => _isExiting = true);
     _exitAnimationController.forward();
   }
 }
 
-/// 開啟外部瀏覽器跳轉至指定的 URL。
+/// 使用外部應用程式開啟指定網址。
 ///
-/// [scheme] 協定類型，預設為 https。
-/// [host] 域名，預設為 github.com。
-/// [path] 資源路徑。
+/// 預設組合為 `https://github.com`，並可透過參數覆寫協定、主機與路徑。
+///
+/// 參數說明：
+/// - [scheme]：URL 協定，預設為 `https`。
+/// - [host]：主機名稱，預設為 `github.com`。
+/// - [path]：資源路徑。
+///
+/// 若主機名稱為空字串，將直接略過開啟流程。
 Future jumpUrL({
   String scheme = "https",
   String host = "github.com",
   String path = "",
 }) async {
   if (host == "") {
-    debugPrint('[_SettingsViewState] 跳轉失敗：無效的 Host 內容');
+    debugPrint('[jumpUrL] 無效的 host 參數，取消開啟網址');
     return;
   }
   final url = Uri(scheme: scheme, host: host, path: path);
+  debugPrint('[jumpUrL] 準備開啟外部網址：$url');
   try {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      debugPrint('[_SettingsViewState] 無法呼叫外部應用程式開啟 URL: $url');
+      debugPrint('[jumpUrL] 無法使用外部應用程式開啟網址：$url');
+    } else {
+      debugPrint('[jumpUrL] 已成功送出外部開啟請求：$url');
     }
   } catch (e) {
-    debugPrint('[_SettingsViewState] 執行 jumpUrL 時發生例外: $e');
+    debugPrint('[jumpUrL] 開啟網址時發生例外：$e');
   }
 }
 
-/// 設定頁面專用的區塊標題元件。
+/// 設定頁面中的區塊標題元件。
 ///
-/// 負責呈現具有一致間距與主題色彩的群組化標題。
+/// 用於在長列表中分隔不同設定群組，提供一致的留白、字重與主題色彩，
+/// 提升整體資訊層次與可讀性。
 class _SettingsSectionTitle extends StatelessWidget {
-  /// 顯示的標題文字。
+  /// 區塊標題文字內容。
   final String title;
 
-  /// 建立區塊標題。
+  /// 建立設定區塊標題元件。
   const _SettingsSectionTitle({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // 確保標題與清單項目對齊，並提供足夠的垂直間距
+      /// 控制標題與相鄰清單項目的間距，使群組分段更清楚。
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,

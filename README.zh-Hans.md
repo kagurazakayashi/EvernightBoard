@@ -8,7 +8,9 @@
 
 长夜锦书(EvernightBoard) 是一款通过预设图文，在触屏和语言交流都受限时为您延续沟通的展示辅助工具。
 
-Android | iOS | Windows | macOS | Linux
+[下载 (Android/iOS/Windows/macOS/Linux)](https://github.com/kagurazakayashi/EvernightBoard/releases) | [在浏览器中在线体验](https://kagurazakayashi.github.io/EvernightBoard/)
+
+本应用程序没有“官方版”发布到任何应用商店。一些网友可能会在获得授权或者未获得授权的情况下，以他们的开发者名称发布到应用商店。我不介意在获得授权的情况下这样做，但因此在通常情况下，只有 [Releases](https://github.com/kagurazakayashi/EvernightBoard/releases) 中的二进制文件可视为“官方版”，只有 [Issues](https://github.com/kagurazakayashi/EvernightBoard/issues) 可视为最佳的反馈渠道。
 
 ## 使用场景
 
@@ -156,6 +158,15 @@ Android | iOS | Windows | macOS | Linux
 4. 运行 `flutter gen-l10n` 构建多语言文本。
 5. 继续上述的“调试”步骤。
 
+### 发布渠道差异
+
+- 渠道变量用于在不同渠道分发软件时，根据特定的渠道显示特定的内容。
+- 要使用渠道变量，在 `flutter run` 和 `flutter build` 命令最后添加:
+  - `--dart-define-from-file="flavor/*.json"`
+- 渠道文件见 `flavor/` 文件夹。
+
+如果要在中国的应用商店中提供本程序，你必须拥有 ICP 备案号并将其填写到对应平台的 `"cnICPfiling":""` 中。详情请了解 [App Store Connect Help 中有关 Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) 的部分。
+
 ### 在 Windows 中编译
 
 - 编译为 Windows 应用程序然后运行: `build.bat` 。
@@ -163,8 +174,8 @@ Android | iOS | Windows | macOS | Linux
 
 ### 在 macOS 或 Linux 中编译
 
-- 编译为 macOS 或 Linux 应用程序然后运行: `./build` 。
-- 编译为 Android 应用程序然后安装: `./build_apk` 。
+- 编译为 macOS 或 Linux 应用程序然后运行: `./build.sh` 。
+- 编译为 Android 应用程序然后安装: `./build_apk.sh` 。
 
 ### 编译为 macOS 或 iOS
 
@@ -177,11 +188,12 @@ Android | iOS | Windows | macOS | Linux
 
 ### 编译为 Web
 
-1. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 删除上次编译的文件。
-2. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` 进行编译。
+1. 运行上面的“调试”中的第 1 步到第 5 步。
+2. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 删除上次编译的文件。
+3. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` 进行编译。
 
 - 如果需要兼容旧版本浏览器，移除 `--wasm` 。
-- 如果不是放在网站根目录，编辑 `--base-href "/EvernightBoard/"` 的 `"/EvernightBoard/"` URL 路径。
+- 可以将 `"/EvernightBoard/"` 改为所需的 URL 根路径。
 
 ## 许可协议
 

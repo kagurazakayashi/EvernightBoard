@@ -1,3 +1,4 @@
+import 'package:evernight_board/flavor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
@@ -161,33 +162,38 @@ class _HomeViewState extends State<HomeView> {
       actions: [
         // 渠道配置 GitHub 按鈕
         InkWell(
-          onTap: () =>
-              _launchURL('https://github.com/kagurazakayashi/EvernightBoard'),
+          onTap: () => _launchURL(Flavor.github),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: SvgPicture.asset('assets/web/github.svg', height: 40),
           ),
         ),
         // 渠道配置 Google Play 按鈕
-        InkWell(
-          onTap: () => _launchURL(
-            'https://play.google.com/store/apps/details?id=moe.yashi.evernightboard',
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: SvgPicture.asset('assets/web/googleplay.svg', height: 40),
-          ),
-        ),
+        Flavor.googlePlayDL.isEmpty
+            ? Text("")
+            : InkWell(
+                onTap: () => _launchURL(Flavor.googlePlayDL),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SvgPicture.asset(
+                    'assets/web/googleplay.svg',
+                    height: 40,
+                  ),
+                ),
+              ),
         // 渠道配置 App Store 按鈕
-        InkWell(
-          onTap: () => _launchURL(
-            'https://apps.apple.com/app/evernightboard/id6761154116',
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: SvgPicture.asset('assets/web/appstore.svg', height: 40),
-          ),
-        ),
+        Flavor.appStoreDL.isEmpty
+            ? Text("")
+            : InkWell(
+                onTap: () => _launchURL(Flavor.appStoreDL),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SvgPicture.asset(
+                    'assets/web/appstore.svg',
+                    height: 40,
+                  ),
+                ),
+              ),
         IconButton(
           icon: const Icon(Icons.close, color: Colors.white70),
           tooltip: 'Hide',

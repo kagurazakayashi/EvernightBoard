@@ -8,7 +8,9 @@
 
 長夜錦書(EvernightBoard) 是一款透過預設圖文，在觸控螢幕和語言交流都受限時為您延續溝通的展示輔助工具。
 
-Android | iOS | Windows | macOS | Linux
+[下載](https://github.com/kagurazakayashi/EvernightBoard/releases) | [在瀏覽器中線上體驗](https://kagurazakayashi.github.io/EvernightBoard/)
+
+本應用程式並未以「官方版」名義發布到任何應用商店。一些網友可能會在取得授權或未取得授權的情況下，以他們自己的開發者名稱將其發布到應用商店。我不介意在取得授權的情況下這麼做，但也因此，一般而言，只有 [Releases](https://github.com/kagurazakayashi/EvernightBoard/releases) 中提供的二進位檔可視為「官方版」，且只有 [Issues](https://github.com/kagurazakayashi/EvernightBoard/issues) 可視為最佳的意見回饋管道。
 
 ## 應用場景
 
@@ -156,6 +158,15 @@ Android | iOS | Windows | macOS | Linux
 4. 執行 `flutter gen-l10n` 以建置多國語言文字。
 5. 繼續上述的「偵錯」步驟。
 
+### 發佈渠道差異
+
+- 渠道變數用於在不同渠道發佈軟體時，根據特定渠道顯示對應的內容。
+- 若要使用渠道變數，請在 `flutter run` 和 `flutter build` 指令最後加入：
+  - `--dart-define-from-file="flavor/*.json"`
+- 渠道設定檔位於 `flavor/` 資料夾中。
+
+如果要在中國的應用程式商店中提供本程式，你必須持有 ICP 備案號，並將其填入對應平台的 `"cnICPfiling":""` 中。詳情請參閱 [App Store Connect Help 中關於 Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) 的相關內容。
+
 ### 在 Windows 中編譯
 
 - 編譯為 Windows 應用程式並執行：`build.bat`。
@@ -163,8 +174,8 @@ Android | iOS | Windows | macOS | Linux
 
 ### 在 macOS 或 Linux 中編譯
 
-- 編譯為 macOS 或 Linux 應用程式並執行：`./build`。
-- 編譯為 Android 應用程式並安裝：`./build_apk`。
+- 編譯為 macOS 或 Linux 應用程式並執行：`./build.sh`。
+- 編譯為 Android 應用程式並安裝：`./build_apk.sh`。
 
 ### 編譯為 macOS 或 iOS
 
@@ -177,11 +188,12 @@ Android | iOS | Windows | macOS | Linux
 
 ### 編譯為 Web
 
-1. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 刪除上次編譯的檔案。
-2. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` 進行編譯。
+1. 執行上述「除錯」中的第 1 步到第 5 步。
+2. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 刪除上次編譯的檔案。
+3. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` 進行編譯。
 
-- 若需要相容舊版瀏覽器，請移除 `--wasm`。
-- 若不是部署在網站根目錄，請編輯 `--base-href "/EvernightBoard/"` 中的 `"/EvernightBoard/"` URL 路徑。
+- 如果需要相容舊版瀏覽器，請移除 `--wasm`。
+- 可以將 `"/EvernightBoard/"` 改為所需的 URL 根路徑。
 
 ## 授權條款
 

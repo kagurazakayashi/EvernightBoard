@@ -8,7 +8,9 @@
 
 長夜錦書(EvernightBoard) は、事前に設定した画像やテキストを通じて、タッチパネルの操作や言葉でのコミュニケーションが制限されている状況において、コミュニケーションを継続するための表示補助ツールです。
 
-Android | iOS | Windows | macOS | Linux
+[ダウンロード](https://github.com/kagurazakayashi/EvernightBoard/releases) | [ブラウザでオンライン体験](https://kagurazakayashi.github.io/EvernightBoard/)
+
+このアプリケーションは、いかなるアプリストアにも「公式版」として公開されていません。一部のユーザーが、許可を得た場合または得ていない場合に、自身の開発者名義でアプリストアへ公開することがあります。許可を得たうえであれば私はそれを問題にしませんが、そのため、通常は [Releases](https://github.com/kagurazakayashi/EvernightBoard/releases) にあるバイナリのみを「公式版」と見なし、また [Issues](https://github.com/kagurazakayashi/EvernightBoard/issues) のみを最適なフィードバック窓口と見なしてください。
 
 ## 利用シーン
 
@@ -156,6 +158,15 @@ Android | iOS | Windows | macOS | Linux
 4. `flutter gen-l10n` を実行して、多言語テキストをビルド（生成）します。
 5. 上記の「デバッグ」手順を続行します。
 
+### 配布チャネルの違い
+
+- チャネル変数は、異なる配布チャネルでソフトウェアを配布する際に、特定のチャネルに応じた内容を表示するために使用されます。
+- チャネル変数を使用するには、`flutter run` および `flutter build` コマンドの末尾に以下を追加します：
+  - `--dart-define-from-file="flavor/*.json"`
+- チャネル設定ファイルは `flavor/` フォルダにあります。
+
+このアプリケーションを中国のアプリストアで提供する場合は、ICP 登録番号を取得し、対応するプラットフォームの `"cnICPfiling":""` に記入する必要があります。詳細については、[App Store Connect Help の Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) に関する項目をご確認ください。
+
 ### Windows でビルド
 
 - Windows アプリケーションとしてビルドして実行：`build.bat`。
@@ -163,8 +174,8 @@ Android | iOS | Windows | macOS | Linux
 
 ### macOS または Linux でビルド
 
-- macOS または Linux アプリケーションとしてビルドして実行：`./build`。
-- Android アプリケーションとしてビルドしてインストール：`./build_apk`。
+- macOS または Linux アプリケーションとしてビルドして実行：`./build.sh`。
+- Android アプリケーションとしてビルドしてインストール：`./build_apk.sh`。
 
 ### macOS または iOS 用のコンパイル
 
@@ -175,10 +186,14 @@ Android | iOS | Windows | macOS | Linux
 5. Xcode を起動し、`macos` または `ios` フォルダ内の `Runner.xcworkspace` を開いて設定（証明書やプロファイルなど）を行います。
 6. 正式なコンパイルを実行します。
 
-### Web 向けにビルドする
+### Web 向けにビルド
 
-1. `RD /S /Q build\web` または `rm -rf build/web` を使用して、前回ビルドしたファイルを削除します。
-2. `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` を使用してビルドします。
+1. 上記の「デバッグ」にある手順 1 から 5 までを実行します。
+2. `RD /S /Q build\web` または `rm -rf build/web` を使用して、前回のビルドで生成されたファイルを削除します。
+3. `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` を使用してビルドします。
+
+- 古いバージョンのブラウザとの互換性が必要な場合は、`--wasm` を削除してください。
+- `"/EvernightBoard/"` は必要な URL のベースパスに変更できます。
 
 - 旧バージョンのブラウザーとの互換性が必要な場合は、`--wasm` を削除してください。
 - Web サイトのルートディレクトリに配置しない場合は、`--base-href "/EvernightBoard/"` の `"/EvernightBoard/"` URL パスを編集してください。

@@ -8,7 +8,9 @@
 
 EvernightBoard is a display-assistive tool that prolongs your communication through preset images and text when both touchscreen access and verbal communication are limited.
 
-Android | iOS | Windows | macOS | Linux
+[Download](https://github.com/kagurazakayashi/EvernightBoard/releases) | [Try it online in your browser](https://kagurazakayashi.github.io/EvernightBoard/)
+
+This application has not been released as an "official version" on any app store. Some users may publish it to app stores under their own developer names, either with authorization or without authorization. I do not mind this if it is done with authorization, but as a result, under normal circumstances, only the binaries in [Releases](https://github.com/kagurazakayashi/EvernightBoard/releases) should be regarded as the "official version", and only [Issues](https://github.com/kagurazakayashi/EvernightBoard/issues) should be regarded as the preferred feedback channel.
 
 ## Use Cases
 
@@ -156,6 +158,15 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 4. Run `flutter gen-l10n` to build the localized text.
 5. Continue with the "Debugging" steps mentioned above.
 
+### Distribution Channel Differences
+
+- Channel variables are used to display specific content based on different distribution channels when releasing the software.
+- To use channel variables, add the following to the end of the `flutter run` and `flutter build` commands:
+  - `--dart-define-from-file="flavor/*.json"`
+- Channel configuration files are located in the `flavor/` directory.
+
+If you want to distribute this application on app stores in China, you must have an ICP filing number and fill it in under `"cnICPfiling":""` for the corresponding platform. For details, please refer to the section about [Availability in China mainland in App Store Connect Help](https://developer.apple.com/help/app-store-connect/reference/app-information).
+
 ### Build on Windows
 
 - Build as a Windows application and run: `build.bat`.
@@ -163,8 +174,8 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 
 ### Build on macOS or Linux
 
-- Build as a macOS or Linux application and run: `./build`.
-- Build as an Android application and install: `./build_apk`.
+- Build as a macOS or Linux application and run: `./build.sh`.
+- Build as an Android application and install: `./build_apk.sh`.
 
 ### Compiling for macOS or iOS
 
@@ -177,11 +188,12 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 
 ### Build for Web
 
-1. Use `RD /S /Q build\web` or `rm -rf build/web` to delete the files from the previous build.
-2. Use `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/"` to build the project.
+1. Run steps 1 through 5 in the "Debug" section above.
+2. Use `RD /S /Q build\web` or `rm -rf build/web` to delete the files from the previous build.
+3. Run `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` to build the project.
 
 - If compatibility with older browsers is required, remove `--wasm`.
-- If the app is not deployed at the website root, modify the `"/EvernightBoard/"` URL path in `--base-href "/EvernightBoard/"`.
+- You can change `"/EvernightBoard/"` to the required URL base path.
 
 ## License
 
