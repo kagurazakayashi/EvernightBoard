@@ -45,27 +45,27 @@ run_cmd() {
 # CHECK DEPENDENCIES
 # =========================================================
 
-info "Checking ImageMagick..."
-if command magick >/dev/null 2>&1; then
+# info "Checking ImageMagick..."
+# if command magick >/dev/null 2>&1; then
   MAGICK_CMD="magick"
-elif command magick.exe >/dev/null 2>&1; then
-  MAGICK_CMD="magick.exe"
-else
-  fail "ImageMagick not found. Please install and add it to PATH."
-fi
-ok "ImageMagick detected."
+# elif command magick >/dev/null 2>&1; then
+#   MAGICK_CMD="magick"
+# else
+#   fail "ImageMagick not found. Please install and add it to PATH."
+# fi
+# ok "ImageMagick detected."
 
-info "Checking Dart / Flutter..."
-if command dart >/dev/null 2>&1; then
+# info "Checking Dart / Flutter..."
+# if command dart >/dev/null 2>&1; then
   DART_CMD="dart"
-elif command dart.exe >/dev/null 2>&1; then
-  DART_CMD="dart.exe"
-elif command flutter >/dev/null 2>&1; then
-  DART_CMD=""
-else
-  fail "Dart/Flutter not found. Please install Flutter SDK."
-fi
-ok "Dart / Flutter detected."
+# elif command dart >/dev/null 2>&1; then
+#   DART_CMD="dart"
+# elif command flutter >/dev/null 2>&1; then
+#   DART_CMD=""
+# else
+#   fail "Dart/Flutter not found. Please install Flutter SDK."
+# fi
+# ok "Dart / Flutter detected."
 
 # =========================================================
 # CLEAN OLD FILES

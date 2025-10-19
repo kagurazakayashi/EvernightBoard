@@ -17,6 +17,8 @@ final HomeController _appController = HomeController();
 void main() {
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};
+  } else {
+    debugPrint("[main] kReleaseMode=$kReleaseMode");
   }
   // 確保外掛與原生層初始化（在非同步呼叫前必須執行）
   WidgetsFlutterBinding.ensureInitialized();

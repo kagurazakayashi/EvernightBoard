@@ -7,3 +7,4 @@ CALL flutter.bat gen-l10n
 RD /S /Q build
 CALL flutter.bat build "aab" --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"
 ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"
+explorer "%CD%\build\app\outputs\bundle\release"

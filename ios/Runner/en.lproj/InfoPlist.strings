@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "EvernightBoard";
+"CFBundleName" = "EvernightBoard";
+"NSPhotoLibraryUsageDescription" = "To import images for display, access to your photo library is required.";

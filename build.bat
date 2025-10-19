@@ -7,4 +7,5 @@ CALL flutter.bat gen-l10n
 RD /S /Q build
 CALL flutter.bat build "windows" --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"
 ECHO "%PWD%\build\windows\x64\runner\Release\evernight_board.exe"
-START "EvernightBoard" /D "build\windows\x64\runner\Release\" "evernight_board.exe"
+explorer "%PWD%\build\windows\x64\runner\Release"
+START "EvernightBoard" /D "%PWD%\build\windows\x64\runner\Release\" "evernight_board.exe"

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -e
+PROJECT_ROOT=`pwd`
+APP_NAME="evernight_board"
+echo "PROJECT_ROOT: $PROJECT_ROOT"
+echo "APP_NAME: $APP_NAME"
 
 OS="$(uname -s)"
 
@@ -32,19 +36,18 @@ flutter build "$TARGET" --no-tree-shake-icons --dart-define-from-file="flavor/$T
 
 echo "Resolving executable path..."
 
-APP_NAME="$(basename "$PROJECT_ROOT")"
-
-case "$PLATFORM" in
+case "$TARGET" in
   macos)
-    APP_BUNDLE_PATH="$PROJECT_ROOT/build/macos/Build/Products/Release/${APP_NAME}.app"
-    EXECUTABLE_PATH="$APP_BUNDLE_PATH/Contents/MacOS/$APP_NAME"
+    EXECUTABLE_PATH="$PROJECT_ROOT/build/macos/Build/Products/Release/${APP_NAME}.app"
 
-    if [ ! -f "$EXECUTABLE_PATH" ]; then
+    if [ ! -f "$EXECUTABLE_PATH/Contents/MacOS/$APP_NAME" ]; then
       echo "Build succeeded, but executable was not found:"
       echo "$EXECUTABLE_PATH"
       echo "Please check whether the app name matches your actual macOS bundle name."
       exit 1
     fi
+
+    open "$PROJECT_ROOT/build/macos/Build/Products/Release"
     ;;
   linux)
     EXECUTABLE_PATH="$PROJECT_ROOT/build/linux/x64/release/bundle/$APP_NAME"
@@ -67,7 +70,7 @@ case "$PLATFORM" in
     fi
     ;;
   *)
-    echo "Internal error: unknown platform $PLATFORM"
+    echo "Internal error: unknown platform $TARGET"
     exit 1
     ;;
 esac
@@ -76,9 +79,12 @@ echo "Build completed successfully."
 echo "Executable path: $EXECUTABLE_PATH"
 echo "Launching application..."
 
-case "$PLATFORM" in
+case "$TARGET" in
   windows)
     "$EXECUTABLE_PATH"
+    ;;
+  macos)
+    open "$EXECUTABLE_PATH"
     ;;
   *)
     chmod +x "$EXECUTABLE_PATH"
