@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'home/home_view.dart';
 import 'package:flutter/foundation.dart';
@@ -7,8 +9,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:evernight_board/l10n/app_localizations.dart';
 import 'global.dart';
 import 'package:evernight_board/home/home_controller.dart';
+import 'package:window_manager/window_manager.dart';
 
 final HomeController _appController = HomeController();
+bool get isDesktop =>
+    !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
 /// 應用程式進入點。
 ///
@@ -22,6 +27,9 @@ void main() {
   }
   // 確保外掛與原生層初始化（在非同步呼叫前必須執行）
   WidgetsFlutterBinding.ensureInitialized();
+  if (isDesktop) {
+    windowManager.ensureInitialized();
+  }
 
   // 註冊你的自定義許可
   LicenseRegistry.addLicense(() async* {
@@ -55,13 +63,24 @@ class EvernightBoardAPP extends StatelessWidget {
   Widget build(BuildContext context) {
     // 定義基礎主題色，供亮色與暗色主題共同衍生色彩系統使用
     const Color seedColor = Colors.red;
-
+    const appTitle = "EvernightBoard";
     return ListenableBuilder(
       listenable: _appController,
       builder: (context, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           locale: _appController.appLocale,
+          title: appTitle,
+
+          onGenerateTitle: (context) {
+            final localizations = AppLocalizations.of(context);
+            String title = localizations?.appTitle ?? appTitle;
+            debugPrint('[main] ${localizations?.appTitle}');
+            if (isDesktop) {
+              windowManager.setTitle(title);
+            }
+            return title;
+          },
 
           // 提供翻譯字典的代理
           localizationsDelegates: const [

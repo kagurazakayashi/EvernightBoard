@@ -147,9 +147,16 @@ mixin HomeControllerData on ChangeNotifier {
         landscapeNavPosition =
             LandscapeNavPosition.values[config['landscapeNavPosition'] ??
                 LandscapeNavPosition.bottom.index];
-        portraitNavPosition =
+        final loadedPortraitPos =
             PortraitNavPosition.values[config['portraitNavPosition'] ??
                 PortraitNavPosition.auto.index];
+        // 如果目前平台不支援音量鍵/感測器 (Web/桌面)，且設定為 auto，強制修正為 right
+        if (!_isVolumeSupported &&
+            loadedPortraitPos == PortraitNavPosition.auto) {
+          portraitNavPosition = PortraitNavPosition.right;
+        } else {
+          portraitNavPosition = loadedPortraitPos;
+        }
         debugPrint(
           '[HomeControllerData] 使用者偏好設定載入完成，目前語系：${_appLocale ?? "自動"}',
         );

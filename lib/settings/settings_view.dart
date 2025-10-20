@@ -159,14 +159,14 @@ class _SettingsViewState extends State<SettingsView>
   @override
   Widget build(BuildContext context) {
     /// 判斷目前平台是否支援實體音量鍵翻頁。
-    ///
-    /// Web 平台不支援，僅允許 Android 與 iOS 啟用此功能。
     final bool isVolumeSupported =
         !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
+    /// 判斷目前平台是否支援重力感測器 (Web 與桌面版不支援)。
+    final bool isSensorSupported =
+        !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
     /// 判斷目前語言顯示是否需要額外補充英文說明。
-    ///
-    /// 既有邏輯沿用原始實作，不調整判斷方式。
     bool isEnglish = t.language != "Language";
 
     return Stack(
@@ -289,9 +289,20 @@ class _SettingsViewState extends State<SettingsView>
                 leading: const Icon(Icons.stay_current_portrait),
                 title: Text(t.currportrait),
                 trailing: DropdownButton<PortraitNavPosition>(
-                  value: widget.controller.portraitNavPosition,
+                  // 如果不支援感測器，且當前值為 auto，則 UI 強制顯示為 right
+                  value:
+                      (!isSensorSupported &&
+                          widget.controller.portraitNavPosition ==
+                              PortraitNavPosition.auto)
+                      ? PortraitNavPosition.right
+                      : widget.controller.portraitNavPosition,
                   onChanged: (val) {
                     if (val != null) {
+                      // 安全檢查：如果不支援感應器，不允許切換到 auto
+                      if (!isSensorSupported &&
+                          val == PortraitNavPosition.auto) {
+                        return;
+                      }
                       debugPrint('[_SettingsViewState] 更新直向模式導覽列位置：$val');
                       widget.controller.setPortraitNavPosition(val);
                     }
@@ -302,7 +313,14 @@ class _SettingsViewState extends State<SettingsView>
                   items: [
                     DropdownMenuItem(
                       value: PortraitNavPosition.auto,
-                      child: Text(t.navbarlocationauto),
+                      enabled: isSensorSupported, // 不支援時停用該選項，使其不可被點擊
+                      child: Text(
+                        t.navbarlocationauto,
+                        style: TextStyle(
+                          // 不支援時將字體顏色設為灰色
+                          color: isSensorSupported ? null : Colors.grey,
+                        ),
+                      ),
                     ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.bottom,
