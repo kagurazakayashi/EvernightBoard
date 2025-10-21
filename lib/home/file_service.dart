@@ -141,4 +141,28 @@ class FileService {
     }
     return null;
   }
+
+  /// 徹底清除應用程式文件目錄下的所有檔案。
+  ///
+  /// 此操作不可逆，將刪除所有已保存的圖片與資料。
+  static Future<void> deleteAllFiles() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      if (await directory.exists()) {
+        // 取得目錄下所有檔案與子目錄
+        final List<FileSystemEntity> entities = directory.listSync();
+        for (var entity in entities) {
+          // 避免刪除系統目錄（如 Android 的某些隱藏目錄）
+          if (entity is File) {
+            await entity.delete();
+          } else if (entity is Directory) {
+            await entity.delete(recursive: true);
+          }
+        }
+        debugPrint('[FileService] 已清空應用程式文件目錄');
+      }
+    } catch (e) {
+      debugPrint('[FileService] 清空文件目錄失敗: $e');
+    }
+  }
 }

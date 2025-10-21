@@ -43,6 +43,9 @@ mixin HomeControllerData on ChangeNotifier {
   /// 應用程式偏好設定寫入本機持久化儲存時所使用的鍵值。
   static const String _configKey = 'evernight_board_config';
 
+  /// 允許存檔
+  bool enableWrite = false;
+
   /// 判斷目前執行平台是否支援音量鍵事件監聽。
   ///
   /// 僅支援 Android 與 iOS，且 Web 平台不適用。
@@ -116,6 +119,7 @@ mixin HomeControllerData on ChangeNotifier {
 
       // 載入首頁項目清單資料。
       final String? jsonStr = prefs.getString(_storageKey);
+      debugPrint('[HomeControllerData] ===DATA===\n$jsonStr\n==========');
       if (jsonStr != null && jsonStr.isNotEmpty) {
         final List<dynamic> jsonData = jsonDecode(jsonStr);
         self.items.clear();
@@ -130,6 +134,7 @@ mixin HomeControllerData on ChangeNotifier {
 
       // 載入使用者偏好設定。
       final String? configJson = prefs.getString(_configKey);
+      debugPrint('[HomeControllerData] ===CONF===\n$configJson\n==========');
       if (configJson != null) {
         final Map<String, dynamic> config = jsonDecode(configJson);
         final String? langCode = config['languageCode'];
@@ -176,6 +181,9 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 將目前的應用程式偏好設定同步寫入本機儲存。
   Future<void> _syncConfig() async {
+    if (!enableWrite) {
+      return;
+    }
     debugPrint('[HomeControllerData] 正在同步偏好設定至本機儲存。');
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
@@ -218,31 +226,32 @@ mixin HomeControllerData on ChangeNotifier {
   ///
   /// [context] 用於顯示操作結果提示並關閉目前頁面。
   Future<void> clearAllData(BuildContext context) async {
-    debugPrint('[HomeControllerData] 開始執行全部資料清除流程。');
-    final self = this as HomeController;
+    // 立即關閉寫入權限
+    enableWrite = false;
 
-    // 逐一刪除各項目所關聯的背景圖片檔案。
-    for (var item in self.items) {
-      await FileService.deleteFile(item.backgroundImagePath);
-    }
+    debugPrint('[HomeControllerData] 開始執行徹底清除流程。');
 
-    self.items.clear();
-    self._currentIndex = 0;
-    _setDefaultData();
+    // 手動清空記憶體中的資料，防止 notifyListeners 導致 UI 拿舊資料去觸發邏輯
+    // final self = this as HomeController;
+    // self.items.clear();
+    // _appLocale = null;
 
+    // 物理刪除所有檔案
+    await FileService.deleteAllFiles();
+
+    // 抹除所有 SharedPreferences 紀錄
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_storageKey);
+    bool success = await prefs.clear(); // 確保 clear 完成
 
-    useVolumeKeys = false;
-    useSideTap = true;
-    await _syncConfig();
-
-    debugPrint('[HomeControllerData] 全部資料與設定已清除完成。');
-    notifyListeners();
+    debugPrint('[HomeControllerData] 資料庫抹除: $success');
+    // 給系統一點點時間完成 IO 刷新
+    await Future.delayed(const Duration(seconds: 1));
 
     if (context.mounted) {
-      _showSnackBar(context, t.allcleared);
-      Navigator.pop(context);
+      debugPrint('[HomeControllerData] 應用程式重啟');
+      RestartWidget.restartApp(context);
+    } else {
+      debugPrint('[HomeControllerData] Context 已失效');
     }
   }
 
@@ -256,6 +265,9 @@ mixin HomeControllerData on ChangeNotifier {
 
   /// 將目前項目清單狀態同步寫入本機磁碟。
   Future<void> _syncToDisk() async {
+    if (!enableWrite) {
+      return;
+    }
     debugPrint('[HomeControllerData] 正在同步項目清單至本機磁碟。');
     final self = this as HomeController;
     final prefs = await SharedPreferences.getInstance();

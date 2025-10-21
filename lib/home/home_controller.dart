@@ -3,6 +3,7 @@ library;
 
 import 'dart:async';
 import 'package:evernight_board/global.dart';
+import 'package:evernight_board/restart_widget.dart';
 
 /// 匯入 Flutter Material 元件庫。
 import 'package:flutter/material.dart';
