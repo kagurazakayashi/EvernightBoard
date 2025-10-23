@@ -63,25 +63,29 @@ class Icp {
   ///   才回傳帶有換行的 ICP 備案資訊。
   /// - 其餘情況皆回傳空字串。
   String icpString(Locale? locale) {
-    final bool localeIsChs = chkLocaleChs(locale);
+    // 檢查是否配置了 ICP 字串
     if (Flavor.cnICPfiling.isEmpty) {
-      debugPrint('[Icp] 未配置');
-      return "";
-    }
-    if ((!kIsWeb && !Platform.isAndroid && !Platform.isIOS)) {
-      debugPrint('[Icp] 跳過');
+      debugPrint('[Icp] 停用');
       return "";
     }
 
-    if (sysIsChs &&
-        (locale == null || localeIsChs) &&
-        tzIsChs &&
-        (kIsWeb || regionIsChs)) {
-      debugPrint('[Icp] ${Flavor.cnICPfiling}');
+    // 限制平臺僅限 iOS (排除 Web 和 Android)
+    if (kIsWeb || !Platform.isIOS) {
+      debugPrint('[Icp] 跳過平臺');
+      return "";
+    }
+
+    // 判定有效的語系是否為簡體中文
+    // 如果是自動(null)，則看系統語系；如果是手動，則看手動設定的語系
+    bool isEffectiveChs = (locale == null) ? sysIsChs : chkLocaleChs(locale);
+
+    // 綜合判定：有效語系是簡中 && 時區是中國 && 地區是中國
+    if (isEffectiveChs && tzIsChs && regionIsChs) {
+      debugPrint('[Icp] 顯示 ICP: ${Flavor.cnICPfiling}');
       return "\n${Flavor.cnICPfiling}";
     }
 
-    debugPrint('[Icp] 停用');
+    debugPrint('[Icp] 不顯示');
     return "";
   }
 

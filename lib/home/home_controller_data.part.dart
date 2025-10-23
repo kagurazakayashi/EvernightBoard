@@ -174,6 +174,7 @@ mixin HomeControllerData on ChangeNotifier {
       _setDefaultData();
     } finally {
       _isInitialized = true;
+      enableWrite = true;
       debugPrint('[HomeControllerData] 資料初始化流程已完成。');
       notifyListeners();
     }
