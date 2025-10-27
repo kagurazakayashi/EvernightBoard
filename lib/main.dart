@@ -43,11 +43,11 @@ void main() {
     windowManager.ensureInitialized();
 
     WindowOptions windowOptions = const WindowOptions(
-      size: Size(1280, 800), // 設定預設視窗尺寸。
-      center: true, // 啟動時將視窗置中顯示。
+      // size: Size(1366, 768), // 設定預設視窗尺寸。
+      // center: true, // 啟動時將視窗置中顯示。
       // backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.normal,
+      // skipTaskbar: false,
+      // titleBarStyle: TitleBarStyle.normal,
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
