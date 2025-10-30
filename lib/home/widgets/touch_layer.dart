@@ -76,23 +76,26 @@ class TouchLayer extends StatelessWidget {
     /// - 不顯示 splash / highlight 效果
     Widget buildButton(VoidCallback? tap, {required String areaName}) =>
         Expanded(
-          child: InkWell(
-            // 直接以 null 控制 InkWell 是否啟用，
-            // 可避免建立不必要的空回呼，也能讓互動語意更清楚。
-            onTap: tap == null
-                ? null
-                : () {
-                    debugPrint('[TouchLayer] 點擊$areaName區塊');
-                    tap();
-                  },
-            // 只有在可點擊時才顯示水波紋效果。
-            splashColor: tap == null ? Colors.transparent : splash,
-            // 只有在可點擊時才顯示按壓高亮效果。
-            highlightColor: tap == null ? Colors.transparent : highlight,
-            // 滑鼠懸停時不額外顯示顏色，維持透明觸控層設計。
-            hoverColor: Colors.transparent,
-            // 讓子元件撐滿可用空間，使整個分區都可作為點擊範圍。
-            child: const SizedBox.expand(),
+          child: Semantics(
+            label: areaName,
+            child: InkWell(
+              // 直接以 null 控制 InkWell 是否啟用，
+              // 可避免建立不必要的空回呼，也能讓互動語意更清楚。
+              onTap: tap == null
+                  ? null
+                  : () {
+                      debugPrint('[TouchLayer] 點擊$areaName區塊');
+                      tap();
+                    },
+              // 只有在可點擊時才顯示水波紋效果。
+              splashColor: tap == null ? Colors.transparent : splash,
+              // 只有在可點擊時才顯示按壓高亮效果。
+              highlightColor: tap == null ? Colors.transparent : highlight,
+              // 滑鼠懸停時不額外顯示顏色，維持透明觸控層設計。
+              hoverColor: Colors.transparent,
+              // 讓子元件撐滿可用空間，使整個分區都可作為點擊範圍。
+              child: const SizedBox.expand(),
+            ),
           ),
         );
 
@@ -101,17 +104,17 @@ class TouchLayer extends StatelessWidget {
       color: Colors.transparent,
       child: isPortrait
           // 直向模式：以上下兩區排列。
-          ? Column(
+           ? Column(
               children: [
-                buildButton(onPrevious, areaName: t.previous),
-                buildButton(onNext, areaName: t.next),
+                buildButton(onPrevious, areaName: t.semanticsPreviousPage),
+                buildButton(onNext, areaName: t.semanticsNextPage),
               ],
             )
           // 橫向模式：以左右兩區排列。
-          : Row(
+           : Row(
               children: [
-                buildButton(onPrevious, areaName: t.previous),
-                buildButton(onNext, areaName: t.next),
+                buildButton(onPrevious, areaName: t.semanticsPreviousPage),
+                buildButton(onNext, areaName: t.semanticsNextPage),
               ],
             ),
     );

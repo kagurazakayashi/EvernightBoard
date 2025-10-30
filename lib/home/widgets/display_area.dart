@@ -58,16 +58,20 @@ class DisplayArea extends StatelessWidget {
           //    此時文字可能是使用者輸入內容，也可能是預設提示文字。
           final bool shouldShowImage = !isPathEmpty;
 
-          return Container(
-            // 確保無論內部顯示圖片或文字，內容都維持水平與垂直置中。
-            alignment: Alignment.center,
-            child: shouldShowImage
-                ? _buildImageContent(path)
-                : AutoScaleText(
-                    text: displayContent,
-                    baseStyle: TextStyle(height: 1.1, color: txtColor),
-                    constraints: constraints,
-                  ),
+          return Semantics(
+             label: shouldShowImage ? t.semanticsImageDisplay : t.semanticsTextDisplay,
+            value: shouldShowImage ? null : displayContent,
+            child: Container(
+              // 確保無論內部顯示圖片或文字，內容都維持水平與垂直置中。
+              alignment: Alignment.center,
+              child: shouldShowImage
+                  ? _buildImageContent(path)
+                  : AutoScaleText(
+                      text: displayContent,
+                      baseStyle: TextStyle(height: 1.1, color: txtColor),
+                      constraints: constraints,
+                    ),
+            ),
           );
         },
       ),

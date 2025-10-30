@@ -92,14 +92,16 @@ class ScrollableNavBar extends StatelessWidget {
             // 判斷目前項目是否為選取狀態。
             final bool isSelected = currentIndex == index;
 
-            return InkWell(
+            return Semantics(
+              label: t.semanticsNavButton(displayTitle.isEmpty ? t.newscreen : displayTitle),
+              child: InkWell(
               // 點擊時將索引回傳給外部，由外部更新選取狀態。
-              onTap: () {
-                debugPrint(
-                  '[ScrollableNavBar] 點擊導覽項目：index=$index, title=${item.title}',
-                );
-                onTap(index);
-              },
+               onTap: () {
+                 debugPrint(
+                   '[ScrollableNavBar] 點擊導覽項目：index=$index, title=${item.title}',
+                 );
+                 onTap(index);
+               },
 
               // 移除預設水波紋與高亮效果，改由自訂膠囊背景呈現互動狀態。
               splashColor: Colors.transparent,
@@ -172,8 +174,9 @@ class ScrollableNavBar extends StatelessWidget {
                   ],
                 ),
               ),
-            );
-          }),
+            ),
+          );
+        }),
         ),
       ),
     );

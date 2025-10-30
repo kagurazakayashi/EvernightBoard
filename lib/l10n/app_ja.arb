@@ -347,5 +347,41 @@
   "volumeturnpages3": "現在のプラットフォームは音量ボタンでのページめくりに対応していません",
   "@volumeturnpages3": {
     "description": "当前平台不支持物理音量键翻页"
+  },
+  "semanticsNavButton": "ナビゲーションボタン: {title}",
+  "@semanticsNavButton": {
+    "description": "导航按钮：{标题}"
+  },
+  "semanticsImageDisplay": "画像表示",
+  "@semanticsImageDisplay": {
+    "description": "图片显示"
+  },
+  "semanticsTextDisplay": "テキスト表示",
+  "@semanticsTextDisplay": {
+    "description": "文字显示"
+  },
+  "semanticsTextField": "テキスト入力フィールド",
+  "@semanticsTextField": {
+    "description": "文本输入框"
+  },
+  "semanticsPreviousPage": "前のページ領域",
+  "@semanticsPreviousPage": {
+    "description": "上一页区域"
+  },
+  "semanticsNextPage": "次のページ領域",
+  "@semanticsNextPage": {
+    "description": "下一页区域"
+  },
+  "semanticsCloseButton": "閉じるボタン",
+  "@semanticsCloseButton": {
+    "description": "关闭按钮"
+  },
+  "semanticsSaveButton": "保存ボタン",
+  "@semanticsSaveButton": {
+    "description": "保存按钮"
+  },
+  "semanticsCancelButton": "キャンセルボタン",
+  "@semanticsCancelButton": {
+    "description": "取消按钮"
   }
 }

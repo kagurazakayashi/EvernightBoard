@@ -347,5 +347,41 @@
   "volumeturnpages3": "Current platform does not support volume key page turning",
   "@volumeturnpages3": {
     "description": "当前平台不支持物理音量键翻页"
+  },
+  "semanticsNavButton": "Navigation button: {title}",
+  "@semanticsNavButton": {
+    "description": "导航按钮：{标题}"
+  },
+  "semanticsImageDisplay": "Image display",
+  "@semanticsImageDisplay": {
+    "description": "图片显示"
+  },
+  "semanticsTextDisplay": "Text display",
+  "@semanticsTextDisplay": {
+    "description": "文字显示"
+  },
+  "semanticsTextField": "Text input field",
+  "@semanticsTextField": {
+    "description": "文本输入框"
+  },
+  "semanticsPreviousPage": "Previous page area",
+  "@semanticsPreviousPage": {
+    "description": "上一页区域"
+  },
+  "semanticsNextPage": "Next page area",
+  "@semanticsNextPage": {
+    "description": "下一页区域"
+  },
+  "semanticsCloseButton": "Close button",
+  "@semanticsCloseButton": {
+    "description": "关闭按钮"
+  },
+  "semanticsSaveButton": "Save button",
+  "@semanticsSaveButton": {
+    "description": "保存按钮"
+  },
+  "semanticsCancelButton": "Cancel button",
+  "@semanticsCancelButton": {
+    "description": "取消按钮"
   }
 }

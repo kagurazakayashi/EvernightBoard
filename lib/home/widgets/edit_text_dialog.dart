@@ -77,18 +77,21 @@ class _EditTextDialogState extends State<EditTextDialog> {
 
     return AlertDialog(
       title: Text(widget.title),
-      content: TextField(
-        controller: _textController,
-        autofocus: true,
+       content: Semantics(
+        label: t.semanticsTextField,
+        child: TextField(
+          controller: _textController,
+          autofocus: true,
 
-        // 多行模式下不限制行數；單行模式固定為 1 行。
-        maxLines: maxLines,
+          // 多行模式下不限制行數；單行模式固定為 1 行。
+          maxLines: maxLines,
 
-        // 多行模式使用 multiline 鍵盤，其餘使用一般文字鍵盤。
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: t.entercontent,
-          border: OutlineInputBorder(),
+          // 多行模式使用 multiline 鍵盤，其餘使用一般文字鍵盤。
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: t.entercontent,
+            border: OutlineInputBorder(),
+          ),
         ),
       ),
       actions: [

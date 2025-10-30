@@ -193,7 +193,9 @@ class ManagementGridMenu extends StatelessWidget {
                   final Color activeColor =
                       item.color ?? theme.colorScheme.onSurface;
 
-                  return InkWell(
+                  return Semantics(
+                    label: item.label,
+                    child: InkWell(
                     onTap: item.onTap,
                     borderRadius: BorderRadius.circular(12),
                     child: Padding(
@@ -226,7 +228,7 @@ class ManagementGridMenu extends StatelessWidget {
                         ],
                       ),
                     ),
-                  );
+                  ));
                 },
               ),
             ),

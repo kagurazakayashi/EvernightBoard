@@ -347,5 +347,41 @@
   "volumeturnpages3": "目前平台不支援實體音量鍵翻頁",
   "@volumeturnpages3": {
     "description": "当前平台不支持物理音量键翻页"
+  },
+  "semanticsNavButton": "導覽按鈕: {title}",
+  "@semanticsNavButton": {
+    "description": "导航按钮：{标题}"
+  },
+  "semanticsImageDisplay": "圖片顯示",
+  "@semanticsImageDisplay": {
+    "description": "图片显示"
+  },
+  "semanticsTextDisplay": "文字顯示",
+  "@semanticsTextDisplay": {
+    "description": "文字显示"
+  },
+  "semanticsTextField": "文字輸入欄位",
+  "@semanticsTextField": {
+    "description": "文本输入框"
+  },
+  "semanticsPreviousPage": "上一頁區域",
+  "@semanticsPreviousPage": {
+    "description": "上一页区域"
+  },
+  "semanticsNextPage": "下一頁區域",
+  "@semanticsNextPage": {
+    "description": "下一页区域"
+  },
+  "semanticsCloseButton": "關閉按鈕",
+  "@semanticsCloseButton": {
+    "description": "关闭按钮"
+  },
+  "semanticsSaveButton": "儲存按鈕",
+  "@semanticsSaveButton": {
+    "description": "保存按钮"
+  },
+  "semanticsCancelButton": "取消按鈕",
+  "@semanticsCancelButton": {
+    "description": "取消按钮"
   }
 }
