@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:evernight_board/flavor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -12,9 +14,10 @@ import 'widgets/management_grid_menu.dart';
 import 'widgets/edit_text_dialog.dart';
 import 'widgets/color_picker_handler.dart';
 import '../settings/settings_view.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:device_accessibility_info/device_accessibility_info.dart';
 
 /// 應用程式首頁主畫面。
 ///
@@ -37,12 +40,27 @@ class HomeView extends StatefulWidget {
 /// [HomeView] 的狀態物件。
 ///
 /// 主要負責監聽控制器、重建畫面，以及處理各類互動事件與底部管理選單。
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   /// 便捷存取目前綁定的 [HomeController]。
   HomeController get _controller => widget.controller;
 
   /// 控制網頁版頂欄是否顯示
   bool _isWebAppBarVisible = true;
+
+  /// 用於延遲檢查無障礙狀態的定時器
+  Timer? _accessibilityCheckTimer;
+
+  /// 螢幕朗讀模式是否啟用（由 device_accessibility_info 插件維護）
+  bool _screenReaderEnabled = false;
+
+  /// 螢幕朗讀狀態變更的訂閱物件
+  StreamSubscription<bool>? _screenReaderSubscription;
+
+  /// 檢測螢幕朗讀模式是否啟用
+  ///
+  /// 使用 device_accessibility_info 插件檢測輔助功能開關狀態，
+  /// 以避免某些定制系統中 MediaQuery 回報不準確的問題。
+  bool get _isScreenReaderActive => _screenReaderEnabled;
 
   @override
   void initState() {
@@ -50,6 +68,47 @@ class _HomeViewState extends State<HomeView> {
     debugPrint('[HomeView] 初始化完成，開始註冊控制器監聽器');
     // 註冊監聽器，當控制器狀態變更時同步觸發畫面更新。
     _controller.addListener(_updateUI);
+    
+    // 註冊無障礙特性變化監聽器
+    WidgetsBinding.instance.addObserver(this);
+    
+    // 在下一帧触发一次无障碍状态检查，解决启动时检测不准确的问题
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted) {
+        debugPrint('[HomeView] 首帧渲染完成，触发无障碍状态检查');
+        // 初始化 device_accessibility_info 插件
+        try {
+          final plugin = DeviceAccessibilityInfo();
+          // 获取当前屏幕朗读状态
+          final bool isEnabled = await plugin.isScreenReaderEnabled();
+          debugPrint('[HomeView] 当前屏幕朗读状态: $isEnabled');
+          if (mounted) {
+            setState(() {
+              _screenReaderEnabled = isEnabled;
+            });
+          }
+          // 订阅屏幕朗读状态变化
+          _screenReaderSubscription = plugin.screenReaderStatusChanged.listen((bool isEnabled) {
+            debugPrint('[HomeView] 屏幕朗读状态变化: $isEnabled');
+            if (mounted) {
+              setState(() {
+                _screenReaderEnabled = isEnabled;
+              });
+            }
+          });
+        } catch (e) {
+          debugPrint('[HomeView] device_accessibility_info 初始化失败: $e');
+        }
+      }
+    });
+    
+    // 啟動延遲檢查定時器，解決應用啟動時無障礙狀態可能檢測不準的問題
+    _accessibilityCheckTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        debugPrint('[HomeView] 延遲無障礙狀態檢查定時器觸發，強制重建畫面');
+        setState(() {});
+      }
+    });
   }
 
   /// 接收控制器狀態變更後，安全地觸發畫面重建。
@@ -72,7 +131,22 @@ class _HomeViewState extends State<HomeView> {
     debugPrint('[HomeView] 即將銷毀元件，移除控制器監聽器並釋放資源');
     // 移除監聽器，避免元件釋放後仍持有回呼造成記憶體洩漏。
     _controller.removeListener(_updateUI);
+    // 移除無障礙特性變化監聽器
+    WidgetsBinding.instance.removeObserver(this);
+    // 取消螢幕朗讀狀態訂閱
+    _screenReaderSubscription?.cancel();
+    // 取消延遲檢查定時器
+    _accessibilityCheckTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAccessibilityFeatures() {
+    super.didChangeAccessibilityFeatures();
+    debugPrint('[HomeView] 無障礙特性發生變化，重新檢查螢幕朗讀狀態');
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   /// 顯示統一樣式的提示訊息。
@@ -214,6 +288,7 @@ class _HomeViewState extends State<HomeView> {
     final bool isPortrait = size.height > size.width;
     final item = _controller.currentItem;
     final theme = Theme.of(context);
+    final bool isScreenReaderActive = _isScreenReaderActive;
 
     // 依目前項目設定決定背景色與主題色；若未指定則回退到主題預設值。
     final Color bgColor = item.backgroundColor ?? theme.colorScheme.surface;
@@ -265,12 +340,19 @@ class _HomeViewState extends State<HomeView> {
           debugPrint('[HomeView] 目前為直向模式，套用直向版面配置');
           switch (_controller.portraitNavPosition) {
             case PortraitNavPosition.auto:
-              debugPrint('[HomeView] 直向導覽位置設定為 auto，依目前側邊方向決定佈局');
-              body = Row(
-                children: _controller.currentSide == NavSide.left
-                    ? [buildVerticalNav(), Expanded(child: mainContent)]
-                    : [Expanded(child: mainContent), buildVerticalNav()],
-              );
+              if (isScreenReaderActive) {
+                debugPrint('[HomeView] 螢幕朗讀模式啟用，直向導覽位置設定為 auto 暫時停用，改為 right 佈局');
+                body = Row(
+                  children: [Expanded(child: mainContent), buildVerticalNav()],
+                );
+              } else {
+                debugPrint('[HomeView] 直向導覽位置設定為 auto，依目前側邊方向決定佈局');
+                body = Row(
+                  children: _controller.currentSide == NavSide.left
+                      ? [buildVerticalNav(), Expanded(child: mainContent)]
+                      : [Expanded(child: mainContent), buildVerticalNav()],
+                );
+              }
               break;
             case PortraitNavPosition.left:
               debugPrint('[HomeView] 直向導覽位置設定為 left');

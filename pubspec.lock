@@ -209,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.2.0"
+  device_accessibility_info:
+    dependency: "direct main"
+    description:
+      name: device_accessibility_info
+      sha256: "078877a6b2c1e77753bb098a61afd53d6361690d5d483aafd50856fc1efe0887"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   equatable:
     dependency: transitive
     description:
