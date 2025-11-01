@@ -170,6 +170,7 @@
 ### 在 Windows 中编译
 
 - 编译为 Windows 应用程序然后运行: `build.bat` 。
+  - 打包成 msix 安装包：`dart.bat run msix:create` 。
 - 编译为 Android 应用程序然后安装: `build_apk.bat` 。
 
 ### 在 macOS 或 Linux 中编译

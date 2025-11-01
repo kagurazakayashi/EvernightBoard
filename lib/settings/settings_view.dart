@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import '../home/home_controller.dart';
 import 'readme_view.dart';
 import 'settings_widgets.dart';
 import 'settings_dialogs_mixin.dart';
+import 'package:device_accessibility_info/device_accessibility_info.dart';
 
 /// 設定頁面主視圖元件。
 ///
@@ -33,12 +35,27 @@ class SettingsView extends StatefulWidget {
 /// 混入 [TickerProviderStateMixin] 以提供動畫所需的 `vsync`，
 /// 並混入 [SettingsDialogsMixin] 以共用各類設定對話框邏輯。
 class _SettingsViewState extends State<SettingsView>
-    with TickerProviderStateMixin, SettingsDialogsMixin {
+    with TickerProviderStateMixin, SettingsDialogsMixin, WidgetsBindingObserver {
+  /// 檢測螢幕朗讀模式是否啟用
+  ///
+  /// 使用 device_accessibility_info 插件檢測輔助功能開關狀態，
+  /// 以避免某些定制系統中 MediaQuery 回報不準確的問題。
+  bool get _isScreenReaderActive => _screenReaderEnabled;
+
   /// 控制退出畫面淡出動畫的控制器。
   late AnimationController _exitAnimationController;
 
   /// 黑幕遮罩透明度動畫，用於退出時的黑屏過場效果。
   late Animation<double> _blackOutAnimation;
+
+  /// 用於延遲檢查無障礙狀態的定時器
+  Timer? _accessibilityCheckTimer;
+
+  /// 螢幕朗讀模式是否啟用（由 device_accessibility_info 插件維護）
+  bool _screenReaderEnabled = false;
+
+  /// 螢幕朗讀狀態變更的訂閱物件
+  StreamSubscription<bool>? _screenReaderSubscription;
 
   /// 是否已進入退出流程，避免重複觸發退出動畫。
   bool _isExiting = false;
@@ -61,6 +78,9 @@ class _SettingsViewState extends State<SettingsView>
     debugPrint('[_SettingsViewState] 開始初始化設定頁面狀態');
     _initPackageInfo();
 
+    // 註冊無障礙特性變化監聽器
+    WidgetsBinding.instance.addObserver(this);
+
     _exitAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -77,6 +97,44 @@ class _SettingsViewState extends State<SettingsView>
       if (status == AnimationStatus.completed && _isExit) {
         debugPrint('[_SettingsViewState] 退出動畫完成，準備結束應用程式');
         exit(0);
+      }
+    });
+
+    // 在下一帧触发一次无障碍状态检查，解决启动时检测不准确的问题
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted) {
+        debugPrint('[_SettingsViewState] 首帧渲染完成，触发无障碍状态检查');
+        // 初始化 device_accessibility_info 插件
+        try {
+          final plugin = DeviceAccessibilityInfo();
+          // 获取当前屏幕朗读状态
+          final bool isEnabled = await plugin.isScreenReaderEnabled();
+          debugPrint('[_SettingsViewState] 当前屏幕朗读状态: $isEnabled');
+          if (mounted) {
+            setState(() {
+              _screenReaderEnabled = isEnabled;
+            });
+          }
+          // 订阅屏幕朗读状态变化
+          _screenReaderSubscription = plugin.screenReaderStatusChanged.listen((bool isEnabled) {
+            debugPrint('[_SettingsViewState] 屏幕朗读状态变化: $isEnabled');
+            if (mounted) {
+              setState(() {
+                _screenReaderEnabled = isEnabled;
+              });
+            }
+          });
+        } catch (e) {
+          debugPrint('[_SettingsViewState] device_accessibility_info 初始化失败: $e');
+        }
+      }
+    });
+
+    // 啟動延遲檢查定時器，解決應用啟動時無障礙狀態可能檢測不準的問題
+    _accessibilityCheckTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        debugPrint('[_SettingsViewState] 延遲無障礙狀態檢查定時器觸發，強制重建畫面');
+        setState(() {});
       }
     });
 
@@ -116,6 +174,15 @@ class _SettingsViewState extends State<SettingsView>
     debugPrint('[_SettingsViewState] 開始執行退出動畫流程');
     setState(() => _isExiting = true);
     _exitAnimationController.forward();
+  }
+
+  @override
+  void didChangeAccessibilityFeatures() {
+    super.didChangeAccessibilityFeatures();
+    debugPrint('[_SettingsViewState] 無障礙特性發生變化，重新檢查螢幕朗讀狀態');
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -261,44 +328,45 @@ class _SettingsViewState extends State<SettingsView>
               ListTile(
                 leading: const Icon(Icons.stay_current_portrait),
                 title: Text(t.currportrait),
+                subtitle: _isScreenReaderActive ? Text(t.accessibilityAutoDisabled) : (!isSensorSupported ? Text(t.sensorAutoDisabled) : null),
                 trailing: DropdownButton<PortraitNavPosition>(
-                  // 若平台不支援感測器，且目前值為 auto，則介面上強制顯示為 right。
+                  // 若平台不支援感測器或螢幕朗讀模式啟用，且目前值為 auto，則介面上強制顯示為 right。
                   value:
-                      (!isSensorSupported &&
+                      ((!isSensorSupported || _isScreenReaderActive) &&
                           widget.controller.portraitNavPosition ==
                               PortraitNavPosition.auto)
                       ? PortraitNavPosition.right
                       : widget.controller.portraitNavPosition,
                   onChanged: (val) {
-                    if (val != null) {
-                      // 安全檢查：若不支援感測器，不允許切換至 auto。
-                      if (!isSensorSupported &&
-                          val == PortraitNavPosition.auto) {
-                        debugPrint(
-                          '[_SettingsViewState] 目前平台不支援感測器，忽略直向模式 auto 導覽列設定',
-                        );
-                        return;
-                      }
-                      debugPrint('[_SettingsViewState] 更新直向模式導覽列位置：$val');
-                      widget.controller.setPortraitNavPosition(val);
-                    }
+                     if (val != null) {
+                       // 安全檢查：若不支援感測器或螢幕朗讀模式啟用，不允許切換至 auto。
+                        if ((!isSensorSupported || _isScreenReaderActive) &&
+                            val == PortraitNavPosition.auto) {
+                         debugPrint(
+                           '[_SettingsViewState] 目前平台不支援感測器或螢幕朗讀模式啟用，忽略直向模式 auto 導覽列設定',
+                         );
+                         return;
+                       }
+                       debugPrint('[_SettingsViewState] 更新直向模式導覽列位置：$val');
+                       widget.controller.setPortraitNavPosition(val);
+                     }
                     if (mounted) {
                       debugPrint('[_SettingsViewState] 直向模式導覽列位置已更新，重新整理畫面');
                       setState(() {});
                     }
                   },
                   items: [
-                    DropdownMenuItem(
-                      value: PortraitNavPosition.auto,
-                      enabled: isSensorSupported, // 不支援時停用此選項，避免使用者誤選。
-                      child: Text(
-                        t.navbarlocationauto,
-                        style: TextStyle(
-                          // 不支援時將文字顏色顯示為灰色。
-                          color: isSensorSupported ? null : Colors.grey,
-                        ),
-                      ),
-                    ),
+                     DropdownMenuItem(
+                       value: PortraitNavPosition.auto,
+                        enabled: isSensorSupported && !_isScreenReaderActive, // 不支援感測器或螢幕朗讀模式啟用時停用此選項
+                       child: Text(
+                         t.navbarlocationauto,
+                         style: TextStyle(
+                           // 不支援感測器或螢幕朗讀模式啟用時將文字顏色顯示為灰色。
+                            color: isSensorSupported && !_isScreenReaderActive ? null : Colors.grey,
+                         ),
+                       ),
+                     ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.bottom,
                       child: Text(t.alwaysbottom),
@@ -420,6 +488,12 @@ class _SettingsViewState extends State<SettingsView>
   @override
   void dispose() {
     debugPrint('[_SettingsViewState] 釋放設定頁面資源');
+    // 移除無障礙特性變化監聽器
+    WidgetsBinding.instance.removeObserver(this);
+    // 取消螢幕朗讀狀態訂閱
+    _screenReaderSubscription?.cancel();
+    // 取消延遲檢查定時器
+    _accessibilityCheckTimer?.cancel();
     _exitAnimationController.dispose();
     super.dispose();
   }

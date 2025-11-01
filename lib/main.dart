@@ -96,7 +96,7 @@ class EvernightBoardAPP extends StatefulWidget {
 /// 此類別同時實作 [WindowListener]，用於監聽桌面平台視窗事件，
 /// 並管理應用程式主要控制器 [HomeController] 的建立與釋放流程。
 class _EvernightBoardAPPState extends State<EvernightBoardAPP>
-    with WindowListener {
+    with WindowListener, WidgetsBindingObserver {
   /// 應用程式主控制器。
   ///
   /// 使用 `late final` 可保證：
@@ -108,6 +108,10 @@ class _EvernightBoardAPPState extends State<EvernightBoardAPP>
   @override
   void initState() {
     super.initState();
+    
+    // 註冊 WidgetsBindingObserver 以監聽無障礙特性變化
+    WidgetsBinding.instance.addObserver(this);
+    debugPrint('[_EvernightBoardAPPState] 已註冊 WidgetsBindingObserver');
 
     // 建立應用程式主控制器，供整體 UI 與狀態同步使用。
     _appController = HomeController();
@@ -122,10 +126,22 @@ class _EvernightBoardAPPState extends State<EvernightBoardAPP>
       windowManager.setPreventClose(true);
       debugPrint('[_EvernightBoardAPPState] 已啟用禁止直接關閉視窗機制');
     }
+
+    // 在下一帧触发无障碍状态检查，解决启动时检测不准确的问题
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        debugPrint('[_EvernightBoardAPPState] 首帧渲染完成，触发无障碍状态检查');
+        setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
+    // 移除 WidgetsBindingObserver
+    WidgetsBinding.instance.removeObserver(this);
+    debugPrint('[_EvernightBoardAPPState] 已移除 WidgetsBindingObserver');
+
     if (isDesktop) {
       // 移除視窗事件監聽器，避免 State 銷毀後仍殘留監聽。
       windowManager.removeListener(this);
@@ -148,6 +164,14 @@ class _EvernightBoardAPPState extends State<EvernightBoardAPP>
       // 即使在 macOS 上，也強制結束整個應用程式行程。
       exit(0);
     }
+  }
+
+  @override
+  void didChangeAccessibilityFeatures() {
+    super.didChangeAccessibilityFeatures();
+    debugPrint('[_EvernightBoardAPPState] 無障礙特性已變更，觸發畫面重建');
+    // 觸發畫面重建，讓 HomeView 可以讀取最新的無障礙狀態
+    setState(() {});
   }
 
   @override

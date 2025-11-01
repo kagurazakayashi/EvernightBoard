@@ -383,5 +383,17 @@
   "semanticsCancelButton": "Cancel button",
   "@semanticsCancelButton": {
     "description": "取消按钮"
+  },
+  "accessibilityAutoDisabled": "Auto move to tilted side is disabled when screen reader is active",
+  "@accessibilityAutoDisabled": {
+    "description": "当朗读模式开启时，自动移动到倾斜侧功能将被禁用"
+  },
+  "accessibilityAutoOptionDisabled": "Auto move to tilted side (disabled when screen reader is active)",
+  "@accessibilityAutoOptionDisabled": {
+    "description": "自动移到微倾斜侧（朗读模式开启时禁用）"
+  },
+  "sensorAutoDisabled": "Auto move to tilted side is disabled because the current platform does not support sensors",
+  "@sensorAutoDisabled": {
+    "description": "当前平台不支持传感器，自动移动到倾斜侧功能已禁用"
   }
 }
