@@ -68,10 +68,10 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
     debugPrint('[HomeView] 初始化完成，開始註冊控制器監聽器');
     // 註冊監聽器，當控制器狀態變更時同步觸發畫面更新。
     _controller.addListener(_updateUI);
-    
+
     // 註冊無障礙特性變化監聽器
     WidgetsBinding.instance.addObserver(this);
-    
+
     // 在下一帧触发一次无障碍状态检查，解决启动时检测不准确的问题
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
@@ -88,7 +88,9 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
             });
           }
           // 订阅屏幕朗读状态变化
-          _screenReaderSubscription = plugin.screenReaderStatusChanged.listen((bool isEnabled) {
+          _screenReaderSubscription = plugin.screenReaderStatusChanged.listen((
+            bool isEnabled,
+          ) {
             debugPrint('[HomeView] 屏幕朗读状态变化: $isEnabled');
             if (mounted) {
               setState(() {
@@ -101,7 +103,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
         }
       }
     });
-    
+
     // 啟動延遲檢查定時器，解決應用啟動時無障礙狀態可能檢測不準的問題
     _accessibilityCheckTimer = Timer(const Duration(seconds: 3), () {
       if (mounted) {
@@ -341,9 +343,14 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           switch (_controller.portraitNavPosition) {
             case PortraitNavPosition.auto:
               if (isScreenReaderActive) {
-                debugPrint('[HomeView] 螢幕朗讀模式啟用，直向導覽位置設定為 auto 暫時停用，改為 right 佈局');
+                debugPrint(
+                  '[HomeView] 螢幕朗讀模式啟用，直向導覽位置設定為 auto 暫時停用，改為 right 佈局',
+                );
                 body = Row(
-                  children: [Expanded(child: mainContent), buildVerticalNav()],
+                  children: [
+                    Expanded(child: mainContent),
+                    buildVerticalNav(),
+                  ],
                 );
               } else {
                 debugPrint('[HomeView] 直向導覽位置設定為 auto，依目前側邊方向決定佈局');

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:evernight_board/flavor.dart';
 import 'package:evernight_board/settings/icp.dart';
 import 'package:evernight_board/global.dart';
+import 'package:evernight_board/restart_widget.dart';
 import 'settings_view.dart';
 import 'settings_utils.dart';
 
@@ -86,15 +87,28 @@ mixin SettingsDialogsMixin on State<SettingsView> {
                         child: Text(t.cancel),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           setDialogState(() => isProcessing = true);
                           debugPrint(
                             '[_SettingsViewState] 使用者確認清除全部資料，開始執行重設流程',
                           );
 
-                          widget.controller.clearAllData(context);
                           setExitFlag(false); // 設定 _isExit 為 false，避免流程直接結束。
-                          exitController.forward();
+                          // 等待退出動畫完成（畫面全黑）
+                          await exitController.forward();
+                          // 清除資料但不立即重啟，使用當前上下文
+                          final currentContext = this.context;
+                          await widget.controller.clearAllData(
+                            currentContext,
+                            restartImmediately: false,
+                          ); // ignore: use_build_context_synchronously
+                          // 重啟應用程式（對話框會自動關閉）
+                          debugPrint('[_SettingsViewState] 動畫完成，重啟應用程式');
+                          if (mounted) {
+                            RestartWidget.restartApp(
+                              currentContext,
+                            ); // ignore: use_build_context_synchronously
+                          }
                         },
                         child: Text(
                           t.ok,

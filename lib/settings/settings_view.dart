@@ -35,7 +35,10 @@ class SettingsView extends StatefulWidget {
 /// 混入 [TickerProviderStateMixin] 以提供動畫所需的 `vsync`，
 /// 並混入 [SettingsDialogsMixin] 以共用各類設定對話框邏輯。
 class _SettingsViewState extends State<SettingsView>
-    with TickerProviderStateMixin, SettingsDialogsMixin, WidgetsBindingObserver {
+    with
+        TickerProviderStateMixin,
+        SettingsDialogsMixin,
+        WidgetsBindingObserver {
   /// 檢測螢幕朗讀模式是否啟用
   ///
   /// 使用 device_accessibility_info 插件檢測輔助功能開關狀態，
@@ -116,7 +119,9 @@ class _SettingsViewState extends State<SettingsView>
             });
           }
           // 订阅屏幕朗读状态变化
-          _screenReaderSubscription = plugin.screenReaderStatusChanged.listen((bool isEnabled) {
+          _screenReaderSubscription = plugin.screenReaderStatusChanged.listen((
+            bool isEnabled,
+          ) {
             debugPrint('[_SettingsViewState] 屏幕朗读状态变化: $isEnabled');
             if (mounted) {
               setState(() {
@@ -125,7 +130,9 @@ class _SettingsViewState extends State<SettingsView>
             }
           });
         } catch (e) {
-          debugPrint('[_SettingsViewState] device_accessibility_info 初始化失败: $e');
+          debugPrint(
+            '[_SettingsViewState] device_accessibility_info 初始化失败: $e',
+          );
         }
       }
     });
@@ -328,7 +335,9 @@ class _SettingsViewState extends State<SettingsView>
               ListTile(
                 leading: const Icon(Icons.stay_current_portrait),
                 title: Text(t.currportrait),
-                subtitle: _isScreenReaderActive ? Text(t.accessibilityAutoDisabled) : (!isSensorSupported ? Text(t.sensorAutoDisabled) : null),
+                subtitle: _isScreenReaderActive
+                    ? Text(t.accessibilityAutoDisabled)
+                    : (!isSensorSupported ? Text(t.sensorAutoDisabled) : null),
                 trailing: DropdownButton<PortraitNavPosition>(
                   // 若平台不支援感測器或螢幕朗讀模式啟用，且目前值為 auto，則介面上強制顯示為 right。
                   value:
@@ -338,35 +347,39 @@ class _SettingsViewState extends State<SettingsView>
                       ? PortraitNavPosition.right
                       : widget.controller.portraitNavPosition,
                   onChanged: (val) {
-                     if (val != null) {
-                       // 安全檢查：若不支援感測器或螢幕朗讀模式啟用，不允許切換至 auto。
-                        if ((!isSensorSupported || _isScreenReaderActive) &&
-                            val == PortraitNavPosition.auto) {
-                         debugPrint(
-                           '[_SettingsViewState] 目前平台不支援感測器或螢幕朗讀模式啟用，忽略直向模式 auto 導覽列設定',
-                         );
-                         return;
-                       }
-                       debugPrint('[_SettingsViewState] 更新直向模式導覽列位置：$val');
-                       widget.controller.setPortraitNavPosition(val);
-                     }
+                    if (val != null) {
+                      // 安全檢查：若不支援感測器或螢幕朗讀模式啟用，不允許切換至 auto。
+                      if ((!isSensorSupported || _isScreenReaderActive) &&
+                          val == PortraitNavPosition.auto) {
+                        debugPrint(
+                          '[_SettingsViewState] 目前平台不支援感測器或螢幕朗讀模式啟用，忽略直向模式 auto 導覽列設定',
+                        );
+                        return;
+                      }
+                      debugPrint('[_SettingsViewState] 更新直向模式導覽列位置：$val');
+                      widget.controller.setPortraitNavPosition(val);
+                    }
                     if (mounted) {
                       debugPrint('[_SettingsViewState] 直向模式導覽列位置已更新，重新整理畫面');
                       setState(() {});
                     }
                   },
                   items: [
-                     DropdownMenuItem(
-                       value: PortraitNavPosition.auto,
-                        enabled: isSensorSupported && !_isScreenReaderActive, // 不支援感測器或螢幕朗讀模式啟用時停用此選項
-                       child: Text(
-                         t.navbarlocationauto,
-                         style: TextStyle(
-                           // 不支援感測器或螢幕朗讀模式啟用時將文字顏色顯示為灰色。
-                            color: isSensorSupported && !_isScreenReaderActive ? null : Colors.grey,
-                         ),
-                       ),
-                     ),
+                    DropdownMenuItem(
+                      value: PortraitNavPosition.auto,
+                      enabled:
+                          isSensorSupported &&
+                          !_isScreenReaderActive, // 不支援感測器或螢幕朗讀模式啟用時停用此選項
+                      child: Text(
+                        t.navbarlocationauto,
+                        style: TextStyle(
+                          // 不支援感測器或螢幕朗讀模式啟用時將文字顏色顯示為灰色。
+                          color: isSensorSupported && !_isScreenReaderActive
+                              ? null
+                              : Colors.grey,
+                        ),
+                      ),
+                    ),
                     DropdownMenuItem(
                       value: PortraitNavPosition.bottom,
                       child: Text(t.alwaysbottom),

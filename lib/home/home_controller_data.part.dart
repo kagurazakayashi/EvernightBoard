@@ -226,33 +226,37 @@ mixin HomeControllerData on ChangeNotifier {
   /// 清除所有應用程式資料與設定，並移除相關聯的實體檔案。
   ///
   /// [context] 用於顯示操作結果提示並關閉目前頁面。
-  Future<void> clearAllData(BuildContext context) async {
+  /// [restartImmediately] 是否在清除完成後立即重啟應用程式，預設為 true。
+  Future<void> clearAllData(
+    BuildContext context, {
+    bool restartImmediately = true,
+  }) async {
     // 立即關閉寫入權限
     enableWrite = false;
 
     debugPrint('[HomeControllerData] 開始執行徹底清除流程。');
 
-    // 手動清空記憶體中的資料，防止 notifyListeners 導致 UI 拿舊資料去觸發邏輯
-    // final self = this as HomeController;
-    // self.items.clear();
-    // _appLocale = null;
+    try {
+      // 物理刪除所有檔案
+      await FileService.deleteAllFiles();
 
-    // 物理刪除所有檔案
-    await FileService.deleteAllFiles();
+      // 抹除所有 SharedPreferences 紀錄
+      final prefs = await SharedPreferences.getInstance();
+      bool success = await prefs.clear(); // 確保 clear 完成
 
-    // 抹除所有 SharedPreferences 紀錄
-    final prefs = await SharedPreferences.getInstance();
-    bool success = await prefs.clear(); // 確保 clear 完成
-
-    debugPrint('[HomeControllerData] 資料庫抹除: $success');
-    // 給系統一點點時間完成 IO 刷新
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (context.mounted) {
-      debugPrint('[HomeControllerData] 應用程式重啟');
-      RestartWidget.restartApp(context);
-    } else {
-      debugPrint('[HomeControllerData] Context 已失效');
+      debugPrint('[HomeControllerData] 資料庫抹除: $success');
+    } catch (e) {
+      debugPrint('[HomeControllerData] 清除資料時發生例外：$e');
+    } finally {
+      // 無論成功與否，都嘗試重啟應用程式（如果允許立即重啟）
+      if (restartImmediately) {
+        debugPrint('[HomeControllerData] 應用程式重啟');
+        RestartWidget.restartApp(
+          context,
+        ); // ignore: use_build_context_synchronously
+      } else {
+        debugPrint('[HomeControllerData] 跳過立即重啟，由呼叫者負責後續重啟');
+      }
     }
   }
 

@@ -24,7 +24,12 @@ class RestartWidget extends StatefulWidget {
   /// 若找到則呼叫其 [restartApp] 方法。
   static void restartApp(BuildContext context) {
     debugPrint('[RestartWidget] 嘗試觸發應用程式子樹重建');
-    context.findAncestorStateOfType<_RestartWidgetState>()?.restartApp();
+    final state = context.findAncestorStateOfType<_RestartWidgetState>();
+    if (state != null) {
+      state.restartApp();
+    } else {
+      debugPrint('[RestartWidget] 錯誤：找不到 _RestartWidgetState，無法重啟應用程式');
+    }
   }
 
   @override

@@ -108,7 +108,7 @@ class _EvernightBoardAPPState extends State<EvernightBoardAPP>
   @override
   void initState() {
     super.initState();
-    
+
     // 註冊 WidgetsBindingObserver 以監聽無障礙特性變化
     WidgetsBinding.instance.addObserver(this);
     debugPrint('[_EvernightBoardAPPState] 已註冊 WidgetsBindingObserver');
