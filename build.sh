@@ -24,6 +24,7 @@ case "$OS" in
 esac
 
 echo "Detected OS: $OS"
+rm flutter_*.log
 flutter clean
 flutter pub get
 bash generate_icons.sh

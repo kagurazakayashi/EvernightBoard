@@ -1,4 +1,4 @@
-# EvernightBoard 长夜锦书
+﻿# EvernightBoard 长夜锦书
 
 ## 隐私权
 

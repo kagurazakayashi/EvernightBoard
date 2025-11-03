@@ -1,4 +1,4 @@
-# EvernightBoard 長夜錦書
+﻿# EvernightBoard 長夜錦書
 
 ![EvernightBoard](assets/appicon/icon.ico)
 
@@ -78,8 +78,8 @@
 
 #### その他の推奨事項
 
-- スマートフォンの画面ロック機能を一時的に無効にします。
-- アプリアイコンをホーム画面や起動しやすい場所に配置します。
+- 操作が不便な状況において、スマートフォンのロック画面機能を一時的に無効化し、アプリのアイコンをホーム画面や起動しやすい場所に配置することで、本プログラムの画面へより簡単に戻れるようになります。
+- アプリは TalkBack と VoiceOver をフルサポートしており、これらを使用してテキストを読み上げることができます。
 
 ### 使い始める
 
@@ -167,12 +167,14 @@
 
 このアプリケーションを中国のアプリストアで提供する場合は、ICP 登録番号を取得し、対応するプラットフォームの `"cnICPfiling":""` に記入する必要があります。詳細については、[App Store Connect Help の Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) に関する項目をご確認ください。
 
-### Windows でビルド
+### Windows でビルドする
 
 - Windows アプリケーションとしてビルドして実行：`build.bat`。
+  - Microsoft Store 配信用の msix インストーラーパッケージ：`dart.bat run msix:create`。
+  - ローカルインストール用の exe インストーラーパッケージ：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
 - Android アプリケーションとしてビルドしてインストール：`build_apk.bat`。
 
-### macOS または Linux でビルド
+### macOS または Linux でビルドする
 
 - macOS または Linux アプリケーションとしてビルドして実行：`./build.sh`。
 - Android アプリケーションとしてビルドしてインストール：`./build_apk.sh`。

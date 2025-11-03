@@ -1,4 +1,4 @@
-# EvernightBoard 长夜锦书
+﻿# EvernightBoard 长夜锦书
 
 ![EvernightBoard](assets/appicon/icon.ico)
 
@@ -78,8 +78,8 @@
 
 #### 其他建议
 
-- 临时禁用手机的锁屏功能。
-- 将应用图标放在首屏或易于启动的位置。
+- 在不便操作的場合，暫時停用手機的鎖定螢幕功能，並將應用程式圖示放在主畫面或易於啟動的位置，可以讓您更輕鬆地回到本程式的畫面。
+- 應用程式完整支援 TalkBack 與 VoiceOver，可以使用它們朗讀文字。
 
 ### 开始使用
 
@@ -169,14 +169,15 @@
 
 ### 在 Windows 中编译
 
-- 编译为 Windows 应用程序然后运行: `build.bat` 。
-  - 打包成 msix 安装包：`dart.bat run msix:create` 。
-- 编译为 Android 应用程序然后安装: `build_apk.bat` 。
+- 编译为 Windows 应用程序并运行: `build.bat` 。
+  - 用于 Microsoft Store 发布的 msix 安装包: `dart.bat run msix:create` 。
+  - 用于 本地安装 的 exe 安装包: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+- 编译为 Android 应用程序并安装: `build_apk.bat` 。
 
 ### 在 macOS 或 Linux 中编译
 
-- 编译为 macOS 或 Linux 应用程序然后运行: `./build.sh` 。
-- 编译为 Android 应用程序然后安装: `./build_apk.sh` 。
+- 编译为 macOS 或 Linux 应用程序并运行: `./build.sh` 。
+- 编译为 Android 应用程序并安装: `./build_apk.sh` 。
 
 ### 编译为 macOS 或 iOS
 

@@ -1,3 +1,4 @@
+DEL flutter_*.log
 CALL flutter.bat clean
 CALL flutter.bat pub get
 CALL generate_icons.bat

@@ -136,6 +136,13 @@ IF ERRORLEVEL 1 (
     EXIT /B 1
 )
 
+ECHO [INFO] Creating installer_nsi.bmp
+magick.exe "iconbackground.png" -resize "164x314!" ^( iconforeground.png -resize "150x150!" ^) -gravity center -composite BMP3:installer_nsi.bmp
+IF ERRORLEVEL 1 (
+    ECHO [ERROR] Failed to installer_nsi.bmp
+    EXIT /B 1
+)
+
 CD "..\..\" || (
     ECHO [ERROR] Failed to return to root directory.
     EXIT /B 1

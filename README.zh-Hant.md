@@ -1,4 +1,4 @@
-# EvernightBoard 長夜錦書
+﻿# EvernightBoard 長夜錦書
 
 ![EvernightBoard](assets/appicon/icon.ico)
 
@@ -78,8 +78,8 @@
 
 #### 其他建議
 
-- 暫時停用手機的鎖定螢幕功能。
-- 將應用程式圖示放在主畫面或易於啟動的位置。
+- 在不便操作的場合，暫時停用手機的鎖定螢幕功能，並將應用程式圖示放在主畫面或易於啟動的位置，可以讓您更輕鬆地回到本程式的畫面。
+- 應用程式完整支援 TalkBack 與 VoiceOver，可以使用它們朗讀文字。
 
 ### 開始使用
 
@@ -170,6 +170,8 @@
 ### 在 Windows 中編譯
 
 - 編譯為 Windows 應用程式並執行：`build.bat`。
+  - 用於 Microsoft Store 發布的 msix 安裝套件：`dart.bat run msix:create`。
+  - 用於本機安裝的 exe 安裝套件：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
 - 編譯為 Android 應用程式並安裝：`build_apk.bat`。
 
 ### 在 macOS 或 Linux 中編譯

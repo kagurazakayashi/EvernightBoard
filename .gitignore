@@ -1,6 +1,6 @@
 /evernight_board
 lib/l10n/app_localizations*.dart
-assets/appicon/*_*.png
+assets/appicon/*_*.*
 macos/Runner/Assets.xcassets/**/*.png
 ios/Runner/Assets.xcassets/**/*.png
 android/app/src/main/res/mi*/*.png

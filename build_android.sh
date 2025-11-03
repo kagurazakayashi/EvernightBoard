@@ -1,3 +1,4 @@
+rm flutter_*.log
 flutter clean
 flutter pub get
 bash generate_icons.sh

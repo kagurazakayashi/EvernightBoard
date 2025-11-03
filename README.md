@@ -78,8 +78,8 @@ This application has not been released as an "official version" on any app store
 
 #### Other Suggestions
 
-- Temporarily disable the phone's lock screen function.
-- Place the app icon on the home screen or in an easy-to-launch location.
+- In situations where operation is inconvenient, temporarily disabling the phone's lock screen and placing the app icon on the home screen or an easily accessible location allows you to return to the application screen more effortlessly.
+- The app fully supports TalkBack and VoiceOver, which can be used to read text aloud.
 
 ### Getting Started
 
@@ -167,15 +167,17 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 
 If you want to distribute this application on app stores in China, you must have an ICP filing number and fill it in under `"cnICPfiling":""` for the corresponding platform. For details, please refer to the section about [Availability in China mainland in App Store Connect Help](https://developer.apple.com/help/app-store-connect/reference/app-information).
 
-### Build on Windows
+### Building on Windows
 
-- Build as a Windows application and run: `build.bat`.
-- Build as an Android application and install: `build_apk.bat`.
+- Build and run as a Windows application: `build.bat`.
+  - MSIX installer package for Microsoft Store distribution: `dart.bat run msix:create`.
+  - EXE installer package for local installation: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+- Build as an Android application and install it: `build_apk.bat`.
 
-### Build on macOS or Linux
+### Building on macOS or Linux
 
-- Build as a macOS or Linux application and run: `./build.sh`.
-- Build as an Android application and install: `./build_apk.sh`.
+- Build and run as a macOS or Linux application: `./build.sh`.
+- Build as an Android application and install it: `./build_apk.sh`.
 
 ### Compiling for macOS or iOS
 
