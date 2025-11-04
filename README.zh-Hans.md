@@ -167,28 +167,30 @@
 
 如果要在中国的应用商店中提供本程序，你必须拥有 ICP 备案号并将其填写到对应平台的 `"cnICPfiling":""` 中。详情请了解 [App Store Connect Help 中有关 Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) 的部分。
 
-### 在 Windows 中编译
+### 编译为 Windows (需要在 Windows 中操作)
 
 - 编译为 Windows 应用程序并运行: `build.bat` 。
   - 用于 Microsoft Store 发布的 msix 安装包: `dart.bat run msix:create` 。
   - 用于 本地安装 的 exe 安装包: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
 - 编译为 Android 应用程序并安装: `build_apk.bat` 。
 
-### 在 macOS 或 Linux 中编译
+### 编译为 macOS 或 Linux (需要在 macOS / Linux 中操作)
 
 - 编译为 macOS 或 Linux 应用程序并运行: `./build.sh` 。
 - 编译为 Android 应用程序并安装: `./build_apk.sh` 。
 
-### 编译为 macOS 或 iOS
+### 手动编译为 macOS 或 iOS (需要在 macOS 中操作)
 
 1. 运行上面的“调试”中的第 1 步到第 5 步。
-2. 运行 `flutter build macos --no-tree-shake-icons` 或 `flutter build ios --no-tree-shake-icons` ，这可能会失败，不用管它。
+2. 执行编译命令（这可能会失败，不用管它）。
+    - macOS: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+    - iOS: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
 3. 运行 `cd macos` 或 `cd ios` 进入相应平台文件夹。
 4. 运行 `pod install` 下载所需第三方库。
 5. 运行 Xcode ，打开 `macos` 或 `ios` 文件夹中的 `Runner.xcworkspace` 进行配置（例如证书和描述文件）。
 6. 进行正式编译。
 
-### 编译为 Web
+### 手动编译为 Web
 
 1. 运行上面的“调试”中的第 1 步到第 5 步。
 2. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 删除上次编译的文件。

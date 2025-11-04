@@ -24,7 +24,7 @@ case "$OS" in
 esac
 
 echo "Detected OS: $OS"
-rm flutter_*.log
+rm -f flutter_*.log
 flutter clean
 flutter pub get
 bash generate_icons.sh
@@ -33,7 +33,7 @@ dart run flutter_iconpicker:generate_packs --packs material
 flutter gen-l10n
 echo "Running: flutter build $TARGET"
 rm -rf "`pwd`\build"
-flutter build "$TARGET" --no-tree-shake-icons --dart-define-from-file="flavor/$TARGET.json"
+flutter build "$TARGET" --no-tree-shake-icons --dart-define-from-file="flavor/macosstore.json"
 
 echo "Resolving executable path..."
 

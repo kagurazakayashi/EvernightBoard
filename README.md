@@ -167,28 +167,30 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 
 If you want to distribute this application on app stores in China, you must have an ICP filing number and fill it in under `"cnICPfiling":""` for the corresponding platform. For details, please refer to the section about [Availability in China mainland in App Store Connect Help](https://developer.apple.com/help/app-store-connect/reference/app-information).
 
-### Building on Windows
+### Compile for Windows (Action required in Windows)
 
-- Build and run as a Windows application: `build.bat`.
-  - MSIX installer package for Microsoft Store distribution: `dart.bat run msix:create`.
-  - EXE installer package for local installation: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
-- Build as an Android application and install it: `build_apk.bat`.
+- Compile as a Windows application and run: `build.bat`.
+  - msix installer package for Microsoft Store release: `dart.bat run msix:create`.
+  - exe installer package for local installation: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+- Compile as an Android application and install: `build_apk.bat`.
 
-### Building on macOS or Linux
+### Compile for macOS or Linux (Action required in macOS / Linux)
 
-- Build and run as a macOS or Linux application: `./build.sh`.
-- Build as an Android application and install it: `./build_apk.sh`.
+- Compile as a macOS or Linux application and run: `./build.sh`.
+- Compile as an Android application and install: `./build_apk.sh`.
 
-### Compiling for macOS or iOS
+### Manually Compile for macOS or iOS (Action required in macOS)
 
-1. Perform steps 1 through 5 from the "Debugging" section above.
-2. Run `flutter build macos` or `flutter build ios`; this might fail, but you can ignore it for now.
+1. Run steps 1 to 5 from the "Debug" section above.
+2. Execute the compilation command (this may fail; you can ignore it).
+    - macOS: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+    - iOS: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
 3. Run `cd macos` or `cd ios` to enter the respective platform folder.
 4. Run `pod install` to download the required third-party libraries.
 5. Launch Xcode and open `Runner.xcworkspace` in the `macos` or `ios` folder to configure settings (e.g., certificates and provisioning profiles).
-6. Proceed with the formal compilation.
+6. Perform the formal compilation.
 
-### Build for Web
+### Manually Compile for Web
 
 1. Run steps 1 through 5 in the "Debug" section above.
 2. Use `RD /S /Q build\web` or `rm -rf build/web` to delete the files from the previous build.

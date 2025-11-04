@@ -1,4 +1,4 @@
-rm flutter_*.log
+rm -f flutter_*.log
 flutter clean
 flutter pub get
 cd ios

@@ -167,28 +167,30 @@
 
 このアプリケーションを中国のアプリストアで提供する場合は、ICP 登録番号を取得し、対応するプラットフォームの `"cnICPfiling":""` に記入する必要があります。詳細については、[App Store Connect Help の Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) に関する項目をご確認ください。
 
-### Windows でビルドする
+### Windows向けコンパイル（Windows環境が必要）
 
-- Windows アプリケーションとしてビルドして実行：`build.bat`。
-  - Microsoft Store 配信用の msix インストーラーパッケージ：`dart.bat run msix:create`。
-  - ローカルインストール用の exe インストーラーパッケージ：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
-- Android アプリケーションとしてビルドしてインストール：`build_apk.bat`。
+- Windowsアプリケーションとしてコンパイルして実行：`build.bat`。
+  - Microsoft Storeリリース用のmsixインストーラーパッケージ：`dart.bat run msix:create`。
+  - ローカルインストール用のexeインストーラーパッケージ：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+- Androidアプリケーションとしてコンパイルしてインストール：`build_apk.bat`。
 
-### macOS または Linux でビルドする
+### macOS または Linux向けコンパイル（macOS / Linux環境が必要）
 
-- macOS または Linux アプリケーションとしてビルドして実行：`./build.sh`。
-- Android アプリケーションとしてビルドしてインストール：`./build_apk.sh`。
+- macOS または Linuxアプリケーションとしてコンパイルして実行：`./build.sh`。
+- Androidアプリケーションとしてコンパイルしてインストール：`./build_apk.sh`。
 
-### macOS または iOS 用のコンパイル
+### macOS または iOS向けの手動コンパイル（macOS環境が必要）
 
-1. 上記「デバッグ」のステップ 1 から 5 を実行します。
-2. `flutter build macos` または `flutter build ios` を実行します。これは失敗する可能性がありますが、無視して構いません。
+1. 上記の「デバッグ」セクションの手順1から5を実行します。
+2. コンパイルコマンドを実行します（失敗する可能性がありますが、無視して構いません）。
+    - macOS: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+    - iOS: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
 3. `cd macos` または `cd ios` を実行して、対応するプラットフォームのフォルダに移動します。
-4. `pod install` を実行して必要なサードパーティライブラリをダウンロードします。
-5. Xcode を起動し、`macos` または `ios` フォルダ内の `Runner.xcworkspace` を開いて設定（証明書やプロファイルなど）を行います。
-6. 正式なコンパイルを実行します。
+4. `pod install` を実行して、必要なサードパーティライブラリをダウンロードします。
+5. Xcodeを起動し、`macos` または `ios` フォルダ内の `Runner.xcworkspace` を開き、設定（証明書やプロビジョニングプロファイルなど）を行います。
+6. 本番コンパイルを実行します。
 
-### Web 向けにビルド
+### Web向けの手動コンパイル
 
 1. 上記の「デバッグ」にある手順 1 から 5 までを実行します。
 2. `RD /S /Q build\web` または `rm -rf build/web` を使用して、前回のビルドで生成されたファイルを削除します。
