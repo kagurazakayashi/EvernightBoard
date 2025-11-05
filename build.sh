@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-PROJECT_ROOT=`pwd`
+PROJECT_ROOT=$PWD
 APP_NAME="evernight_board"
 echo "PROJECT_ROOT: $PROJECT_ROOT"
 echo "APP_NAME: $APP_NAME"
@@ -24,16 +24,9 @@ case "$OS" in
 esac
 
 echo "Detected OS: $OS"
-rm -f flutter_*.log
-flutter clean
-flutter pub get
-bash generate_icons.sh
-dart run flutter_native_splash:create
-dart run flutter_iconpicker:generate_packs --packs material
-flutter gen-l10n
+sh build_pre.sh
 echo "Running: flutter build $TARGET"
-rm -rf "`pwd`\build"
-flutter build "$TARGET" --no-tree-shake-icons --dart-define-from-file="flavor/macosstore.json"
+flutter build "$TARGET" --no-tree-shake-icons --dart-define-from-file="flavor/$TARGET.json"
 
 echo "Resolving executable path..."
 

@@ -135,18 +135,15 @@
 
 1. 运行 `flutter clean` 清理缓存。
 2. 运行 `flutter pub get` 下载所需第三方库。
-3. 运行 `generate_icons.bat` 或 `./generate_icons` 生成各种规格和样式的应用图标。
+3. 运行 `generate_icons.bat` (Windows) 或 `./generate_icons.sh` 生成各种规格和样式的应用图标。
 4. 运行 `dart run flutter_native_splash:create` 构建启动画面。
 5. 运行 `flutter gen-l10n` 构建多语言文本。
 6. 运行 `dart run flutter_iconpicker:generate_packs --packs material` 准备图标资源。
 7. 运行 `flutter run` 开始调试。
 
 - 如果需要编辑源代码，必须在启动 IDE 前完成第 1 步到第 5 步。
-
-#### 手动编译示例
-
-- 运行 `flutter build apk --no-tree-shake-icons` 为 Android 编译安装包。
-- 运行 `flutter build aab --no-tree-shake-icons` 为 Android 编译发布版。
+- 如果需要执行编译，必须在编译命令执行前完成第 1 步到第 6 步。
+  - 你可以运行 `build_pre.bat` (Windows) 或 `./build_pre.sh` 直接完成这些步骤。
 
 ### 编辑显示语言
 
@@ -156,7 +153,7 @@
    2. 变量名必须和其他语言文件一样齐全。
 3. 运行 `dart l10n_metadata.dart` 自动补齐所有语言文件的 `"@..."` 部分。
 4. 运行 `flutter gen-l10n` 构建多语言文本。
-5. 继续上述的“调试”步骤。
+5. 继续上述的 [调试](#调试) 步骤。
 
 ### 发布渠道差异
 
@@ -167,37 +164,77 @@
 
 如果要在中国的应用商店中提供本程序，你必须拥有 ICP 备案号并将其填写到对应平台的 `"cnICPfiling":""` 中。详情请了解 [App Store Connect Help 中有关 Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) 的部分。
 
-### 编译为 Windows (需要在 Windows 中操作)
+### 在 Windows 中编译
 
 - 编译为 Windows 应用程序并运行: `build.bat` 。
-  - 用于 Microsoft Store 发布的 msix 安装包: `dart.bat run msix:create` 。
-  - 用于 本地安装 的 exe 安装包: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
 - 编译为 Android 应用程序并安装: `build_apk.bat` 。
 
-### 编译为 macOS 或 Linux (需要在 macOS / Linux 中操作)
+#### 手动编译为 Windows (需要在 Windows 中操作)
+
+1. 运行上面的 [调试](#调试) 中的第 1 步到第 6 步。你可以运行 `build_pre.bat` 直接完成这些步骤。
+2. 使用 `RD /S /Q build\windows` 删除上次编译的文件。
+3. 执行编译命令：
+   - 编译为 exe 程序: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"` 。
+     - 创建用于 本地安装 的 exe 安装包: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+   - 编译为用于 Microsoft Store 的发布版:
+     1. 编译 exe 程序: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
+     2. 处理 NOTICES.Z 警告: `DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     3. 创建用于 Microsoft Store 发布的 msix 安装包: `dart.bat run msix:create` 。
+     4. 可以使用 `Windows App Cert Kit` 验证该 msix 安装包。
+4. 查看生成的文件: `DIR "%CD%\build\windows\x64\runner\Release"` 。
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
+
+### 在 macOS 或 Linux 中编译
 
 - 编译为 macOS 或 Linux 应用程序并运行: `./build.sh` 。
 - 编译为 Android 应用程序并安装: `./build_apk.sh` 。
 
 ### 手动编译为 macOS 或 iOS (需要在 macOS 中操作)
 
-1. 运行上面的“调试”中的第 1 步到第 5 步。
+1. 运行上面的 [调试](#调试) 中的第 1 步到第 6 步。你可以运行 `./build_pre.sh` 直接完成这些步骤。
 2. 执行编译命令（这可能会失败，不用管它）。
-    - macOS: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
-    - iOS: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
+   - 编译为 macOS 程序: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+   - 编译为 iOS 程序: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
+   - 编译为用于 macOS App Store 的发布版: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+   - 编译为用于 iOS App Store 的发布版: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
 3. 运行 `cd macos` 或 `cd ios` 进入相应平台文件夹。
 4. 运行 `pod install` 下载所需第三方库。
 5. 运行 Xcode ，打开 `macos` 或 `ios` 文件夹中的 `Runner.xcworkspace` 进行配置（例如证书和描述文件）。
 6. 进行正式编译。
 
+### 手动编译为 Android
+
+1. 运行上面的 [调试](#调试) 中的第 1 步到第 6 步。你可以运行 `build_pre.bat` (Windows) 或 `./build_pre.sh` 直接完成这些步骤。
+2. 使用 `RD /S /Q build\app` (Windows) 或 `rm -rf build/app` 删除上次编译的文件。
+3. 执行编译命令：
+   - 编译为 apk 安装包: `flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"` 。
+   - 编译为用于 Google Play 的发布版: `flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"` 。
+4. 查看生成的文件:
+   - Windows: `DIR "build\app\outputs\flutter-apk"` 。
+     - `ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"`
+     - `ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"`
+   - macOS,Linux: `ls "build/app/outputs/flutter-apk"`
+     - `ls -d "$PWD/build/app/outputs/flutter-apk/app-release.apk"`
+     - `ls -d "$PWD/build/app/outputs/bundle/release/app-release.aab"`
+
 ### 手动编译为 Web
 
-1. 运行上面的“调试”中的第 1 步到第 5 步。
-2. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 删除上次编译的文件。
+1. 运行上面的 [调试](#调试) 中的第 1 步到第 6 步。你可以运行 `build_pre.bat` (Windows) 或 `./build_pre.sh` 直接完成这些步骤。
+2. 使用 `RD /S /Q build\web` (Windows) 或 `rm -rf build/web` 删除上次编译的文件。
 3. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` 进行编译。
 
 - 如果需要兼容旧版本浏览器，移除 `--wasm` 。
 - 可以将 `"/EvernightBoard/"` 改为所需的 URL 根路径。
+
+### 手动编译为 Linux (需要在 Linux 中操作)
+
+1. 运行上面的 [调试](#调试) 中的第 1 步到第 6 步。你可以运行 `./build_pre.sh` 直接完成这些步骤。
+2. 使用 `rm -rf build/linux` 删除上次编译的文件。
+3. 使用 `flutter build linux --no-tree-shake-icons --dart-define-from-file="flavor/linux.json"` 进行编译。
+4. 查看生成的文件: `ls "build/linux/x64/release/bundle"`
+   - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
+   - 如果运行时显示出现倾倒或其他画面异常，请尝试 `LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"` 。
 
 ## 许可协议
 

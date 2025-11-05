@@ -7,7 +7,7 @@
 - 适用于 iOS 的 .ipa 程序的额外说明
   - 该程序包含 Ad-Hoc 签名，在安装前需要使用你自己的签名重新签名才能安装。
 - 适用于 macOS 的 .app 程序的额外说明
-  - 该程序在 Apple silicon 和 Universal 中均可使用。
+  - 该程序在 Apple silicon 和 Intel 处理器中均可使用。
   - 该程序包含正式签名，可以直接运行。但不确保签名始终有效，如果遇到安全阻止或者启动时崩溃，请尝试使用本机重签，命令是:
     - `codesign --force --deep --sign - evernight_board.app`
 - 适用于 Linux 的程序的额外说明
@@ -19,7 +19,7 @@
 - Additional notes for the iOS .ipa program:
   - This program contains an Ad-Hoc signature and must be re-signed with your own signature before installation.
 - Additional notes for the macOS .app program:
-  - The program is compatible with both Apple Silicon and Universal.
+  - This program is compatible with both Apple silicon and Intel processors.
   - This program includes an official signature and can be run directly. However, there is no guarantee that the signature will remain valid indefinitely. If you encounter security blocks or crashes on startup, please try local re-signing using the following command:
     - `codesign --force --deep --sign - evernight_board.app`
 - Additional notes for the Linux program:
@@ -31,7 +31,7 @@
 - iOS 用 .ipa プログラムに関する追加事項：
   - このプログラムにはアドホック（Ad-Hoc）署名が含まれています。インストール前にご自身の署名で再署名する必要があります。
 - macOS 用 .app プログラムに関する追加事項：
-  - このプログラムは Apple シリコンおよび Universal の両方で利用可能です。
+  - このプログラムは、AppleシリコンとIntelプロセッサの両方で動作可能です。
   - このプログラムには正式な署名が含まれており、そのまま実行できます。ただし、署名の有効性が常に保証されるわけではありません。セキュリティブロックや起動時のクラッシュが発生した場合は、以下のコマンドを使用してローカルでの再署名を試みてください：
     - `codesign --force --deep --sign - evernight_board.app`
 - Linux 用プログラムに関する追加事項：

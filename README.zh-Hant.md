@@ -133,30 +133,27 @@
 
 ### 偵錯
 
-1. 執行 `flutter clean` 清除快取。
-2. 執行 `flutter pub get` 下載所需的第三方函式庫。
-3. 執行 `generate_icons.bat` 或 `./generate_icons` 以產生各種規格與樣式的應用程式圖示。
-4. 執行 `dart run flutter_native_splash:create` 以建置啟動畫面。
-5. 執行 `flutter gen-l10n` 以建置多國語言文本。
-6. 執行 `dart run flutter_iconpicker:generate_packs --packs material` 以準備圖示資源。
+1. 執行 `flutter clean` 清理快取。
+2. 執行 `flutter pub get` 下載所需的第三方套件。
+3. 執行 `generate_icons.bat`（Windows）或 `./generate_icons.sh` 產生各種規格與樣式的應用程式圖示。
+4. 執行 `dart run flutter_native_splash:create` 建立啟動畫面。
+5. 執行 `flutter gen-l10n` 建立多語系文字。
+6. 執行 `dart run flutter_iconpicker:generate_packs --packs material` 準備圖示資源。
 7. 執行 `flutter run` 開始偵錯。
 
-若需要編輯原始碼，必須在啟動 IDE 前完成第 1 步至第 5 步。
-
-#### 手動編譯範例
-
-- 執行 `flutter build apk --no-tree-shake-icons` 以為 Android 編譯安裝包。
-- 執行 `flutter build aab --no-tree-shake-icons` 以為 Android 編譯發行版。
+- 如果需要編輯原始碼，必須在啟動 IDE 前完成第 1 步到第 5 步。
+- 如果需要執行編譯，必須在執行編譯指令前完成第 1 步到第 6 步。
+  - 你可以執行 `build_pre.bat`（Windows）或 `./build_pre.sh` 直接完成這些步驟。
 
 ### 編輯顯示語言
 
-1. 修改或依照格式新建 `lib/l10n/app_*.arb`（`*` 為語言代碼）。
-2. 該檔案為 JSON 格式，若要新增語言文字，只需依照 `"變數名稱": "新語言文字"` 進行設定即可。注意：
-   1. 每一項語言文字僅需此行，例如 `"textcolor": "文字顏色",`，不需要後方的 `"@textcolor": ...` 部分。
-   2. 變數名稱必須與其他語言檔案保持一致且齊全。
-3. 執行 `dart l10n_metadata.dart` 以自動補全所有語言檔案的 `"@..."` 部分。
-4. 執行 `flutter gen-l10n` 以建置多國語言文字。
-5. 繼續上述的「偵錯」步驟。
+1. 修改或依格式新增 `lib/l10n/app_*.arb`（`*` 為語言代碼）。
+2. 此檔案為 JSON 格式。若要新增語言文字，只需要按照 `"變數名稱":"新語言文字"` 的格式設定即可。注意：
+   1. 每個語言文字只需要這一行，例如 `"textcolor": "文字顏色",`，不需要後面的 `"@textcolor": ...` 部分。
+   2. 變數名稱必須與其他語言檔案一樣完整。
+3. 執行 `dart l10n_metadata.dart` 自動補齊所有語言檔案中的 `"@..."` 部分。
+4. 執行 `flutter gen-l10n` 建立多語系文字。
+5. 繼續上述的 [偵錯](#偵錯) 步驟。
 
 ### 發佈渠道差異
 
@@ -167,37 +164,77 @@
 
 如果要在中國的應用程式商店中提供本程式，你必須持有 ICP 備案號，並將其填入對應平台的 `"cnICPfiling":""` 中。詳情請參閱 [App Store Connect Help 中關於 Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) 的相關內容。
 
-### 編譯為 Windows (需要在 Windows 中操作)
+### 在 Windows 中編譯
 
 - 編譯為 Windows 應用程式並執行：`build.bat`。
-  - 用於 Microsoft Store 發布的 msix 安裝包：`dart.bat run msix:create`。
-  - 用於 本地安裝 的 exe 安裝包：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
 - 編譯為 Android 應用程式並安裝：`build_apk.bat`。
 
-### 編譯為 macOS 或 Linux (需要在 macOS / Linux 中操作)
+#### 手動編譯為 Windows（需要在 Windows 中操作）
+
+1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `build_pre.bat` 直接完成這些步驟。
+2. 使用 `RD /S /Q build\windows` 刪除上次編譯的檔案。
+3. 執行編譯命令：
+   - 編譯為 exe 程式：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`。
+     - 建立用於本機安裝的 exe 安裝套件：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+   - 編譯為用於 Microsoft Store 的發行版：
+     1. 編譯 exe 程式：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
+     2. 處理 NOTICES.Z 警告：`DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     3. 建立用於 Microsoft Store 發佈的 msix 安裝套件：`dart.bat run msix:create`。
+     4. 可以使用 `Windows App Cert Kit` 驗證該 msix 安裝套件。
+4. 查看產生的檔案：`DIR "%CD%\build\windows\x64\runner\Release"`。
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
+
+### 在 macOS 或 Linux 中編譯
 
 - 編譯為 macOS 或 Linux 應用程式並執行：`./build.sh`。
 - 編譯為 Android 應用程式並安裝：`./build_apk.sh`。
 
-### 手動編譯為 macOS 或 iOS (需要在 macOS 中操作)
+### 手動編譯為 macOS 或 iOS（需要在 macOS 中操作）
 
-1. 執行上方「除錯」中的第 1 步到第 5 步。
-2. 執行編譯指令（這可能會失敗，請忽略它）。
-    - macOS：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
-    - iOS：`flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
-3. 執行 `cd macos` 或 `cd ios` 進入相應平台資料夾。
-4. 執行 `pod install` 下載所需第三方函式庫。
-5. 執行 Xcode，開啟 `macos` 或 `ios` 資料夾中的 `Runner.xcworkspace` 進行設定（例如憑證與佈署設定檔）。
+1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `./build_pre.sh` 直接完成這些步驟。
+2. 執行編譯命令（這可能會失敗，不用理會）。
+   - 編譯為 macOS 程式：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+   - 編譯為 iOS 程式：`flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
+   - 編譯為用於 macOS App Store 的發行版：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+   - 編譯為用於 iOS App Store 的發行版：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+3. 執行 `cd macos` 或 `cd ios` 進入對應的平台資料夾。
+4. 執行 `pod install` 下載所需的第三方函式庫。
+5. 執行 Xcode，開啟 `macos` 或 `ios` 資料夾中的 `Runner.xcworkspace` 進行設定（例如憑證和描述檔）。
 6. 進行正式編譯。
+
+### 手動編譯為 Android
+
+1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `build_pre.bat`（Windows）或 `./build_pre.sh` 直接完成這些步驟。
+2. 使用 `RD /S /Q build\app`（Windows）或 `rm -rf build/app` 刪除上次編譯產生的檔案。
+3. 執行編譯命令：
+   - 編譯為 apk 安裝套件：`flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"`。
+   - 編譯為用於 Google Play 的發布版本：`flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"`。
+4. 檢視產生的檔案：
+   - Windows：`DIR "build\app\outputs\flutter-apk"`。
+     - `ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"`
+     - `ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"`
+   - macOS、Linux：`ls "build/app/outputs/flutter-apk"`
+     - `ls -d "$PWD/build/app/outputs/flutter-apk/app-release.apk"`
+     - `ls -d "$PWD/build/app/outputs/bundle/release/app-release.aab"`
 
 ### 手動編譯為 Web
 
-1. 執行上述「除錯」中的第 1 步到第 5 步。
-2. 使用 `RD /S /Q build\web` 或 `rm -rf build/web` 刪除上次編譯的檔案。
+1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `build_pre.bat`（Windows）或 `./build_pre.sh` 直接完成這些步驟。
+2. 使用 `RD /S /Q build\web`（Windows）或 `rm -rf build/web` 刪除上次編譯產生的檔案。
 3. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` 進行編譯。
 
-- 如果需要相容舊版瀏覽器，請移除 `--wasm`。
+- 如需相容舊版瀏覽器，請移除 `--wasm`。
 - 可以將 `"/EvernightBoard/"` 改為所需的 URL 根路徑。
+
+### 手動編譯為 Linux（需要在 Linux 中操作）
+
+1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `./build_pre.sh` 直接完成這些步驟。
+2. 使用 `rm -rf build/linux` 刪除上次編譯產生的檔案。
+3. 使用 `flutter build linux --no-tree-shake-icons --dart-define-from-file="flavor/linux.json"` 進行編譯。
+4. 檢視產生的檔案：`ls "build/linux/x64/release/bundle"`
+   - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
+   - 如果執行時顯示傾印或其他畫面異常，請嘗試 `LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"`。
 
 ## 授權條款
 

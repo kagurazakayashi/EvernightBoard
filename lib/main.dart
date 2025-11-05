@@ -185,7 +185,7 @@ class _EvernightBoardAPPState extends State<EvernightBoardAPP>
         debugPrint('[_EvernightBoardAPPState] 重新建構 MaterialApp');
 
         return MaterialApp(
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: true,
 
           // 套用控制器維護的語系設定，讓整體應用程式可依狀態切換語言。
           locale: _appController.appLocale,

@@ -133,30 +133,27 @@
 
 ### デバッグ
 
-1. `flutter clean` を実行してキャッシュをクリアします。
-2. `flutter pub get` を実行して、必要なサードパーティライブラリをダウンロードします。
-3. `generate_icons.bat` または `./generate_icons` を実行して、さまざまな仕様やスタイルのアプリアイコンを生成します。
-4. `dart run flutter_native_splash:create` を実行してスプラッシュ画面をビルドします。
-5. `flutter gen-l10n` を実行して多言語テキスト（l10n）をビルドします。
+1. `flutter clean` を実行してキャッシュを削除します。
+2. `flutter pub get` を実行して、必要なサードパーティ製パッケージをダウンロードします。
+3. `generate_icons.bat`（Windows）または `./generate_icons.sh` を実行して、さまざまなサイズとスタイルのアプリアイコンを生成します。
+4. `dart run flutter_native_splash:create` を実行してスプラッシュ画面を作成します。
+5. `flutter gen-l10n` を実行して多言語テキストを生成します。
 6. `dart run flutter_iconpicker:generate_packs --packs material` を実行してアイコンリソースを準備します。
 7. `flutter run` を実行してデバッグを開始します。
 
-ソースコードを編集する必要がある場合は、IDE を起動する前にステップ 1 から 5 までを完了させる必要があります。
-
-#### 手動コンパイルの例
-
-- Android 用のインストールパッケージをコンパイルするには、`flutter build apk --no-tree-shake-icons` を実行します。
-- Android 用のリリース版（App Bundle）をコンパイルするには、`flutter build aab --no-tree-shake-icons` を実行します。
+- ソースコードを編集する必要がある場合は、IDE を起動する前に手順 1 から手順 5 までを完了する必要があります。
+- ビルドを実行する必要がある場合は、ビルドコマンドを実行する前に手順 1 から手順 6 までを完了する必要があります。
+  - `build_pre.bat`（Windows）または `./build_pre.sh` を実行すると、これらの手順を直接完了できます。
 
 ### 表示言語の編集
 
-1. `lib/l10n/app_*.arb` を修正するか、形式に従って新規作成します（`*` は言語コードです）。
-2. このファイルは JSON 形式です。言語テキストを追加するには、`"変数名": "新しい言語テキスト"` のように設定するだけです。注意点：
-   1. 各言語テキストはこの 1 行のみで問題ありません（例：`"textcolor": "文字色",`）。後続の `"@textcolor": ...` 部分は不要です。
-   2. 変数名は他の言語ファイルと同様に、すべて揃っている必要があります。
+1. `lib/l10n/app_*.arb`（`*` は言語コード）を変更するか、指定形式に従って新規作成します。
+2. このファイルは JSON 形式です。言語テキストを追加するには、`"変数名":"新しい言語テキスト"` の形式で設定するだけです。注意：
+   1. 各言語テキストにはこの 1 行だけが必要です。例：`"textcolor": "文字顏色",`。後続の `"@textcolor": ...` 部分は不要です。
+   2. 変数名は、他の言語ファイルと同じようにすべて揃っている必要があります。
 3. `dart l10n_metadata.dart` を実行して、すべての言語ファイルの `"@..."` 部分を自動補完します。
-4. `flutter gen-l10n` を実行して、多言語テキストをビルド（生成）します。
-5. 上記の「デバッグ」手順を続行します。
+4. `flutter gen-l10n` を実行して多言語テキストを生成します。
+5. 上記の [デバッグ](#デバッグ) 手順を続行します。
 
 ### 配布チャネルの違い
 
@@ -167,40 +164,77 @@
 
 このアプリケーションを中国のアプリストアで提供する場合は、ICP 登録番号を取得し、対応するプラットフォームの `"cnICPfiling":""` に記入する必要があります。詳細については、[App Store Connect Help の Availability in China mainland](https://developer.apple.com/help/app-store-connect/reference/app-information) に関する項目をご確認ください。
 
-### Windows向けコンパイル（Windows環境が必要）
+### Windows でビルドする
 
-- Windowsアプリケーションとしてコンパイルして実行：`build.bat`。
-  - Microsoft Storeリリース用のmsixインストーラーパッケージ：`dart.bat run msix:create`。
-  - ローカルインストール用のexeインストーラーパッケージ：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
-- Androidアプリケーションとしてコンパイルしてインストール：`build_apk.bat`。
+- Windows アプリケーションとしてビルドして実行する：`build.bat`。
+- Android アプリケーションとしてビルドしてインストールする：`build_apk.bat`。
 
-### macOS または Linux向けコンパイル（macOS / Linux環境が必要）
+#### Windows 向けに手動でビルドする（Windows 上で操作する必要があります）
 
-- macOS または Linuxアプリケーションとしてコンパイルして実行：`./build.sh`。
-- Androidアプリケーションとしてコンパイルしてインストール：`./build_apk.sh`。
+1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`build_pre.bat` を実行すると、これらの手順を直接完了できます。
+2. `RD /S /Q build\windows` を使用して、前回ビルドしたファイルを削除します。
+3. ビルドコマンドを実行します：
+   - exe プログラムとしてビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`。
+     - ローカルインストール用の exe インストーラーを作成する：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+   - Microsoft Store 向けのリリース版としてビルドする：
+     1. exe プログラムをビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
+     2. NOTICES.Z 警告に対応する：`DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     3. Microsoft Store 公開用の msix インストーラーを作成する：`dart.bat run msix:create`。
+     4. `Windows App Cert Kit` を使用して、この msix インストーラーを検証できます。
+4. 生成されたファイルを確認する：`DIR "%CD%\build\windows\x64\runner\Release"`。
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
 
-### macOS または iOS向けの手動コンパイル（macOS環境が必要）
+### macOS または Linux でビルドする
 
-1. 上記の「デバッグ」セクションの手順1から5を実行します。
-2. コンパイルコマンドを実行します（失敗する可能性がありますが、無視して構いません）。
-    - macOS: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
-    - iOS: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
-3. `cd macos` または `cd ios` を実行して、対応するプラットフォームのフォルダに移動します。
-4. `pod install` を実行して、必要なサードパーティライブラリをダウンロードします。
-5. Xcodeを起動し、`macos` または `ios` フォルダ内の `Runner.xcworkspace` を開き、設定（証明書やプロビジョニングプロファイルなど）を行います。
-6. 本番コンパイルを実行します。
+- macOS または Linux アプリケーションとしてビルドして実行する：`./build.sh`。
+- Android アプリケーションとしてビルドしてインストールする：`./build_apk.sh`。
 
-### Web向けの手動コンパイル
+### macOS または iOS 向けに手動でビルドする（macOS 上で操作する必要があります）
 
-1. 上記の「デバッグ」にある手順 1 から 5 までを実行します。
-2. `RD /S /Q build\web` または `rm -rf build/web` を使用して、前回のビルドで生成されたファイルを削除します。
+1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`./build_pre.sh` を実行すると、これらの手順を直接完了できます。
+2. ビルドコマンドを実行します（失敗する可能性がありますが、無視してかまいません）。
+   - macOS プログラムとしてビルドする：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+   - iOS プログラムとしてビルドする：`flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
+   - macOS App Store 向けのリリース版としてビルドする：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+   - iOS App Store 向けのリリース版としてビルドする：`flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+3. `cd macos` または `cd ios` を実行して、対応するプラットフォームフォルダーに移動します。
+4. `pod install` を実行して、必要なサードパーティ製ライブラリをダウンロードします。
+5. Xcode を起動し、`macos` または `ios` フォルダー内の `Runner.xcworkspace` を開いて設定します（証明書やプロビジョニングプロファイルなど）。
+6. 正式にビルドします。
+
+### Android 向けに手動ビルドする
+
+1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`build_pre.bat`（Windows）または `./build_pre.sh` を実行すると、これらの手順を直接完了できます。
+2. `RD /S /Q build\app`（Windows）または `rm -rf build/app` を使用して、前回のビルドで生成されたファイルを削除します。
+3. ビルドコマンドを実行します：
+   - apk インストールパッケージとしてビルド：`flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"`。
+   - Google Play 向けのリリース版としてビルド：`flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"`。
+4. 生成されたファイルを確認します：
+   - Windows：`DIR "build\app\outputs\flutter-apk"`。
+     - `ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"`
+     - `ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"`
+   - macOS、Linux：`ls "build/app/outputs/flutter-apk"`
+     - `ls -d "$PWD/build/app/outputs/flutter-apk/app-release.apk"`
+     - `ls -d "$PWD/build/app/outputs/bundle/release/app-release.aab"`
+
+### Web 向けに手動ビルドする
+
+1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`build_pre.bat`（Windows）または `./build_pre.sh` を実行すると、これらの手順を直接完了できます。
+2. `RD /S /Q build\web`（Windows）または `rm -rf build/web` を使用して、前回のビルドで生成されたファイルを削除します。
 3. `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` を使用してビルドします。
 
-- 古いバージョンのブラウザとの互換性が必要な場合は、`--wasm` を削除してください。
-- `"/EvernightBoard/"` は必要な URL のベースパスに変更できます。
+- 古いバージョンのブラウザーとの互換性が必要な場合は、`--wasm` を削除してください。
+- `"/EvernightBoard/"` は、必要な URL ルートパスに変更できます。
 
-- 旧バージョンのブラウザーとの互換性が必要な場合は、`--wasm` を削除してください。
-- Web サイトのルートディレクトリに配置しない場合は、`--base-href "/EvernightBoard/"` の `"/EvernightBoard/"` URL パスを編集してください。
+### Linux 向けに手動ビルドする（Linux 上で操作する必要があります）
+
+1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`./build_pre.sh` を実行すると、これらの手順を直接完了できます。
+2. `rm -rf build/linux` を使用して、前回のビルドで生成されたファイルを削除します。
+3. `flutter build linux --no-tree-shake-icons --dart-define-from-file="flavor/linux.json"` を使用してビルドします。
+4. 生成されたファイルを確認します：`ls "build/linux/x64/release/bundle"`
+   - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
+   - 実行時にコアダンプやその他の画面表示異常が発生する場合は、`LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"` を試してください。
 
 ## ライセンス
 

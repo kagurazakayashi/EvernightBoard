@@ -134,29 +134,26 @@ This program only uses permissions in the following scenarios, and you can disab
 ### Debugging
 
 1. Run `flutter clean` to clear the cache.
-2. Run `flutter pub get` to download the required third-party libraries.
-3. Run `generate_icons.bat` or `./generate_icons` to generate app icons of various specifications and styles.
+2. Run `flutter pub get` to download the required third-party packages.
+3. Run `generate_icons.bat` (Windows) or `./generate_icons.sh` to generate application icons in various sizes and styles.
 4. Run `dart run flutter_native_splash:create` to build the splash screen.
-5. Run `flutter gen-l10n` to build localization (l10n) texts.
+5. Run `flutter gen-l10n` to generate localized text.
 6. Run `dart run flutter_iconpicker:generate_packs --packs material` to prepare icon resources.
 7. Run `flutter run` to start debugging.
 
-If you need to edit the source code, you must complete steps 1 through 5 before starting the IDE.
+- If you need to edit the source code, you must complete steps 1 through 5 before launching the IDE.
+- If you need to build the project, you must complete steps 1 through 6 before executing the build command.
+  - You can run `build_pre.bat` (Windows) or `./build_pre.sh` to complete these steps directly.
 
-#### Manual Compilation Example
+### Editing Display Languages
 
-- Run `flutter build apk --no-tree-shake-icons` to compile the installation package for Android.
-- Run `flutter build aab --no-tree-shake-icons` to compile the release version for Android.
-
-### Edit Display Language
-
-1. Modify or create a new `lib/l10n/app_*.arb` file according to the format (`*` is the language code).
-2. The file is in JSON format. To add language text, simply set it as `"variableName": "new language text"`. Note:
-   1. Each language entry only requires this single line, e.g., `"textcolor": "Text Color",`. The following `"@textcolor": ...` section is not necessary.
-   2. Variable names must be as complete and consistent as in other language files.
-3. Run `dart l10n_metadata.dart` to automatically fill in the `"@..."` section for all language files.
-4. Run `flutter gen-l10n` to build the localized text.
-5. Continue with the "Debugging" steps mentioned above.
+1. Modify or create a new `lib/l10n/app_*.arb` file following the required format (`*` is the language code).
+2. This file is in JSON format. To add localized text, simply set it in the format `"variableName":"new localized text"`. Note:
+   1. Each localized text entry only needs this single line, for example `"textcolor": "文字顏色",`; the following `"@textcolor": ...` section is not required.
+   2. The variable names must be complete and consistent with those in other language files.
+3. Run `dart l10n_metadata.dart` to automatically complete the `"@..."` sections in all language files.
+4. Run `flutter gen-l10n` to generate localized text.
+5. Continue with the [Debugging](#debugging) steps above.
 
 ### Distribution Channel Differences
 
@@ -167,37 +164,77 @@ If you need to edit the source code, you must complete steps 1 through 5 before 
 
 If you want to distribute this application on app stores in China, you must have an ICP filing number and fill it in under `"cnICPfiling":""` for the corresponding platform. For details, please refer to the section about [Availability in China mainland in App Store Connect Help](https://developer.apple.com/help/app-store-connect/reference/app-information).
 
-### Compile for Windows (Action required in Windows)
+### Build on Windows
 
-- Compile as a Windows application and run: `build.bat`.
-  - msix installer package for Microsoft Store release: `dart.bat run msix:create`.
-  - exe installer package for local installation: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
-- Compile as an Android application and install: `build_apk.bat`.
+- Build as a Windows application and run it: `build.bat`.
+- Build as an Android application and install it: `build_apk.bat`.
 
-### Compile for macOS or Linux (Action required in macOS / Linux)
+#### Manually Build for Windows (must be performed on Windows)
 
-- Compile as a macOS or Linux application and run: `./build.sh`.
-- Compile as an Android application and install: `./build_apk.sh`.
+1. Run steps 1 through 6 in [Debug](#debug) above. You can run `build_pre.bat` to complete these steps directly.
+2. Use `RD /S /Q build\windows` to delete the files from the previous build.
+3. Run the build commands:
+   - Build as an exe program: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`.
+     - Create an exe installer for local installation: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
+   - Build a release version for Microsoft Store:
+     1. Build the exe program: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
+     2. Handle the NOTICES.Z warning: `DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     3. Create an msix installer for Microsoft Store publishing: `dart.bat run msix:create`.
+     4. You can use `Windows App Cert Kit` to validate the msix installer.
+4. View the generated files: `DIR "%CD%\build\windows\x64\runner\Release"`.
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
+   - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
 
-### Manually Compile for macOS or iOS (Action required in macOS)
+### Build on macOS or Linux
 
-1. Run steps 1 to 5 from the "Debug" section above.
-2. Execute the compilation command (this may fail; you can ignore it).
-    - macOS: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
-    - iOS: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
-3. Run `cd macos` or `cd ios` to enter the respective platform folder.
+- Build as a macOS or Linux application and run it: `./build.sh`.
+- Build as an Android application and install it: `./build_apk.sh`.
+
+### Manually Build for macOS or iOS (must be performed on macOS)
+
+1. Run steps 1 through 6 in [Debug](#debug) above. You can run `./build_pre.sh` to complete these steps directly.
+2. Run the build command. This may fail; you can ignore it.
+   - Build as a macOS program: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
+   - Build as an iOS program: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`
+   - Build a release version for macOS App Store: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+   - Build a release version for iOS App Store: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/appstore.json"`
+3. Run `cd macos` or `cd ios` to enter the corresponding platform folder.
 4. Run `pod install` to download the required third-party libraries.
-5. Launch Xcode and open `Runner.xcworkspace` in the `macos` or `ios` folder to configure settings (e.g., certificates and provisioning profiles).
-6. Perform the formal compilation.
+5. Launch Xcode, then open `Runner.xcworkspace` in the `macos` or `ios` folder for configuration, such as certificates and provisioning profiles.
+6. Perform the final build.
 
-### Manually Compile for Web
+### Manually Build for Android
 
-1. Run steps 1 through 5 in the "Debug" section above.
-2. Use `RD /S /Q build\web` or `rm -rf build/web` to delete the files from the previous build.
-3. Run `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` to build the project.
+1. Run steps 1 through 6 in [Debugging](#debugging) above. You can run `build_pre.bat` (Windows) or `./build_pre.sh` to complete these steps directly.
+2. Use `RD /S /Q build\app` (Windows) or `rm -rf build/app` to delete the files generated by the previous build.
+3. Run the build commands:
+   - Build an APK installer package: `flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"`.
+   - Build a release version for Google Play: `flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"`.
+4. Check the generated files:
+   - Windows: `DIR "build\app\outputs\flutter-apk"`.
+     - `ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"`
+     - `ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"`
+   - macOS, Linux: `ls "build/app/outputs/flutter-apk"`
+     - `ls -d "$PWD/build/app/outputs/flutter-apk/app-release.apk"`
+     - `ls -d "$PWD/build/app/outputs/bundle/release/app-release.aab"`
 
-- If compatibility with older browsers is required, remove `--wasm`.
-- You can change `"/EvernightBoard/"` to the required URL base path.
+### Manually Build for Web
+
+1. Run steps 1 through 6 in [Debugging](#debugging) above. You can run `build_pre.bat` (Windows) or `./build_pre.sh` to complete these steps directly.
+2. Use `RD /S /Q build\web` (Windows) or `rm -rf build/web` to delete the files generated by the previous build.
+3. Use `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` to build.
+
+- To support older browsers, remove `--wasm`.
+- You can change `"/EvernightBoard/"` to the required URL root path.
+
+### Manually Build for Linux (must be performed on Linux)
+
+1. Run steps 1 through 6 in [Debugging](#debugging) above. You can run `./build_pre.sh` to complete these steps directly.
+2. Use `rm -rf build/linux` to delete the files generated by the previous build.
+3. Use `flutter build linux --no-tree-shake-icons --dart-define-from-file="flavor/linux.json"` to build.
+4. Check the generated files: `ls "build/linux/x64/release/bundle"`
+   - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
+   - If a core dump or other display issue occurs when running, try `LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"`.
 
 ## License
 
