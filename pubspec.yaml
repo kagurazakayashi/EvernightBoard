@@ -172,9 +172,12 @@ msix_config:
   publisher_display_name: KagurazakaYashi
   identity_name: 58CB094E.EvernightBoard
   publisher: CN=50F20D8C-C40E-4B4D-99A8-42B6518D28AD
+  architecture: x64
   msix_version: 1.1.0.0
   logo_path: assets\appicon\launcher_icons.png
   build_windows: false
+  assets_directory: windows/msix_assets
+  capabilities: 'runFullTrust'
   store: true
   languages: "zh, zh-hant, en-US, ja"
   # install_certificate: false

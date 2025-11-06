@@ -9,6 +9,7 @@ android/.kotlin/sessions/kotlin-compiler-*.salive
 web/favicon.png
 web/icons/*.png
 web/splash/img/*.png
+windows/msix_assets
 windows/runner/resources/app_icon.ico
 icp.txt
 
