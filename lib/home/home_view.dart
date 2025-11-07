@@ -435,7 +435,9 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
         return Scaffold(
           backgroundColor: bgColor,
           appBar: _buildWebAppBar(),
-          bottomNavigationBar: bottomNavigationBarWidget,
+          bottomNavigationBar: bottomNavigationBarWidget != null
+              ? SafeArea(child: bottomNavigationBarWidget)
+              : null,
           body: body,
         );
       },
