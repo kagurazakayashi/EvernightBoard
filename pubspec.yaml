@@ -1,5 +1,5 @@
 name: evernight_board
-description: "EvernightBoard is an assistive tool for continuous communication via preset text and images when touch input is limited."
+description: "EvernightBoard is a display-assistive tool that prolongs your communication through preset images and text when both touchscreen access and verbal communication are limited."
 
 # 以下這一行可防止套件被意外發佈到 pub.dev。
 # 這通常用於私人套件。
@@ -76,7 +76,7 @@ flutter: # 3.41
   # 以下這一行確保應用程式包含 Material Icons 字型，
   # 讓你可以使用 Material Icons 類別中的圖示。
   uses-material-design: true
-  
+
   # 自動生成本地化程式碼 (搭配 intl)
   generate: true
 
@@ -171,14 +171,18 @@ msix_config:
   display_name: EvernightBoard
   publisher_display_name: KagurazakaYashi
   identity_name: 58CB094E.EvernightBoard
-  publisher: CN=50F20D8C-C40E-4B4D-99A8-42B6518D28AD
   architecture: x64
-  msix_version: 1.1.0.0
+  # msix_version: 1.1.0.0
   logo_path: assets\appicon\launcher_icons.png
   build_windows: false
   assets_directory: windows/msix_assets
-  capabilities: 'runFullTrust'
+  capabilities: "runFullTrust"
+  languages: "zh-Hans, zh-hant, en-US, ja"
+  dependencies_include: Microsoft.VCLibs.140.00
+  # -- Local::
+  # store: false
+  # install_certificate: true
+  # -- Microsoft Store::
   store: true
-  languages: "zh, zh-hant, en-US, ja"
-  # install_certificate: false
-  # capabilities: internetClient, location, microphone, webcam
+  publisher: CN=50F20D8C-C40E-4B4D-99A8-42B6518D28AD
+  install_certificate: false

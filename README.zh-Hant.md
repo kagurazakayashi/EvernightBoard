@@ -178,7 +178,7 @@
      - 建立用於本機安裝的 exe 安裝套件：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
    - 編譯為用於 Microsoft Store 的發行版：
      1. 編譯 exe 程式：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
-     2. 處理 NOTICES.Z 警告：`DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     2. 處理 NOTICES.Z 警告：`DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`。
      3. 建立用於 Microsoft Store 發佈的 msix 安裝套件：`dart.bat run msix:create`。
      4. 可以使用 `Windows App Cert Kit` 驗證該 msix 安裝套件。
 4. 查看產生的檔案：`DIR "%CD%\build\windows\x64\runner\Release"`。

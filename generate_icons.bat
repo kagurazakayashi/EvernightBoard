@@ -44,6 +44,8 @@ DEL /Q "ios\Runner\Assets.xcassets\AppIcon.appiconset\*.png" 2>NUL
 DEL /Q "web\favicon.png" 2>NUL
 DEL /Q "windows\runner\resources\app_icon.ico" 2>NUL
 DEL /Q "assets\appicon\*_*.png" 2>NUL
+DEL /Q "windows\msix_assets\BadgeLogo*.png" 2>NUL
+DEL /Q "mask.png" 2>NUL
 
 ECHO [OK] Old files cleaned.
 
@@ -143,12 +145,66 @@ IF ERRORLEVEL 1 (
     EXIT /B 1
 )
 
+ECHO [INFO] Creating monochromatic.png for Microsoft Store
+magick.exe "iconforeground.png" -resize "512x512!" -threshold 50%% -fill black -opaque white -fill white -opaque black -transparent black monochromatic.png
+IF ERRORLEVEL 1 (
+    ECHO [ERROR] Failed to generate monochromatic.png
+    EXIT /B 1
+)
+
 CD "..\..\" || (
     ECHO [ERROR] Failed to return to root directory.
     EXIT /B 1
 )
 
 ECHO [OK] Icon assets generated.
+
+REM =========================================================
+REM GENERATE MICROSOFT STORE BADGELOGO
+REM =========================================================
+
+ECHO [INFO] Generating Microsoft Store BadgeLogo assets...
+IF NOT EXIST "assets\appicon\monochromatic.png" (
+    ECHO [WARN] monochromatic.png not found, skipping BadgeLogo generation.
+    GOTO :badge_done
+)
+
+ECHO [INFO] Creating BadgeLogo base and scale variants from monochromatic.png...
+REM Microsoft Store requires RGBA (color-type 6) format with pure white (#FFFFFF) or transparent pixels.
+
+magick.exe "assets\appicon\monochromatic.png" -resize 24x24 -background none -gravity center -extent 24x24 -alpha extract -threshold 50%% "mask.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+magick.exe "mask.png" -define png:color-type=6 -channel RGB -evaluate set 100%% +channel "windows\msix_assets\BadgeLogo.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+DEL "mask.png"
+
+magick.exe "assets\appicon\monochromatic.png" -resize 30x30 -background none -gravity center -extent 30x30 -alpha extract -threshold 50%% "mask.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+magick.exe "mask.png" -define png:color-type=6 -channel RGB -evaluate set 100%% +channel "windows\msix_assets\BadgeLogo.scale-125.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+DEL "mask.png"
+
+magick.exe "assets\appicon\monochromatic.png" -resize 36x36 -background none -gravity center -extent 36x36 -alpha extract -threshold 50%% "mask.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+magick.exe "mask.png" -define png:color-type=6 -channel RGB -evaluate set 100%% +channel "windows\msix_assets\BadgeLogo.scale-150.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+DEL "mask.png"
+
+magick.exe "assets\appicon\monochromatic.png" -resize 48x48 -background none -gravity center -extent 48x48 -alpha extract -threshold 50%% "mask.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+magick.exe "mask.png" -define png:color-type=6 -channel RGB -evaluate set 100%% +channel "windows\msix_assets\BadgeLogo.scale-200.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+DEL "mask.png"
+
+magick.exe "assets\appicon\monochromatic.png" -resize 96x96 -background none -gravity center -extent 96x96 -alpha extract -threshold 50%% "mask.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+magick.exe "mask.png" -define png:color-type=6 -channel RGB -evaluate set 100%% +channel "windows\msix_assets\BadgeLogo.scale-400.png"
+IF ERRORLEVEL 1 GOTO :badge_error
+DEL "mask.png"
+
+ECHO [OK] BadgeLogo assets generated with white foreground and transparent background.
+
+:badge_done
 
 REM =========================================================
 REM RUN FLUTTER TOOL

@@ -171,17 +171,17 @@ If you want to distribute this application on app stores in China, you must have
 
 #### Manually Build for Windows (must be performed on Windows)
 
-1. Run steps 1 through 6 in [Debug](#debug) above. You can run `build_pre.bat` to complete these steps directly.
+1. Run steps 1 through 6 in [Debugging](#debugging) above. You can run `build_pre.bat` to complete these steps directly.
 2. Use `RD /S /Q build\windows` to delete the files from the previous build.
 3. Run the build commands:
    - Build as an exe program: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`.
      - Create an exe installer for local installation: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
    - Build a release version for Microsoft Store:
      1. Build the exe program: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
-     2. Handle the NOTICES.Z warning: `DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
-     3. Create an msix installer for Microsoft Store publishing: `dart.bat run msix:create`.
+     2. Handle the NOTICES.Z warning: `DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"` .
+     3. Create an msix installer for Microsoft Store publishing: `dart.bat run msix:create` .
      4. You can use `Windows App Cert Kit` to validate the msix installer.
-4. View the generated files: `DIR "%CD%\build\windows\x64\runner\Release"`.
+4. View the generated files: `DIR "%CD%\build\windows\x64\runner\Release"` .
    - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
    - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
 
@@ -192,7 +192,7 @@ If you want to distribute this application on app stores in China, you must have
 
 ### Manually Build for macOS or iOS (must be performed on macOS)
 
-1. Run steps 1 through 6 in [Debug](#debug) above. You can run `./build_pre.sh` to complete these steps directly.
+1. Run steps 1 through 6 in [Debugging](#debugging) above. You can run `./build_pre.sh` to complete these steps directly.
 2. Run the build command. This may fail; you can ignore it.
    - Build as a macOS program: `flutter build macos --no-tree-shake-icons --dart-define-from-file="flavor/macos.json"`
    - Build as an iOS program: `flutter build ios --no-tree-shake-icons --dart-define-from-file="flavor/ios.json"`

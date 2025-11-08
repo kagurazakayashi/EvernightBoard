@@ -11,7 +11,7 @@ web/icons/*.png
 web/splash/img/*.png
 windows/msix_assets
 windows/runner/resources/app_icon.ico
-icp.txt
+WindowsAppCertKit.xml
 
 # Created by https://www.toptal.com/developers/gitignore/api/c,c++,dart,java,linux,macos,swift,xcode,gradle,kotlin,android,flutter,windows,cocoapods,objective-c,androidstudio,visualstudiocode,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,dart,java,linux,macos,swift,xcode,gradle,kotlin,android,flutter,windows,cocoapods,objective-c,androidstudio,visualstudiocode,intellij

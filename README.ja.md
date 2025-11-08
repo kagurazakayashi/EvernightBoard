@@ -177,8 +177,8 @@
    - exe プログラムとしてビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`。
      - ローカルインストール用の exe インストーラーを作成する：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
    - Microsoft Store 向けのリリース版としてビルドする：
-     1. exe プログラムをビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
-     2. NOTICES.Z 警告に対応する：`DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     1. exe プログラムをビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`。
+     2. NOTICES.Z 警告に対応する：`DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`。
      3. Microsoft Store 公開用の msix インストーラーを作成する：`dart.bat run msix:create`。
      4. `Windows App Cert Kit` を使用して、この msix インストーラーを検証できます。
 4. 生成されたファイルを確認する：`DIR "%CD%\build\windows\x64\runner\Release"`。

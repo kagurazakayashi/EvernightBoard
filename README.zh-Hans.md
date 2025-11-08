@@ -177,8 +177,8 @@
    - 编译为 exe 程序: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"` 。
      - 创建用于 本地安装 的 exe 安装包: `"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
    - 编译为用于 Microsoft Store 的发布版:
-     1. 编译 exe 程序: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
-     2. 处理 NOTICES.Z 警告: `DEL "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`
+     1. 编译 exe 程序: `flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"` 。
+     2. 处理 NOTICES.Z 警告: `DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"` 。
      3. 创建用于 Microsoft Store 发布的 msix 安装包: `dart.bat run msix:create` 。
      4. 可以使用 `Windows App Cert Kit` 验证该 msix 安装包。
 4. 查看生成的文件: `DIR "%CD%\build\windows\x64\runner\Release"` 。
