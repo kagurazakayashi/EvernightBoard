@@ -52,6 +52,9 @@ case "$TARGET" in
       echo "Please check your Linux bundle output directory."
       exit 1
     fi
+    cp "$PROJECT_ROOT/linux_menu.sh" "$(dirname "$EXECUTABLE_PATH")"
+    cp "$PROJECT_ROOT/assets/appicon/launcher_round_icons.png" "$(dirname "$EXECUTABLE_PATH")/icon.png"
+    echo "Copied linux_menu.sh and icon.png to the bundle directory."
     ;;
   windows)
     EXECUTABLE_PATH="$PROJECT_ROOT/build/windows/x64/runner/Release/${APP_NAME}.exe"
@@ -68,6 +71,14 @@ case "$TARGET" in
     exit 1
     ;;
 esac
+
+echo "Copying LICENSE and markdown files to build directory..."
+TARGET_DIR=$(dirname "$EXECUTABLE_PATH")
+shopt -s nullglob
+for f in "$PROJECT_ROOT"/LICENSE* "$PROJECT_ROOT"/*.md; do
+  cp "$f" "$TARGET_DIR/"
+done
+shopt -u nullglob
 
 echo "Build completed successfully."
 echo "Executable path: $EXECUTABLE_PATH"
