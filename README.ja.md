@@ -149,7 +149,7 @@
 
 1. `lib/l10n/app_*.arb`（`*` は言語コード）を変更するか、指定形式に従って新規作成します。
 2. このファイルは JSON 形式です。言語テキストを追加するには、`"変数名":"新しい言語テキスト"` の形式で設定するだけです。注意：
-   1. 各言語テキストにはこの 1 行だけが必要です。例：`"textcolor": "文字顏色",`。後続の `"@textcolor": ...` 部分は不要です。
+   1. 各言語テキストにはこの 1 行だけが必要です。例：`"textcolor": "文字顏色",` 。後続の `"@textcolor": ...` 部分は不要です。
    2. 変数名は、他の言語ファイルと同じようにすべて揃っている必要があります。
 3. `dart l10n_metadata.dart` を実行して、すべての言語ファイルの `"@..."` 部分を自動補完します。
 4. `flutter gen-l10n` を実行して多言語テキストを生成します。
@@ -166,29 +166,29 @@
 
 ### Windows でビルドする
 
-- Windows アプリケーションとしてビルドして実行する：`build.bat`。
-- Android アプリケーションとしてビルドしてインストールする：`build_apk.bat`。
+- Windows アプリケーションとしてビルドして実行する：`build.bat` 。
+- Android アプリケーションとしてビルドしてインストールする：`build_apk.bat` 。
 
 #### Windows 向けに手動でビルドする（Windows 上で操作する必要があります）
 
 1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`build_pre.bat` を実行すると、これらの手順を直接完了できます。
 2. `RD /S /Q build\windows` を使用して、前回ビルドしたファイルを削除します。
 3. ビルドコマンドを実行します：
-   - exe プログラムとしてビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`。
+   - exe プログラムとしてビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"` 。
      - ローカルインストール用の exe インストーラーを作成する：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
    - Microsoft Store 向けのリリース版としてビルドする：
-     1. exe プログラムをビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`。
-     2. NOTICES.Z 警告に対応する：`DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`。
-     3. Microsoft Store 公開用の msix インストーラーを作成する：`dart.bat run msix:create`。
+     1. exe プログラムをビルドする：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"` 。
+     2. NOTICES.Z 警告に対応する：`DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"` 。
+     3. Microsoft Store 公開用の msix インストーラーを作成する：`dart.bat run msix:create` 。
      4. `Windows App Cert Kit` を使用して、この msix インストーラーを検証できます。
-4. 生成されたファイルを確認する：`DIR "%CD%\build\windows\x64\runner\Release"`。
+4. 生成されたファイルを確認する：`DIR "%CD%\build\windows\x64\runner\Release"` 。
    - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
    - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
 
 ### macOS または Linux でビルドする
 
-- macOS または Linux アプリケーションとしてビルドして実行する：`./build.sh`。
-- Android アプリケーションとしてビルドしてインストールする：`./build_apk.sh`。
+- macOS または Linux アプリケーションとしてビルドして実行する：`./build.sh` 。
+- Android アプリケーションとしてビルドしてインストールする：`./build_apk.sh` 。
 
 ### macOS または iOS 向けに手動でビルドする（macOS 上で操作する必要があります）
 
@@ -208,10 +208,10 @@
 1. 上記の [デバッグ](#デバッグ) の手順 1 から手順 6 までを実行します。`build_pre.bat`（Windows）または `./build_pre.sh` を実行すると、これらの手順を直接完了できます。
 2. `RD /S /Q build\app`（Windows）または `rm -rf build/app` を使用して、前回のビルドで生成されたファイルを削除します。
 3. ビルドコマンドを実行します：
-   - apk インストールパッケージとしてビルド：`flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"`。
-   - Google Play 向けのリリース版としてビルド：`flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"`。
+   - apk インストールパッケージとしてビルド：`flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"` 。
+   - Google Play 向けのリリース版としてビルド：`flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"` 。
 4. 生成されたファイルを確認します：
-   - Windows：`DIR "build\app\outputs\flutter-apk"`。
+   - Windows：`DIR "build\app\outputs\flutter-apk"` 。
      - `ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"`
      - `ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"`
    - macOS、Linux：`ls "build/app/outputs/flutter-apk"`
@@ -235,6 +235,48 @@
 4. 生成されたファイルを確認します：`ls "build/linux/x64/release/bundle"`
    - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
    - 実行時にコアダンプやその他の画面表示異常が発生する場合は、`LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"` を試してください。
+
+### スタートメニュー項目とデスクトップショートカットの作成 (Windows または Linux での操作が必要)
+
+`.\shortcuts.ps1` (Windows) または `./shortcuts.sh` (Linux) を使用して、スタートメニュー項目やデスクトップショートカットを作成できます。
+
+1. スクリプトを実行する前に、以下のファイルが **同一のフォルダー** 内にあることを確認してください：
+   - **Linux**: `shortcuts.sh` (スクリプト)、`icon.png` (アイコンファイル)、`evernight_board` (実行ファイル)。
+   - **Windows**: `shortcuts.ps1` (スクリプト)、`evernight_board.exe` (実行ファイル)。
+2. スクリプトに実行権限を付与する
+   - **Linux**: 実行前にスクリプトに実行権限を付与してください: `chmod +x shortcuts.sh` 。
+   - **Windows**: 実行前に PowerShell スクリプトの実行権限が有効であることを確認してください: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` 。
+
+#### ショートカットスクリプトの使用方法
+
+コマンド形式: `./スクリプト名 [アクション] [ターゲット] [モード]` 。
+
+1. アクション
+   - `add` (または `a`): ショートカットを作成します。
+   - `remove` (または `r`): ショートカットを削除します。
+2. ターゲット
+   - `menu` (または `m`): システムアプリケーションメニュー (デフォルト)。
+   - `desktop` (または `d`): デスクトップショートカット。
+3. モード
+   - `--user` (または `-u`): 現在のユーザーのみを対象とする (デフォルト)。
+   - `--system` (または `-s`): システム全体にインストールする (管理者/Root 権限が必要)。
+
+#### ショートカットスクリプトのコマンド例
+
+Linux の `sh` 例:
+
+- **現在のユーザー**に**メニュー項目**を追加する: `./shortcuts.sh add` 。
+- **システム全体**に**メニュー項目**を追加する: `sudo ./shortcuts.sh add menu --system` 。
+- **現在のユーザー**に**メニュー項目**と**デスクトップショートカット**を同時追加する: `./shortcuts.sh add menu desktop` 。
+- **システム全体**に**メニュー項目**と**デスクトップショートカット**を同時追加する: `sudo ./shortcuts.sh add menu desktop --system` 。
+- 現在のユーザーのメニュー項目を**削除**する: `./shortcuts.sh remove` 。
+- システム全体のメニュー項目とデスクトップショートカットを**削除**する: `sudo ./shortcuts.sh remove menu --system` 。
+
+Windows の `Windows PowerShell` 例:
+
+- 上記の例の `./shortcuts.sh` を `.\shortcuts.ps1` に置き換えてください。
+- 上記の例の `sudo ./shortcuts.sh` を **管理者として実行** したウィンドウでの `.\shortcuts.ps1` に置き換えてください。
+- 例: `.\shortcuts.ps1 add menu desktop --system` 。
 
 ## ライセンス
 

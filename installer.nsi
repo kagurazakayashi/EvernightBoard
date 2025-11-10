@@ -236,19 +236,7 @@ Section "Install"
 
     ; 遞迴加入 Flutter Windows Release 輸出內容
     ; 也就是實際應用程式的執行檔與相關 DLL / 資源
-    File /r "build\windows\x64\runner\Release\*.*"
-
-    ; 額外把多語系文件一起打包到安裝目錄
-    File "PRIVACY.ja.md"
-    File "PRIVACY.md"
-    File "PRIVACY.zh-Hans.md"
-    File "PRIVACY.zh-Hant.md"
-    File "README.ja.md"
-    File "README.md"
-    File "README.zh-Hans.md"
-    File "README.zh-Hant.md"
-    File "LICENSE"
-    File "LICENSE.zh-CN"
+    File /r "build\windows\x64\runner\Release\*"
 
     ; 產生解除安裝程式
     WriteUninstaller "$INSTDIR\${APP_NAME}_Uninstall.exe"

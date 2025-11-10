@@ -166,29 +166,29 @@
 
 ### 在 Windows 中編譯
 
-- 編譯為 Windows 應用程式並執行：`build.bat`。
-- 編譯為 Android 應用程式並安裝：`build_apk.bat`。
+- 編譯為 Windows 應用程式並執行：`build.bat` 。
+- 編譯為 Android 應用程式並安裝：`build_apk.bat` 。
 
 #### 手動編譯為 Windows（需要在 Windows 中操作）
 
 1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `build_pre.bat` 直接完成這些步驟。
 2. 使用 `RD /S /Q build\windows` 刪除上次編譯的檔案。
 3. 執行編譯命令：
-   - 編譯為 exe 程式：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"`。
+   - 編譯為 exe 程式：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/windows.json"` 。
      - 建立用於本機安裝的 exe 安裝套件：`"%ProgramFiles(x86)%\NSIS\makensis.exe" installer.nsi`
    - 編譯為用於 Microsoft Store 的發行版：
      1. 編譯 exe 程式：`flutter.bat build windows --no-tree-shake-icons --dart-define-from-file="flavor/msstore.json"`
-     2. 處理 NOTICES.Z 警告：`DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"`。
-     3. 建立用於 Microsoft Store 發佈的 msix 安裝套件：`dart.bat run msix:create`。
+     2. 處理 NOTICES.Z 警告：`DEL /Q "build\flutter_assets\*.Z" "build\windows\x64\runner\Release\data\flutter_assets\*.Z"` 。
+     3. 建立用於 Microsoft Store 發佈的 msix 安裝套件：`dart.bat run msix:create` 。
      4. 可以使用 `Windows App Cert Kit` 驗證該 msix 安裝套件。
-4. 查看產生的檔案：`DIR "%CD%\build\windows\x64\runner\Release"`。
+4. 查看產生的檔案：`DIR "%CD%\build\windows\x64\runner\Release"` 。
    - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.exe"`
    - `ECHO "%CD%\build\windows\x64\runner\Release\evernight_board.msix"`
 
 ### 在 macOS 或 Linux 中編譯
 
-- 編譯為 macOS 或 Linux 應用程式並執行：`./build.sh`。
-- 編譯為 Android 應用程式並安裝：`./build_apk.sh`。
+- 編譯為 macOS 或 Linux 應用程式並執行：`./build.sh` 。
+- 編譯為 Android 應用程式並安裝：`./build_apk.sh` 。
 
 ### 手動編譯為 macOS 或 iOS（需要在 macOS 中操作）
 
@@ -208,10 +208,10 @@
 1. 執行上方 [偵錯](#偵錯) 中的第 1 步到第 6 步。你可以執行 `build_pre.bat`（Windows）或 `./build_pre.sh` 直接完成這些步驟。
 2. 使用 `RD /S /Q build\app`（Windows）或 `rm -rf build/app` 刪除上次編譯產生的檔案。
 3. 執行編譯命令：
-   - 編譯為 apk 安裝套件：`flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"`。
-   - 編譯為用於 Google Play 的發布版本：`flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"`。
+   - 編譯為 apk 安裝套件：`flutter build apk --no-tree-shake-icons --dart-define-from-file="flavor/android.json"` 。
+   - 編譯為用於 Google Play 的發布版本：`flutter build aab --no-tree-shake-icons --dart-define-from-file="flavor/googleplay.json"` 。
 4. 檢視產生的檔案：
-   - Windows：`DIR "build\app\outputs\flutter-apk"`。
+   - Windows：`DIR "build\app\outputs\flutter-apk"` 。
      - `ECHO "%CD%\build\app\outputs\flutter-apk\app-release.apk"`
      - `ECHO "%CD%\build\app\outputs\bundle\release\app-release.aab"`
    - macOS、Linux：`ls "build/app/outputs/flutter-apk"`
@@ -224,7 +224,7 @@
 2. 使用 `RD /S /Q build\web`（Windows）或 `rm -rf build/web` 刪除上次編譯產生的檔案。
 3. 使用 `flutter build web --wasm --no-tree-shake-icons --base-href "/EvernightBoard/" --dart-define-from-file="flavor/web.json"` 進行編譯。
 
-- 如需相容舊版瀏覽器，請移除 `--wasm`。
+- 如需相容舊版瀏覽器，請移除 `--wasm` 。
 - 可以將 `"/EvernightBoard/"` 改為所需的 URL 根路徑。
 
 ### 手動編譯為 Linux（需要在 Linux 中操作）
@@ -234,7 +234,49 @@
 3. 使用 `flutter build linux --no-tree-shake-icons --dart-define-from-file="flavor/linux.json"` 進行編譯。
 4. 檢視產生的檔案：`ls "build/linux/x64/release/bundle"`
    - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
-   - 如果執行時顯示傾印或其他畫面異常，請嘗試 `LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"`。
+   - 如果執行時顯示傾印或其他畫面異常，請嘗試 `LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"` 。
+
+### 建立啟動或開始功能表項目和桌面捷徑 (需要在 Windows 或 Linux 中操作)
+
+你可以使用 `.\shortcuts.ps1` (Windows) 或 `./shortcuts.sh` (Linux) 建立啟動或開始功能表項目和桌面捷徑。
+
+1. 在執行指令碼前，請確保以下檔案位於 **同一個資料夾** 中：
+   - **Linux**: `shortcuts.sh` (指令碼)、`icon.png` (圖示檔案)、`evernight_board` (執行檔)。
+   - **Windows**: `shortcuts.ps1` (指令碼)、`evernight_board.exe` (執行檔)。
+2. 賦予指令碼執行權限
+   - **Linux**: 執行前請先賦予指令碼執行權限: `chmod +x shortcuts.sh` 。
+   - **Windows**: 執行前請確保已開啟 PowerShell 指令碼執行權限: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` 。
+
+#### 捷徑指令碼的使用方式
+
+指令格式: `./指令碼名稱 [動作] [目標] [模式]` 。
+
+1. 動作
+   - `add` (或 `a`): 建立捷徑。
+   - `remove` (或 `r`): 移除捷徑。
+2. 目標
+   - `menu` (或 `m`): 系統應用程式功能表 (預設值)。
+   - `desktop` (或 `d`): 桌面捷徑。
+3. 模式
+   - `--user` (或 `-u`): 僅針對目前使用者 (預設值)。
+   - `--system` (或 `-s`): 全系統安裝 (需具備管理員/Root 權限)。
+
+#### 捷徑指令碼的指令範例
+
+Linux 的 `sh` 範例:
+
+- 為**目前使用者**新增**功能表項目**: `./shortcuts.sh add` 。
+- **全系統**新增**功能表項目**: `sudo ./shortcuts.sh add menu --system` 。
+- 為**目前使用者**同時新增**功能表項目**與**桌面捷徑**: `./shortcuts.sh add menu desktop` 。
+- **全系統**新增**功能表項目**與**桌面捷徑**: `sudo ./shortcuts.sh add menu desktop --system` 。
+- **移除**目前使用者的功能表項目: `./shortcuts.sh remove` 。
+- 全系統**移除**功能表項目與桌面捷徑: `sudo ./shortcuts.sh remove menu --system` 。
+
+Windows 的 `Windows PowerShell` 範例:
+
+- 把上述範例的 `./shortcuts.sh` 改成 `.\shortcuts.ps1` 。
+- 把上述範例的 `sudo ./shortcuts.sh` 改成 **以管理員身分執行** 的視窗中的 `.\shortcuts.ps1` 。
+- 範例: `.\shortcuts.ps1 add menu desktop --system` 。
 
 ## 授權條款
 

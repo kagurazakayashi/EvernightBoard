@@ -236,6 +236,48 @@
    - `ls -d "$PWD/build/linux/x64/release/bundle/evernight_board"`
    - 如果运行时显示出现倾倒或其他画面异常，请尝试 `LIBGL_ALWAYS_SOFTWARE=1 "$PWD/build/linux/x64/release/bundle/evernight_board"` 。
 
+### 建立启动或开始菜单项和桌面快捷方式 (需要在 Windows 或 Linux 中操作)
+
+你可以使用 `.\shortcuts.ps1` (Windows) 或 `./shortcuts.sh` (Linux) 建立启动或开始菜单项和桌面快捷方式。
+
+1. 在运行脚本前，请确保以下文件位于 **同一个文件夹** 中：
+   - **Linux**: `shortcuts.sh` (脚本)、`icon.png` (图标文件)、`evernight_board` (执行文件)。
+   - **Windows**: `shortcuts.ps1` (脚本)、`evernight_board.exe` (执行文件)。
+2. 赋予脚本执行权限
+   - **Linux**: 运行前请先赋予脚本执行权限: `chmod +x shortcuts.sh` 。
+   - **Windows**: 运行前请确保已开启 PowerShell 脚本运行权限: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` 。
+
+#### 快捷方式脚本的使用方式
+
+命令格式: `./脚本名称 [动作] [目标] [模式]` 。
+
+1. 动作
+   - `add` (或 `a`): 创建快捷方式。
+   - `remove` (或 `r`): 移除快捷方式。
+2. 目标
+   - `menu` (或 `m`): 系统应用程序菜单 (默认值)。
+   - `desktop` (或 `d`): 桌面快捷方式。
+3. 模式
+   - `--user` (或 `-u`): 仅针对当前用户 (默认值)。
+   - `--system` (或 `-s`): 全系统安装 (需具备管理员/Root 权限)。
+
+#### 快捷方式脚本的命令示例
+
+Linux 的 `sh` 示例:
+
+- 为**当前用户**添加**菜单项**: `./shortcuts.sh add` 。
+- **全系统**添加**菜单项**: `sudo ./shortcuts.sh add menu --system` 。
+- 为**当前用户**同时添加**菜单项**与**桌面快捷方式**: `./shortcuts.sh add menu desktop` 。
+- **全系统**添加**菜单项**与**桌面快捷方式**: `sudo ./shortcuts.sh add menu desktop --system` 。
+- **移除**当前用户的菜单项: `./shortcuts.sh remove` 。
+- 全系统**移除**菜单项与桌面快捷方式: `sudo ./shortcuts.sh remove menu --system` 。
+
+Windows 的 `Windows PowerShell` 示例:
+
+- 把上述示例的 `./shortcuts.sh` 改成 `.\shortcuts.ps1` 。
+- 把上述示例的 `sudo ./shortcuts.sh` 改成 **以管理员身份运行**的窗口的 `.\shortcuts.ps1` 。
+- 示例: `.\shortcuts.ps1 add menu desktop --system` 。
+
 ## 许可协议
 
 ```LICENSE

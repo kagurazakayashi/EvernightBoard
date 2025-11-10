@@ -6,11 +6,11 @@
 - 以下所有软件包均需要 64 位处理器。
 - 适用于 iOS 的 .ipa 程序的额外说明
   - 该程序包含 Ad-Hoc 签名，在安装前需要使用你自己的签名重新签名才能安装。
-- 适用于 macOS 的 .app 程序的额外说明
+- 适用于 macOS 的额外说明
   - 该程序在 Apple silicon 和 Intel 处理器中均可使用。
   - 该程序包含正式签名，可以直接运行。但不确保签名始终有效，如果遇到安全阻止或者启动时崩溃，请尝试使用本机重签，命令是:
     - `codesign --force --deep --sign - evernight_board.app`
-- 适用于 Linux 的程序的额外说明
+- 适用于 Linux 的额外说明
   - 请先使用 `chmod +x ./evernight_board` 给予执行权限。
   - 如果显示出现倾倒，请尝试 `LIBGL_ALWAYS_SOFTWARE=1 ./evernight_board` 。
 
@@ -64,13 +64,25 @@
 ## v1.1.0
 
 - 有关该版本的使用说明，请参见源代码压缩包中的 README(en/ja/zh-Hans/zh-Hant).md 或应用程序内的“使用说明”。
-- 有关下载和启动程序的注意事项，请参考 `v1.0.0` 的描述。
+- 有关下载和启动程序的注意事项，请参考 `v1.0.0` 的描述。以下是对这些描述的补充说明：
+- 适用于 Windows 的额外说明
+  - 如果你不想通过安装程序安装，可以使用解压缩软件直接解压缩安装包到需要的地方即可。
+- 适用于 Linux 的额外说明
+  - 如果需要创建程序菜单项或者桌面快捷方式，请运行 `shortcuts.sh` 。
 
-- For usage instructions regarding this version, please refer to README(en/ja/zh-Hans/zh-Hant).md in the source code archive or the "Usage Instructions" within the application.
-- For notes regarding downloading and launching the program, please refer to the description of `v1.0.0`.
+- For instructions regarding this version, please refer to `README(en/ja/zh-Hans/zh-Hant).md` in the source code archive or the "Instructions" within the application.
+- For notes on downloading and launching the program, please refer to the description of `v1.0.0`. The following are supplementary notes to those descriptions:
+- Additional notes for Windows
+  - If you do not wish to use the installer, you can simply use decompression software to extract the installation package directly to your desired location.
+- Additional notes for Linux
+  - To create program menu items or desktop shortcuts, please run `shortcuts.sh`.
 
-- 本バージョンの使用説明については、ソースコード圧縮パッケージ内の README(en/ja/zh-Hans/zh-Hant).md またはアプリ内の「使用説明」をご参照ください。
-- プログラムのダウンロードおよび起動に関する注意事項については、`v1.0.0` の説明をご参照ください。
+- このバージョンの使用方法については、ソースコードのアーカイブに含まれる `README(en/ja/zh-Hans/zh-Hant).md` またはアプリケーション内の「使用説明」をご参照ください。
+- プログラムのダウンロードと起動に関する注意事項については、`v1.0.0` の説明をご参照ください。以下は、それらの説明に対する補足事項です。
+- Windows に関する補足事項
+  - インストーラーによるインストールを行いたくない場合は、解凍ソフトを使用してインストールパッケージを任意の場所に直接展開してください。
+- Linux に関する補足事項
+  - プログラムのメニュー項目やデスクトップショートカットを作成する必要がある場合は、`shortcuts.sh` を実行してください。
 
 **新增功能**  **New Features**  **新機能**
 
@@ -78,13 +90,16 @@
 - 适配操作系统的“无障碍”功能。
 - 在 TalkBack 和 VoiceOver 启用时，暂停导航栏的自动移动位置功能。
 - 在某些功能被禁用时，显示提示信息并说明原因。
+- 适配新版本系统。
 
-- Fixed an issue where the language settings would revert to "Auto" upon restarting the application after a language had been manually specified.
-- Adapted to the operating system's accessibility features.
-- Paused the navigation bar's auto-positioning feature when TalkBack or VoiceOver is enabled.
-- Displayed prompt messages and explained the reasons when certain features are disabled.
+- Fixed an issue where the language setting would revert to "Auto" upon restarting the program after being manually specified.
+- Adapted to the operating system's "Accessibility" features.
+- Paused the navigation bar's automatic positioning feature when TalkBack or VoiceOver is enabled.
+- Displays prompt messages explaining the reason when certain features are disabled.
+- Adapted for newer operating system versions.
 
-- 言語を手動で指定した後、アプリを再起動すると「自動」に戻ってしまう問題を修正しました。
-- オペレーティングシステムの「アクセシビリティ」機能に対応。
-- TalkBack または VoiceOver が有効な場合、ナビゲーションバーの自動位置移動機能を一時停止。
-- 特定の機能が無効になっている場合に、ヒントメッセージを表示してその理由を説明。
+- 言語を手動で指定した後、プログラムを再起動すると「自動」に戻ってしまう問題を修正しました。
+- オペレーティングシステムの「アクセシビリティ」機能に対応しました。
+- TalkBack または VoiceOver が有効な場合、ナビゲーションバーの自動位置移動機能を一時停止するようにしました。
+- 特定の機能が無効化されている際に、プロンプトを表示してその理由を説明するようにしました。
+- 新しいバージョンの OS に対応しました。

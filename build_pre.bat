@@ -1,6 +1,10 @@
-DEL flutter_*.log
+if exist "flutter_*.log" (
+    DEL "flutter_*.log"
+)
 CALL flutter.bat clean
-RD /S /Q build
+if exist "build" (
+    RD /S /Q build
+)
 CALL flutter.bat pub get
 CALL generate_icons.bat
 CALL dart.bat run flutter_native_splash:create

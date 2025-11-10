@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# @file         linux_menu.sh
+# @file         shortcuts.sh
 # @brief        長夜錦書 (EvernightBoard) Linux 桌面入口管理工具
 # @description  此腳本用於管理「長夜錦書」在 Linux 系統中的 .desktop 檔案。
 #               支援新增/刪除「應用程式選單」與「桌面快捷方式」，並具備多語言偵測功能。
