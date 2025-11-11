@@ -249,11 +249,9 @@ mixin HomeControllerData on ChangeNotifier {
       debugPrint('[HomeControllerData] 清除資料時發生例外：$e');
     } finally {
       // 無論成功與否，都嘗試重啟應用程式（如果允許立即重啟）
-      if (restartImmediately) {
+      if (restartImmediately && context.mounted) {
         debugPrint('[HomeControllerData] 應用程式重啟');
-        RestartWidget.restartApp(
-          context,
-        ); // ignore: use_build_context_synchronously
+        RestartWidget.restartApp(context);
       } else {
         debugPrint('[HomeControllerData] 跳過立即重啟，由呼叫者負責後續重啟');
       }

@@ -96,19 +96,16 @@ mixin SettingsDialogsMixin on State<SettingsView> {
                           setExitFlag(false); // 設定 _isExit 為 false，避免流程直接結束。
                           // 等待退出動畫完成（畫面全黑）
                           await exitController.forward();
-                          // 清除資料但不立即重啟，使用當前上下文
-                          final currentContext = this.context;
+                          if (!mounted) return;
+                          // 清除資料但不立即重啟
                           await widget.controller.clearAllData(
-                            currentContext,
+                            this.context,
                             restartImmediately: false,
-                          ); // ignore: use_build_context_synchronously
+                          );
+                          if (!mounted) return;
                           // 重啟應用程式（對話框會自動關閉）
                           debugPrint('[_SettingsViewState] 動畫完成，重啟應用程式');
-                          if (mounted) {
-                            RestartWidget.restartApp(
-                              currentContext,
-                            ); // ignore: use_build_context_synchronously
-                          }
+                          RestartWidget.restartApp(this.context);
                         },
                         child: Text(
                           t.ok,
