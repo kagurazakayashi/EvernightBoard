@@ -278,6 +278,23 @@ Windows `Windows PowerShell` examples:
 - Change `sudo ./shortcuts.sh` in the examples above to `.\shortcuts.ps1` executed in an **Run as Administrator** window.
 - Example: `.\shortcuts.ps1 add menu desktop --system` .
 
+### Unit Testing
+
+- Run all tests: `flutter test`
+- Run a single test file: `flutter test test/home_item_test.dart`
+- Run and display detailed output: `flutter test --reporter expanded`
+- Run tests and generate coverage report: `flutter test --coverage`
+- View coverage (requires lcov to be installed): `genhtml coverage/lcov.info -o coverage/html`
+
+Test File Manifest:
+
+- `test/home_item_test.dart` - Full testing of the HomeItem model (toJson, fromJson, copyWith, serialization round-trip)
+- `test/home_controller_test.dart` - HomeController tests (navigation, index switching, language switching, settings, color utilities)
+- `test/file_service_test.dart` - FileService tests (boundary conditions, invalid input handling)
+- `test/data_export_service_test.dart` - DataExportService tests (import/export cancellation scenarios)
+- `test/restart_widget_test.dart` - RestartWidget component tests (rebuild functionality)
+- `test/snack_bar_utils_test.dart` - SnackBarUtils component tests (success/error prompts, clearing previous ones)
+
 ## License
 
 ```LICENSE

@@ -278,6 +278,23 @@ Windows の `Windows PowerShell` 例:
 - 上記の例の `sudo ./shortcuts.sh` を **管理者として実行** したウィンドウでの `.\shortcuts.ps1` に置き換えてください。
 - 例: `.\shortcuts.ps1 add menu desktop --system` 。
 
+### ユニットテスト
+
+- すべてのテストを実行: `flutter test`
+- 単一のテストファイルを実行: `flutter test test/home_item_test.dart`
+- 実行して詳細な出力を表示: `flutter test --reporter expanded`
+- テストを実行してカバレッジレポートを生成: `flutter test --coverage`
+- カバレッジを確認する (事前に lcov のインストールが必要): `genhtml coverage/lcov.info -o coverage/html`
+
+テストファイルリスト:
+
+- `test/home_item_test.dart` - HomeItem モデルの完全なテスト (toJson、fromJson、copyWith、シリアライズの往復)
+- `test/home_controller_test.dart` - HomeController のテスト (ナビゲーション、インデックス切り替え、言語切り替え、設定、カラーユーティリティ)
+- `test/file_service_test.dart` - FileService のテスト (境界条件、無効な入力の処理)
+- `test/data_export_service_test.dart` - DataExportService のテスト (インポート/エクスポートの中止シナリオ)
+- `test/restart_widget_test.dart` - RestartWidget コンポーネントのテスト (再構築機能)
+- `test/snack_bar_utils_test.dart` - SnackBarUtils コンポーネントのテスト (成功/エラー通知、直前の通知の消去)
+
 ## ライセンス
 
 ```LICENSE

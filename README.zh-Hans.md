@@ -278,6 +278,23 @@ Windows 的 `Windows PowerShell` 示例:
 - 把上述示例的 `sudo ./shortcuts.sh` 改成 **以管理员身份运行**的窗口的 `.\shortcuts.ps1` 。
 - 示例: `.\shortcuts.ps1 add menu desktop --system` 。
 
+### 单元测试
+
+- 运行所有测试: `flutter test`
+- 运行单个测试文件: `flutter test test/home_item_test.dart`
+- 运行并显示详细输出: `flutter test --reporter expanded`
+- 运行测试并生成覆盖率报告: `flutter test --coverage`
+- 查看覆盖率（需要先安装 lcov）: `genhtml coverage/lcov.info -o coverage/html`
+
+测试文件清单:
+
+- `test/home_item_test.dart` - HomeItem 模型的完整测试（toJson、fromJson、copyWith、序列化往返）
+- `test/home_controller_test.dart` - HomeController 测试（导航、索引切换、语言切换、设置、颜色工具）
+- `test/file_service_test.dart` - FileService 测试（边界条件、无效输入处理）
+- `test/data_export_service_test.dart` - DataExportService 测试（导入/导出取消场景）
+- `test/restart_widget_test.dart` - RestartWidget 组件测试（重建功能）
+- `test/snack_bar_utils_test.dart` - SnackBarUtils 组件测试（成功/错误提示、清除前一条）
+
 ## 许可协议
 
 ```LICENSE
