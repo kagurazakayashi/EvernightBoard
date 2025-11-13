@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:evernight_board/home/file_service.dart';
 
@@ -17,7 +16,10 @@ void main() {
       });
 
       test('當檔名以 assets/ 開頭時不執行任何操作', () async {
-        expect(() => FileService.deleteFile('assets/image.png'), returnsNormally);
+        expect(
+          () => FileService.deleteFile('assets/image.png'),
+          returnsNormally,
+        );
       });
     });
 

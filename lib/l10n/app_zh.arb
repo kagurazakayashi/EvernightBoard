@@ -395,5 +395,13 @@
   "sensorAutoDisabled": "当前平台不支持传感器，自动移动到倾斜侧功能已禁用",
   "@sensorAutoDisabled": {
     "description": "Auto move to tilted side is disabled because the current platform does not support sensors"
+  },
+  "missingcomponentstitle": "系统缺少必要组件",
+  "@missingcomponentstitle": {
+    "description": "System components missing"
+  },
+  "missingcomponents": "系统缺少必要组件，无法打开对话框",
+  "@missingcomponents": {
+    "description": "System missing necessary components, cannot open dialog"
   }
 }

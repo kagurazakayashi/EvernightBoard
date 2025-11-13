@@ -618,16 +618,34 @@ mixin HomeControllerData on ChangeNotifier {
       exportList.add(itemJson);
     }
 
-    final String jsonStr = jsonEncode(exportList);
-    final bool success = await DataExportService.exportJson(jsonStr);
+    try {
+      final String jsonStr = jsonEncode(exportList);
+      final bool success = await DataExportService.exportJson(jsonStr);
 
-    if (context.mounted) {
-      if (success) {
-        debugPrint('[HomeControllerData] 資料匯出成功。');
-        _showSnackBar(context, t.exportok);
-      } else {
-        debugPrint('[HomeControllerData] 資料匯出已取消或失敗。');
-        _showSnackBar(context, t.exportcancel, isError: true);
+      if (context.mounted) {
+        if (success) {
+          debugPrint('[HomeControllerData] 資料匯出成功。');
+          _showSnackBar(context, t.exportok);
+        } else {
+          debugPrint('[HomeControllerData] 資料匯出已取消或失敗。');
+          _showSnackBar(context, t.exportcancel, isError: true);
+        }
+      }
+    } on LinuxPortalMissingException {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(t.missingcomponentstitle),
+            content: Text(t.missingcomponents),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(t.ok),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
@@ -640,17 +658,17 @@ mixin HomeControllerData on ChangeNotifier {
   Future<void> importData(BuildContext context) async {
     debugPrint('[HomeControllerData] 啟動資料匯入流程。');
     final self = this as HomeController;
-    final String? jsonStr = await DataExportService.importJson();
-
-    if (jsonStr == null) {
-      debugPrint('[HomeControllerData] 匯入已取消：未選擇任何檔案。');
-      if (context.mounted) {
-        _showSnackBar(context, t.nofileselected, isError: true);
-      }
-      return;
-    }
-
     try {
+      final String? jsonStr = await DataExportService.importJson();
+
+      if (jsonStr == null) {
+        debugPrint('[HomeControllerData] 匯入已取消：未選擇任何檔案。');
+        if (context.mounted) {
+          _showSnackBar(context, t.nofileselected, isError: true);
+        }
+        return;
+      }
+
       final List<dynamic> decoded = jsonDecode(jsonStr);
       final List<HomeItem> newItems = [];
 
@@ -699,6 +717,22 @@ mixin HomeControllerData on ChangeNotifier {
         if (context.mounted) {
           _showSnackBar(context, t.invalidconffile, isError: true);
         }
+      }
+    } on LinuxPortalMissingException {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(t.missingcomponentstitle),
+            content: Text(t.missingcomponents),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(t.ok),
+              ),
+            ],
+          ),
+        );
       }
     } catch (e) {
       debugPrint('[HomeControllerData] 匯入解析過程發生錯誤：$e');

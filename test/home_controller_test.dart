@@ -9,11 +9,11 @@ void main() {
 
   group('首页控制器', () {
     // 使用清單集中管理控制器實體
-    final List<HomeController> _controllers = [];
+    final List<HomeController> controllers = [];
 
     // 所有測試結束後釋放資源
     tearDownAll(() {
-      for (final c in _controllers) {
+      for (final c in controllers) {
         try {
           c.dispose();
         } catch (_) {}
@@ -23,7 +23,7 @@ void main() {
     // 輔助方法：建立控制器並加入管理清單
     HomeController createController() {
       final c = HomeController();
-      _controllers.add(c);
+      controllers.add(c);
       return c;
     }
 
