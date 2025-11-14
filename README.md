@@ -108,6 +108,30 @@ After preparing multiple preset images or texts according to the preparation ste
 
 `^ ✪ ω ✪ ^` _So, can you guess what scenario this application was originally designed for?_
 
+### Troubleshooting
+
+Windows:
+
+- Q: Received message: "This app can't run on your PC" or "The image file is invalid."
+  - A: This program only runs on Windows 10 or later on 64-bit x86 processors. ARM processors and 32-bit or lower processors are not supported.
+
+macOS:
+
+- Q: Received message: "App cannot be opened because the developer cannot be verified."
+  - A: Open "Security & Privacy" in "System Preferences," switch to the "General" tab, and check "Anywhere," then run again. If it says "App was blocked from use because it is not from an identified developer," click the "Open Anyway" button.
+- Q: Crashes immediately on startup, and the crash report contains `codesign` related content.
+  - A: Please try re-signing locally using the command: `codesign --force --deep --sign - evernight_board.app`. If the command is not found, run `xcode-select --install` to install Xcode first.
+
+Linux:
+
+- Q: When importing or exporting configurations, the file dialog fails to open, and it says "System is missing necessary components." What should I do?
+  - A: You need to install XDG Desktop Portal and its backend. Using Arch Linux as an example:
+    1. Install the main service: `sudo pacman -S xdg-desktop-portal`
+    2. Choose a backend based on your desktop environment: `sudo pacman -S xdg-desktop-portal-gtk (xdg-desktop-portal-kde / xdg-desktop-portal-wlr / ...)`
+    3. Start the service: `systemctl --user enable xdg-desktop-portal && systemctl --user start xdg-desktop-portal`
+- Q: The program display appears tilted, or the visuals/animations are incomplete or abnormal.
+  - A: Please try `LIBGL_ALWAYS_SOFTWARE=1 ./evernight_board`.
+
 ## Privacy
 
 This program is fully open-source, free, and respects your privacy.

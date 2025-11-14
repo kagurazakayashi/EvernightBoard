@@ -13,6 +13,7 @@
 - 适用于 Linux 的额外说明
   - 请先使用 `chmod +x ./evernight_board` 给予执行权限。
   - 如果显示出现倾倒，请尝试 `LIBGL_ALWAYS_SOFTWARE=1 ./evernight_board` 。
+  - 如果在导入或导出配置时，无法打开文件对话框，而是提示“系统缺少必要组件”，需要安装 `XDG Desktop Portal` 及它的后端。
 
 - For usage instructions regarding this version, please refer to README(en/ja/zh-Hans/zh-Hant).md in the source code archive or the "Usage Instructions" within the application.
 - All the following packages require a 64-bit processor.
@@ -25,6 +26,7 @@
 - Additional notes for the Linux program:
   - Please use `chmod +x ./evernight_board` to grant execution permissions first.
   - If the display appears corrupted or glitched, please try `LIBGL_ALWAYS_SOFTWARE=1 ./evernight_board`.
+  - If the file dialog fails to open when importing or exporting configurations, and instead displays "System is missing necessary components," you need to install `XDG Desktop Portal` and its backend.
 
 - 本バージョンの使用説明については、ソースコード圧縮パッケージ内の README(en/ja/zh-Hans/zh-Hant).md またはアプリ内の「使用説明」をご参照ください。
 - 以下のすべてのパッケージは 64 ビットプロセッサを必要とします。
@@ -37,6 +39,7 @@
 - Linux 用プログラムに関する追加事項：
   - まず `chmod +x ./evernight_board` を使用して実行権限を付与してください。
   - 表示が乱れる場合は、`LIBGL_ALWAYS_SOFTWARE=1 ./evernight_board` をお試しください。
+  - 設定のインポートまたはエクスポート時にファイルダイアログが開かず、「システムに必要なコンポーネントが不足しています」と表示される場合は、`XDG Desktop Portal` とそのバックエンドをインストールする必要があります。
 
 **新增功能**  **New Features**  **新機能**
 

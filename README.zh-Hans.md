@@ -108,6 +108,30 @@
 
 `^ ✪ ω ✪ ^` _所以你猜这个应用程序最初设计是为了什么情景的？_
 
+### 疑难排解
+
+Windows:
+
+- Q: 收到提示信息: “此应用无法在你的电脑上运行”或者“映像文件无效”。
+  - A: 这个程序只能在 Windows 10 及以上版本的 64 位 x86 处理器上运行。不支持 ARM 处理器和 32 位及以下处理器。
+
+macOS:
+
+- Q: 收到提示信息: “无法打开，因为无法验证开发者。”
+  - A: 打开“系统偏好设置”中的“安全性与隐私”，切换到“通用”标签页，勾选“任何来源”，再次运行。如果这里有“已阻止使用，因为来自身份不明的开发者”，请按“仍要打开”按钮。
+- Q: 启动直接崩溃，崩溃信息里有 `codesign` 相关内容。
+  - A: 请尝试使用本机重签，命令是: `codesign --force --deep --sign - evernight_board.app` 。如果没有命令，先运行 `xcode-select --install` 安装 Xcode 。
+
+Linux:
+
+- Q: 在导入或导出配置时，无法打开文件对话框，而是提示“系统缺少必要组件”，怎么办？
+  - A: 需要安装 XDG Desktop Portal 及后端。以 Arch Linux 为例:
+    1. 安装主服务: `sudo pacman -S xdg-desktop-portal`
+    2. 根据你的桌面环境选择一个后端: `sudo pacman -S xdg-desktop-portal-gtk (xdg-desktop-portal-kde / xdg-desktop-portal-wlr / ...)`
+    3. 启动服务: `systemctl --user enable xdg-desktop-portal && systemctl --user start xdg-desktop-portal`
+- Q: 程序的画面显示出现倾倒，或者画面、动画显示不完整或异常。
+  - A: 请尝试 `LIBGL_ALWAYS_SOFTWARE=1 ./evernight_board` 。
+
 ## 隐私权
 
 本程序完全开源、免费，并且尊重您的隐私。
